@@ -5,6 +5,9 @@ import { User, Session, AuthError } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types/supabase'
 
+// Default credits given to new users on signup
+const DEFAULT_SIGNUP_CREDITS = 3;
+
 interface AuthContextType {
   user: User | null
   session: Session | null
@@ -85,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           email: currentUser.email,
           full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0],
           avatar_url: currentUser.user_metadata?.avatar_url,
-          credits: 3,
+          credits: DEFAULT_SIGNUP_CREDITS,
         })
 
       if (error && error.code !== '23505') {

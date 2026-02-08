@@ -6,8 +6,12 @@ export async function createClient() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   // Return null if env vars are not set (for build time)
+  // This allows the app to build without Supabase configuration
+  // and run in free-tier-only mode
   if (!url || !key) {
     console.warn('Supabase URL or API key not configured')
+    // We use `as any` here intentionally to allow graceful degradation
+    // The API routes check for null and skip auth validation
     return null as any
   }
 

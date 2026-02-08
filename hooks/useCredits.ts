@@ -5,9 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 export const useCredits = () => {
   const { profile, refreshProfile } = useAuth()
 
-  const hasCredits = () => {
-    return profile && profile.credits > 0
-  }
+  const hasCredits = profile && profile.credits > 0
 
   const getCredits = () => {
     return profile?.credits || 0
@@ -29,7 +27,7 @@ export const useCredits = () => {
 
   return {
     credits: getCredits(),
-    hasCredits: hasCredits(),
+    hasCredits,
     deductCredit,
     refreshProfile,
   }

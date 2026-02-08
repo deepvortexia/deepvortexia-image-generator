@@ -94,10 +94,10 @@ export async function POST(req: NextRequest) {
 
           console.log('✅ Credit deducted. Remaining:', updatedProfile.credits);
         } catch (error: unknown) {
-          console.error('Error verifying credits:', error);
+          console.error('Error deducting credit:', error);
           return NextResponse.json(
             { 
-              error: 'Failed to verify credits',
+              error: 'Failed to deduct credit',
               success: false 
             },
             { status: 500 }
