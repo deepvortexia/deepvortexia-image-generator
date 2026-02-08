@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Header from "@/components/Header";
-import PromptInput from "@/components/PromptInput";
-import AspectRatioSelector from "@/components/AspectRatioSelector";
-import StyleSuggestions from "@/components/StyleSuggestions";
-import QuickIdeas from "@/components/QuickIdeas";
-import GenerateButton from "@/components/GenerateButton";
+import EcosystemCards from "@/components/EcosystemCards";
+import CreditsDisplay from "@/components/CreditsDisplay";
+import CompactSuggestions from "@/components/CompactSuggestions";
+import PromptSection from "@/components/PromptSection";
 import ImageDisplay from "@/components/ImageDisplay";
 
 export default function Home() {
@@ -52,37 +51,157 @@ export default function Home() {
     setPrompt(prev => prev ? `${prev}, ${style}` : style);
   };
 
-  return (
-    <div className="min-h-screen bg-black text-white">
-      {/* TODO: Replace hardcoded credits with dynamic value from user profile/API */}
-      <Header credits={439} />
-      
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-yellow-400 mb-2">
-            AI Image Generator
-          </h1>
-          <p className="text-gray-400">
-            Create stunning images from text with AI
-          </p>
-        </div>
+  const handleRegenerate = () => {
+    if (prompt) {
+      handleGenerate();
+    }
+  };
 
-        <PromptInput value={prompt} onChange={setPrompt} disabled={isLoading} />
-        
-        <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
-        
-        <StyleSuggestions onSelect={handleStyleSelect} />
-        
-        <QuickIdeas onSelect={setPrompt} />
-        
-        <GenerateButton onClick={handleGenerate} isLoading={isLoading} disabled={!prompt.trim()} />
+  return (
+    <div className="app fade-in">
+      {/* Animated Background */}
+      <div className="app-container">
+        {/* Floating Particles */}
+        <div className="particles">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div 
+              key={`bg-particle-${i}`}
+              className="particle" 
+              style={{ 
+                left: `${(i + 1) * 10}%`, 
+                animationDelay: `${i * 0.5}s` 
+              }}
+            ></div>
+          ))}
+        </div>
+      </div>
+
+      <Header />
+      
+      <EcosystemCards />
+      
+      <CreditsDisplay credits={439} />
+      
+      <CompactSuggestions 
+        onStyleSelect={handleStyleSelect}
+        onIdeaSelect={setPrompt}
+      />
+      
+      <main className="main-content">
+        <PromptSection
+          prompt={prompt}
+          onPromptChange={setPrompt}
+          aspectRatio={aspectRatio}
+          onAspectRatioChange={setAspectRatio}
+          onGenerate={handleGenerate}
+          isLoading={isLoading}
+        />
         
         <ImageDisplay 
           imageUrl={imageUrl}
           isLoading={isLoading}
           error={error}
+          onRegenerate={handleRegenerate}
         />
+
+        <footer className="footer">
+          <p className="footer-tagline">
+            Deep Vortex AI - Building the complete AI creative ecosystem
+          </p>
+          <p className="footer-text">
+            Powered by <span className="gradient-text">Deep Vortex</span> ×{' '}
+            <span className="gradient-text">Replicate Imagen</span>
+          </p>
+        </footer>
       </main>
+
+      <style jsx>{`
+        .app {
+          min-height: 100vh;
+          background: var(--bg-primary);
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        .fade-in {
+          animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .app-container {
+          position: fixed;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          z-index: 0;
+          pointer-events: none;
+        }
+
+        .main-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: auto;
+          padding: 0.8rem 1.25rem 2.5rem;
+          text-align: center;
+          width: 100%;
+          max-width: 700px;
+          margin: 0 auto;
+          position: relative;
+          z-index: 1;
+        }
+
+        .footer {
+          margin-top: 80px;
+          text-align: center;
+        }
+
+        .footer-tagline {
+          font-family: 'Orbitron', sans-serif;
+          color: var(--gold-primary);
+          font-size: 1rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          letter-spacing: 0.02em;
+        }
+
+        .footer-text {
+          color: var(--text-secondary);
+          font-size: 14px;
+        }
+
+        .gradient-text {
+          background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary), var(--gold-light));
+          background-size: 200% 200%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          font-weight: 700;
+          animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+
+        @media (max-width: 768px) {
+          .main-content {
+            padding: 0.5rem 1.25rem 2.5rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }
+
