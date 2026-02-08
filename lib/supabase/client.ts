@@ -19,7 +19,7 @@ export const createClient = () => {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      storageKey: 'deepvortex-image-generator-auth',
+      storageKey: 'deepvortexia-image-generator-auth',
       flowType: 'pkce',
     },
     cookies: {
