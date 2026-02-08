@@ -32,7 +32,7 @@ export default function Header() {
             {/* Floating particles */}
             <div className="magic-particles">
               {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className="magic-particle"></div>
+                <div key={`particle-${i}`} className="magic-particle"></div>
               ))}
             </div>
             
@@ -60,14 +60,16 @@ export default function Header() {
       <div className="action-buttons-section">
         <button 
           className="action-btn action-btn-signin"
-          onClick={() => alert('Sign In - Coming Soon!')}
+          onClick={() => console.log('Sign In - Coming Soon!')}
+          title="Coming Soon"
         >
           <span className="btn-icon" aria-hidden="true">🔐</span>
           <span>Sign In</span>
         </button>
         <button 
           className="action-btn action-btn-favorites"
-          onClick={() => alert('Favorites - Coming Soon!')}
+          onClick={() => console.log('Favorites - Coming Soon!')}
+          title="Coming Soon"
         >
           <span className="btn-icon" aria-hidden="true">⭐</span>
           <span>Favorites</span>

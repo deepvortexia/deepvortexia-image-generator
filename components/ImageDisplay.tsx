@@ -186,10 +186,18 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate 
           )}
           <button
             className="action-btn copy-btn"
-            onClick={() => {
-              navigator.clipboard.writeText(imageUrl);
-              alert('Image URL copied!');
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(imageUrl);
+                console.log('Image URL copied to clipboard!');
+                // In a production app, show a toast notification here
+              } catch (err) {
+                console.error('Failed to copy:', err);
+                // Fallback: show the URL in a prompt
+                window.prompt('Copy this URL:', imageUrl);
+              }
             }}
+            title="Copy image URL to clipboard"
           >
             <span>🔗</span> Copy URL
           </button>

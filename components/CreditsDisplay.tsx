@@ -14,8 +14,9 @@ export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
         <div className="credits-actions">
           <button 
             className="buy-credits-btn"
-            onClick={() => alert('Buy Credits - Coming Soon!')}
+            onClick={() => console.log('Buy Credits - Coming Soon!')}
             aria-label="Buy more credits"
+            title="Coming Soon"
           >
             <span aria-hidden="true">💳</span>
             <span>Buy Credits</span>

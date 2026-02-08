@@ -65,7 +65,7 @@ export default function Home() {
         <div className="particles">
           {Array.from({ length: 9 }).map((_, i) => (
             <div 
-              key={i}
+              key={`bg-particle-${i}`}
               className="particle" 
               style={{ 
                 left: `${(i + 1) * 10}%`, 
