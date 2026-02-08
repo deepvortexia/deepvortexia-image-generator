@@ -122,11 +122,13 @@ export async function POST(req: NextRequest) {
       authenticated: !!user,
     });
 
-    // Call Replicate API with CORRECT Imagen-4 parameters
+    // Call Replicate API with Imagen-4
     let generationFailed = false;
     let userId: string | undefined = user?.id;
 
     try {
+      console.log('🚀 Calling Replicate with Imagen-4-Fast...');
+      
       const output = await replicate.run(
         "google/imagen-4-fast",
         {
@@ -139,81 +141,153 @@ export async function POST(req: NextRequest) {
         }
       );
 
-      console.log('Replicate raw output:', JSON.stringify(output, null, 2));
-      console.log('Output type:', typeof output);
-      console.log('Is array:', Array.isArray(output));
+      // EXTENSIVE DEBUGGING
+      console.log('📦 Raw output received');
+      console.log('📦 Output type:', typeof output);
+      console.log('📦 Is array:', Array.isArray(output));
+      console.log('📦 Output constructor:', output?.constructor?.name);
+      
+      // Try to stringify safely
+      try {
+        console.log('📦 Output JSON:', JSON.stringify(output, (key, value) => {
+          if (typeof value === 'function') return '[Function]';
+          if (value instanceof URL) return value.toString();
+          return value;
+        }, 2));
+      } catch (e) {
+        console.log('📦 Could not stringify output:', e);
+      }
 
-      // Handle ALL possible output formats from Replicate
-      let imageUrl: string | undefined = undefined;
+      // Extract image URL with comprehensive handling
+      let imageUrl: string | null = null;
       
       // Case 1: Direct string URL
       if (typeof output === 'string') {
+        console.log('✅ Output is direct string');
         imageUrl = output;
       }
-      // Case 2: Array of strings or objects
+      // Case 2: URL object
+      else if (output instanceof URL) {
+        console.log('✅ Output is URL object');
+        imageUrl = output.toString();
+      }
+      // Case 3: Array
       else if (Array.isArray(output)) {
+        console.log('📦 Output is array with length:', output.length);
         if (output.length === 0) {
           throw new Error('No image generated - empty array');
         }
         const firstItem = output[0];
+        console.log('📦 First item type:', typeof firstItem);
+        console.log('📦 First item constructor:', firstItem?.constructor?.name);
+        
         if (typeof firstItem === 'string') {
           imageUrl = firstItem;
+        } else if (firstItem instanceof URL) {
+          imageUrl = firstItem.toString();
         } else if (firstItem && typeof firstItem === 'object') {
-          // Could be FileOutput object
-          if ('url' in firstItem && typeof firstItem.url === 'function') {
-            imageUrl = await firstItem.url();
-          } else if ('url' in firstItem && typeof firstItem.url === 'string') {
-            imageUrl = firstItem.url;
+          // Check for FileOutput with url() method
+          if ('url' in firstItem) {
+            const urlValue = firstItem.url;
+            console.log('📦 firstItem.url type:', typeof urlValue);
+            if (typeof urlValue === 'function') {
+              const result = await urlValue();
+              imageUrl = typeof result === 'string' ? result : result?.toString?.() || String(result);
+            } else if (urlValue instanceof URL) {
+              imageUrl = urlValue.toString();
+            } else if (typeof urlValue === 'string') {
+              imageUrl = urlValue;
+            }
           } else if ('href' in firstItem) {
-            imageUrl = firstItem.href;
+            const hrefValue = (firstItem as any).href;
+            imageUrl = typeof hrefValue === 'string' ? hrefValue : hrefValue?.toString?.() || String(hrefValue);
+          }
+          // Try toString if nothing else worked
+          if (!imageUrl && firstItem.toString && firstItem.toString !== Object.prototype.toString) {
+            const str = firstItem.toString();
+            if (typeof str === 'string' && str.startsWith('http')) {
+              imageUrl = str;
+            }
           }
         }
       }
-      // Case 3: Single object (FileOutput or similar)
+      // Case 4: Single object (FileOutput)
       else if (output && typeof output === 'object') {
-        // Check if it's a FileOutput with url() method
-        if ('url' in output && typeof (output as any).url === 'function') {
-          imageUrl = await (output as any).url();
-        }
-        // Check if it has a url string property
-        else if ('url' in output && typeof (output as any).url === 'string') {
-          imageUrl = (output as any).url;
+        console.log('📦 Output is object');
+        console.log('📦 Object keys:', Object.keys(output as object));
+        
+        // Check for url property/method
+        if ('url' in output) {
+          const urlValue = (output as any).url;
+          console.log('📦 output.url type:', typeof urlValue);
+          if (typeof urlValue === 'function') {
+            const result = await urlValue();
+            imageUrl = typeof result === 'string' ? result : result?.toString?.() || String(result);
+          } else if (urlValue instanceof URL) {
+            imageUrl = urlValue.toString();
+          } else if (typeof urlValue === 'string') {
+            imageUrl = urlValue;
+          }
         }
         // Check for href property
         else if ('href' in output) {
-          imageUrl = (output as any).href;
+          const hrefValue = (output as any).href;
+          imageUrl = typeof hrefValue === 'string' ? hrefValue : hrefValue?.toString?.() || String(hrefValue);
         }
-        // Check if it's iterable (like a generator)
-        else if (Symbol.iterator in output || Symbol.asyncIterator in output) {
-          const items = [];
-          for await (const item of output as any) {
+        // Try toString
+        if (!imageUrl && output.toString && output.toString !== Object.prototype.toString) {
+          const str = output.toString();
+          if (typeof str === 'string' && str.startsWith('http')) {
+            imageUrl = str;
+          }
+        }
+        // Check for async iterator
+        if (!imageUrl && (Symbol.asyncIterator in output)) {
+          console.log('📦 Output is async iterable, collecting items...');
+          const items: any[] = [];
+          for await (const item of output as AsyncIterable<any>) {
             items.push(item);
           }
+          console.log('📦 Collected items:', items.length);
           if (items.length > 0) {
             const firstItem = items[0];
             if (typeof firstItem === 'string') {
               imageUrl = firstItem;
-            } else if (firstItem && 'url' in firstItem) {
-              imageUrl = typeof firstItem.url === 'function' ? await firstItem.url() : firstItem.url;
+            } else if (firstItem instanceof URL) {
+              imageUrl = firstItem.toString();
+            } else if (firstItem?.url) {
+              const urlVal = typeof firstItem.url === 'function' ? await firstItem.url() : firstItem.url;
+              imageUrl = typeof urlVal === 'string' ? urlVal : urlVal?.toString?.() || String(urlVal);
             }
           }
         }
       }
 
+      // CRITICAL: Ensure imageUrl is a string
+      if (imageUrl !== null && typeof imageUrl !== 'string') {
+        console.log('⚠️ imageUrl is not a string, converting...', typeof imageUrl);
+        imageUrl = String(imageUrl);
+      }
+
       // Final validation
       if (!imageUrl) {
-        console.error('Failed to extract image URL. Output was:', output);
+        console.error('❌ Failed to extract image URL');
+        console.error('❌ Output was:', output);
         throw new Error('Could not extract image URL from Replicate response');
       }
 
-      // Validate URL format
+      // Validate URL format - NOW SAFE because we ensured it's a string
+      if (typeof imageUrl !== 'string') {
+        throw new Error('Image URL is not a string');
+      }
+      
       if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+        console.error('❌ Invalid URL format:', imageUrl);
         throw new Error('Invalid image URL format');
       }
 
       console.log('✅ Image generated successfully:', imageUrl);
 
-      // Return success response
       return NextResponse.json({ 
         imageUrl,
         success: true 
