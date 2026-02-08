@@ -1,25 +1,48 @@
-interface CreditsDisplayProps {
-  credits: number;
-}
+'use client';
 
-export default function CreditsDisplay({ credits }: CreditsDisplayProps) {
+import { useFreeGenerations } from '@/hooks/useFreeGenerations';
+
+export default function CreditsDisplay() {
+  const { freeGenerationsLeft, isLoggedIn, isClient } = useFreeGenerations();
+
   return (
     <div className="credits-display-section">
       <div className="credits-display-content">
         <div className="credits-info">
-          <span className="credits-icon">💎</span>
-          <span className="credits-amount">{credits} credits</span>
+          {isLoggedIn ? (
+            <>
+              <span className="credits-icon">💰</span>
+              <span className="credits-amount">439 credits</span>
+            </>
+          ) : (
+            <>
+              <span className="credits-icon">🎁</span>
+              <span className="credits-amount">
+                {isClient ? (
+                  freeGenerationsLeft > 0 
+                    ? `${freeGenerationsLeft} free generation${freeGenerationsLeft !== 1 ? 's' : ''} remaining`
+                    : 'Sign in for unlimited generations!'
+                ) : '2 free generations remaining'}
+              </span>
+            </>
+          )}
         </div>
         
         <div className="credits-actions">
           <button 
             className="buy-credits-btn"
-            onClick={() => console.log('Buy Credits - Coming Soon!')}
-            aria-label="Buy more credits"
-            title="Coming Soon"
+            onClick={() => {
+              if (isLoggedIn) {
+                console.log('Buy Credits - Coming Soon!');
+              } else {
+                window.location.href = 'https://deepvortexai.art/login';
+              }
+            }}
+            aria-label={isLoggedIn ? "Buy more credits" : "Sign in"}
+            title={isLoggedIn ? "Coming Soon" : "Sign in to get unlimited generations"}
           >
-            <span aria-hidden="true">💳</span>
-            <span>Buy Credits</span>
+            <span aria-hidden="true">{isLoggedIn ? '💳' : '🔐'}</span>
+            <span>{isLoggedIn ? 'Buy Credits' : 'Sign In'}</span>
           </button>
         </div>
       </div>

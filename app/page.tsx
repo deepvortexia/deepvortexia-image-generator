@@ -7,6 +7,7 @@ import CreditsDisplay from "@/components/CreditsDisplay";
 import CompactSuggestions from "@/components/CompactSuggestions";
 import PromptSection from "@/components/PromptSection";
 import ImageDisplay from "@/components/ImageDisplay";
+import { useFreeGenerations } from "@/hooks/useFreeGenerations";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
@@ -14,10 +15,18 @@ export default function Home() {
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  
+  const { canGenerate, useFreeGeneration, restoreFreeGeneration, freeGenerationsLeft, isLoggedIn } = useFreeGenerations();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       setError("Please enter a prompt");
+      return;
+    }
+
+    // Try to use a free generation (checks internally if user can generate)
+    if (!useFreeGeneration()) {
+      setError("No free generations left. Sign in to continue!");
       return;
     }
 
@@ -35,6 +44,8 @@ export default function Home() {
       const data = await response.json();
 
       if (!response.ok) {
+        // Restore the free generation if the API call failed
+        restoreFreeGeneration();
         throw new Error(data.error || "Failed to generate image");
       }
 
@@ -80,7 +91,7 @@ export default function Home() {
       
       <EcosystemCards />
       
-      <CreditsDisplay credits={439} />
+      <CreditsDisplay />
       
       <CompactSuggestions 
         onStyleSelect={handleStyleSelect}
