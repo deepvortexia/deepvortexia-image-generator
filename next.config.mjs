@@ -34,7 +34,7 @@ const nextConfig = {
       'replicate.com',
     ],
   },
-  // Disable strict mode for better Replicate compatibility
+  // Disable strict mode to prevent double-rendering which can cause issues with Replicate API calls
   reactStrictMode: false,
 };
 

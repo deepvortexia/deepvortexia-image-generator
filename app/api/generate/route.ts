@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
       console.log('Is array:', Array.isArray(output));
 
       // Handle ALL possible output formats from Replicate
-      let imageUrl: string | null = null;
+      let imageUrl: string | undefined = undefined;
       
       // Case 1: Direct string URL
       if (typeof output === 'string') {
