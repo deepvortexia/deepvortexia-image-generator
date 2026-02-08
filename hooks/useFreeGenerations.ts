@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 const FREE_GENERATIONS_KEY = 'deepvortex_free_generations';
 const INITIAL_FREE_GENERATIONS = 2;
@@ -46,13 +46,27 @@ export function useFreeGenerations() {
     return true;
   };
 
-  const canGenerate = isLoggedIn || freeGenerationsLeft > 0;
+  const restoreFreeGeneration = (): void => {
+    if (!isLoggedIn && freeGenerationsLeft < INITIAL_FREE_GENERATIONS) {
+      const newCount = freeGenerationsLeft + 1;
+      setFreeGenerationsLeft(newCount);
+      if (isClient) {
+        localStorage.setItem(FREE_GENERATIONS_KEY, newCount.toString());
+      }
+    }
+  };
+
+  // Compute canGenerate dynamically
+  const canGenerate = useMemo(() => {
+    return isLoggedIn || freeGenerationsLeft > 0;
+  }, [isLoggedIn, freeGenerationsLeft]);
 
   return {
     freeGenerationsLeft,
     isLoggedIn,
     canGenerate,
     useFreeGeneration,
+    restoreFreeGeneration,
     isClient,
   };
 }

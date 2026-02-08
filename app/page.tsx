@@ -16,7 +16,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   
-  const { canGenerate, useFreeGeneration, freeGenerationsLeft, isLoggedIn } = useFreeGenerations();
+  const { canGenerate, useFreeGeneration, restoreFreeGeneration, freeGenerationsLeft, isLoggedIn } = useFreeGenerations();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -24,14 +24,8 @@ export default function Home() {
       return;
     }
 
-    // Check if user can generate
-    if (!canGenerate) {
-      setError("Sign in to continue generating images!");
-      return;
-    }
-
-    // Use free generation (if not logged in)
-    if (!isLoggedIn && !useFreeGeneration()) {
+    // Try to use a free generation (checks internally if user can generate)
+    if (!useFreeGeneration()) {
       setError("No free generations left. Sign in to continue!");
       return;
     }
@@ -51,6 +45,7 @@ export default function Home() {
 
       if (!response.ok) {
         // Restore the free generation if the API call failed
+        restoreFreeGeneration();
         throw new Error(data.error || "Failed to generate image");
       }
 
