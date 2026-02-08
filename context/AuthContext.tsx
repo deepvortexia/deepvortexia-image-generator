@@ -34,6 +34,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const initialized = useRef(false)
   const supabase = createClient()
 
+  // If Supabase is not configured, just render children without auth
+  if (!supabase) {
+    if (loading) {
+      setTimeout(() => setLoading(false), 0)
+    }
+    return (
+      <AuthContext.Provider value={{
+        user: null,
+        session: null,
+        profile: null,
+        loading: false,
+        signInWithGoogle: async () => { throw new Error('Supabase not configured') },
+        signInWithEmail: async () => ({ error: new Error('Supabase not configured') as AuthError }),
+        signOut: async () => {},
+        refreshProfile: async () => {},
+      }}>
+        {children}
+      </AuthContext.Provider>
+    )
+  }
+
   const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
       const { data, error } = await supabase
@@ -100,7 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
+      async (event: any, currentSession: any) => {
         console.log('Auth event:', event)
 
         if (currentSession?.user) {
@@ -123,7 +144,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     )
 
     // Then check for existing session
-    supabase.auth.getSession().then(async ({ data: { session: initialSession }, error }) => {
+    supabase.auth.getSession().then(async ({ data: { session: initialSession }, error }: any) => {
       if (error) {
         console.error('Error getting session:', error)
         setLoading(false)
