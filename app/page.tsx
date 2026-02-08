@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import EcosystemCards from "@/components/EcosystemCards";
 import CreditsDisplay from "@/components/CreditsDisplay";
 import CompactSuggestions from "@/components/CompactSuggestions";
 import PromptSection from "@/components/PromptSection";
 import ImageDisplay from "@/components/ImageDisplay";
+import { Notification } from "@/components/Notification";
+import { AuthModal } from "@/components/AuthModal";
 import { useFreeGenerations } from "@/hooks/useFreeGenerations";
 import { useCredits } from "@/hooks/useCredits";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
@@ -16,9 +19,24 @@ export default function Home() {
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   const { canGenerate, useFreeGeneration, restoreFreeGeneration, freeGenerationsLeft, isLoggedIn } = useFreeGenerations();
   const { hasCredits, refreshProfile } = useCredits();
+  const { user, loading: authLoading } = useAuth();
+
+  // Handle successful Stripe payments (session_id in URL)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    
+    if (sessionId && user) {
+      setShowNotification(true);
+      // Clean the URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [user]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -36,12 +54,14 @@ export default function Home() {
       // For logged-in users, check if they have credits
       if (!hasCredits) {
         setError("You have run out of credits. Please purchase more to continue.");
+        // Could show pricing modal here
         return;
       }
     } else {
       // For non-logged users, use free generation system
       if (!useFreeGeneration()) {
         setError("You've used your 2 free generations. Sign in to continue!");
+        setShowAuthModal(true);
         return;
       }
     }
@@ -157,6 +177,10 @@ export default function Home() {
           </p>
         </footer>
       </main>
+
+      {/* Notifications and Modals */}
+      <Notification show={showNotification} onClose={() => setShowNotification(false)} />
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       <style jsx>{`
         .app {

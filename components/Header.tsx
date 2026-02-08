@@ -1,9 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { AuthModal } from "@/components/AuthModal";
 
 export default function Header() {
+  const { user, profile, signOut, loading } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const handleAuthAction = () => {
+    if (user) {
+      // User is logged in, show sign out confirmation
+      if (confirm('Are you sure you want to sign out?')) {
+        signOut();
+      }
+    } else {
+      // User is not logged in, show auth modal
+      setShowAuthModal(true);
+    }
+  };
+
   return (
     <>
       <header className="app-header">
@@ -60,11 +78,12 @@ export default function Header() {
       <div className="action-buttons-section">
         <button 
           className="action-btn action-btn-signin"
-          onClick={() => window.location.href = 'https://deepvortexai.art/login'}
-          title="Sign in to get unlimited generations"
+          onClick={handleAuthAction}
+          disabled={loading}
+          title={user ? "Sign out" : "Sign in to get unlimited generations"}
         >
-          <span className="btn-icon" aria-hidden="true">🔐</span>
-          <span>Sign In</span>
+          <span className="btn-icon" aria-hidden="true">{user ? '👤' : '🔐'}</span>
+          <span>{loading ? 'Loading...' : user ? (profile?.email?.split('@')[0] || 'Profile') : 'Sign In'}</span>
         </button>
         <button 
           className="action-btn action-btn-favorites"
@@ -75,6 +94,8 @@ export default function Header() {
           <span>Favorites</span>
         </button>
       </div>
+
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       <style jsx>{`
         .app-header {
