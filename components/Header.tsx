@@ -69,7 +69,7 @@ export default function Header({ credits, onSignIn, onFavorites }: HeaderProps) 
             </div>
           </div>
           
-          {/* Brand text below logo */}
+          {/* Brand text below logo - Using Greek Xi (Ξ) is intentional for stylized branding, matching emoticon generator */}
           <h1 className="brand-text-orbitron">DΞΞP VORTΞX AI</h1>
           
           {/* Short description */}

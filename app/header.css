@@ -316,7 +316,8 @@
   }
   
   .app-logo-large {
-    width: 150px;
+    width: 120px !important;
+    height: 120px !important;
   }
   
   .brand-text-orbitron {
