@@ -181,6 +181,53 @@ body {
   }
 }
 
+/* Prompt Section - Wider for better UX */
+.prompt-section {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.prompt-input,
+.prompt-textarea {
+  width: 100%;
+  min-width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  background: rgba(20, 20, 20, 0.8);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.prompt-input:focus,
+.prompt-textarea:focus {
+  outline: none;
+  border-color: #D4AF37;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  background: rgba(30, 30, 30, 0.9);
+}
+
+.prompt-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Make prompt section responsive */
+@media (max-width: 768px) {
+  .prompt-section {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+  
+  .prompt-input,
+  .prompt-textarea {
+    font-size: 14px;
+  }
+}
+
 /* Optimized animations */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

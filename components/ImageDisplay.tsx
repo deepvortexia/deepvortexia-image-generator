@@ -118,29 +118,69 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate 
   }
 
   if (error) {
+    const showSignInButton = error.includes('Sign in') || error.includes('free generations');
+    
     return (
       <div className="error-message">
         <span className="error-icon">⚠️</span>
-        {error}
+        <p>{error}</p>
+        {showSignInButton && (
+          <button 
+            onClick={() => window.location.href = 'https://deepvortexai.art/login'}
+            className="error-action-btn"
+          >
+            Sign In Now
+          </button>
+        )}
         
         <style jsx>{`
           .error-message {
-            padding: 1rem;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--error);
-            border-radius: 8px;
-            color: var(--error);
+            max-width: 600px;
             margin: 20px auto;
+            padding: 16px 20px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            animation: fadeIn 0.3s ease;
-            max-width: 600px;
+            gap: 12px;
+            animation: shake 0.5s ease;
           }
 
           .error-icon {
-            font-size: 20px;
+            font-size: 24px;
+            flex-shrink: 0;
+          }
+          
+          .error-message p {
+            margin: 0;
+            color: #FCA5A5;
+            font-size: 14px;
+            line-height: 1.5;
+            flex: 1;
+          }
+          
+          .error-action-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #D4AF37, #E8C87C);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+          }
+          
+          .error-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+          }
+
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
           }
 
           @keyframes fadeIn {
