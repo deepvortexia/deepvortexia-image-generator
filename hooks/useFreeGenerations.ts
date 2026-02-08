@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 const FREE_GENERATIONS_KEY = 'deepvortex_free_generations';
 const INITIAL_FREE_GENERATIONS = 2;
 
 export function useFreeGenerations() {
   const [freeGenerationsLeft, setFreeGenerationsLeft] = useState<number>(INITIAL_FREE_GENERATIONS);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isClient, setIsClient] = useState<boolean>(false);
+  const { user, loading } = useAuth();
+  
+  // Derive isLoggedIn from auth context
+  const isLoggedIn = !loading && !!user;
 
   useEffect(() => {
     // Mark that we're on the client
@@ -22,10 +26,6 @@ export function useFreeGenerations() {
         setFreeGenerationsLeft(parsedValue);
       }
     }
-
-    // TODO: Check actual login status from your auth system
-    // For now, assume not logged in
-    // setIsLoggedIn(checkAuthStatus());
   }, []);
 
   const useFreeGeneration = (): boolean => {

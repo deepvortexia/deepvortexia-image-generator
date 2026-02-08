@@ -1,9 +1,11 @@
 'use client';
 
 import { useFreeGenerations } from '@/hooks/useFreeGenerations';
+import { useCredits } from '@/hooks/useCredits';
 
 export default function CreditsDisplay() {
   const { freeGenerationsLeft, isLoggedIn, isClient } = useFreeGenerations();
+  const { credits } = useCredits();
 
   return (
     <div className="credits-display-section">
@@ -12,7 +14,7 @@ export default function CreditsDisplay() {
           {isLoggedIn ? (
             <>
               <span className="credits-icon">💰</span>
-              <span className="credits-amount">439 credits</span>
+              <span className="credits-amount">{credits} credits</span>
             </>
           ) : (
             <>

@@ -8,6 +8,7 @@ import CompactSuggestions from "@/components/CompactSuggestions";
 import PromptSection from "@/components/PromptSection";
 import ImageDisplay from "@/components/ImageDisplay";
 import { useFreeGenerations } from "@/hooks/useFreeGenerations";
+import { useCredits } from "@/hooks/useCredits";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
@@ -17,6 +18,7 @@ export default function Home() {
   const [error, setError] = useState("");
   
   const { canGenerate, useFreeGeneration, restoreFreeGeneration, freeGenerationsLeft, isLoggedIn } = useFreeGenerations();
+  const { hasCredits, refreshProfile } = useCredits();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -29,10 +31,19 @@ export default function Home() {
       return;
     }
 
-    // Try to use a free generation (checks internally if user can generate)
-    if (!useFreeGeneration()) {
-      setError("You've used your 2 free generations. Sign in to continue!");
-      return;
+    // Check if user can generate
+    if (isLoggedIn) {
+      // For logged-in users, check if they have credits
+      if (!hasCredits) {
+        setError("You have run out of credits. Please purchase more to continue.");
+        return;
+      }
+    } else {
+      // For non-logged users, use free generation system
+      if (!useFreeGeneration()) {
+        setError("You've used your 2 free generations. Sign in to continue!");
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -49,16 +60,26 @@ export default function Home() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Restore the free generation if the API call failed
-        restoreFreeGeneration();
+        // Restore the free generation if the API call failed (for non-logged users)
+        if (!isLoggedIn) {
+          restoreFreeGeneration();
+        }
+        // For logged-in users, credit is restored server-side
         throw new Error(data.error || data.details || "Failed to generate image");
       }
 
       if (data.success && data.imageUrl) {
         setImageUrl(data.imageUrl);
+        
+        // Refresh profile to update credits display (for logged-in users)
+        if (isLoggedIn) {
+          await refreshProfile();
+        }
       } else {
-        // Restore the free generation if response invalid
-        restoreFreeGeneration();
+        // Restore the free generation if response invalid (for non-logged users)
+        if (!isLoggedIn) {
+          restoreFreeGeneration();
+        }
         throw new Error('Invalid response from server');
       }
     } catch (err) {
