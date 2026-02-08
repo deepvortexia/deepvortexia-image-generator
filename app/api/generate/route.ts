@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
           // Try toString if nothing else worked
           if (!imageUrl && firstItem.toString && firstItem.toString !== Object.prototype.toString) {
             const str = firstItem.toString();
-            if (str.startsWith('http')) {
+            if (typeof str === 'string' && str.startsWith('http')) {
               imageUrl = str;
             }
           }
@@ -237,7 +237,7 @@ export async function POST(req: NextRequest) {
         // Try toString
         if (!imageUrl && output.toString && output.toString !== Object.prototype.toString) {
           const str = output.toString();
-          if (str.startsWith('http')) {
+          if (typeof str === 'string' && str.startsWith('http')) {
             imageUrl = str;
           }
         }
