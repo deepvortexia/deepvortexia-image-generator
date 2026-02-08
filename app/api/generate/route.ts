@@ -67,15 +67,18 @@ export async function POST(req: NextRequest) {
       success: true 
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorResponse = (error as any).response;
+    
     console.error('❌ Imagen generation error:', {
-      message: error.message,
-      status: error.response?.status,
-      details: error.response?.data,
+      message: errorMessage,
+      status: errorResponse?.status,
+      details: errorResponse?.data,
     });
 
     // Check for specific error types
-    if (error.message?.includes('REPLICATE_API_TOKEN')) {
+    if (errorMessage?.includes('REPLICATE_API_TOKEN')) {
       return NextResponse.json(
         { 
           error: 'Server configuration error: Missing API token',
@@ -85,7 +88,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (error.response?.status === 402) {
+    if (errorResponse?.status === 402) {
       return NextResponse.json(
         { 
           error: 'Insufficient Replicate credits. Please add credits to your Replicate account.',
@@ -95,7 +98,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (error.response?.status === 429) {
+    if (errorResponse?.status === 429) {
       return NextResponse.json(
         { 
           error: 'Rate limit exceeded. Please try again in a moment.',
@@ -109,7 +112,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Failed to generate image. Please try again.',
-        details: error.message,
+        details: errorMessage,
         success: false 
       },
       { status: 500 }
