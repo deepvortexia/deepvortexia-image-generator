@@ -60,8 +60,8 @@ export default function Header() {
       <div className="action-buttons-section">
         <button 
           className="action-btn action-btn-signin"
-          onClick={() => console.log('Sign In - Coming Soon!')}
-          title="Coming Soon"
+          onClick={() => window.location.href = 'https://deepvortexai.art/login'}
+          title="Sign in to get unlimited generations"
         >
           <span className="btn-icon" aria-hidden="true">🔐</span>
           <span>Sign In</span>
