@@ -22,19 +22,9 @@ const nextConfig = {
         hostname: 'replicate.com',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: '*.replicate.com',
-        pathname: '/**',
-      },
     ],
-    domains: [
-      'replicate.delivery',
-      'pbxt.replicate.delivery',
-      'replicate.com',
-    ],
+    unoptimized: true,
   },
-  // Disable strict mode to prevent double-rendering which can cause issues with Replicate API calls
   reactStrictMode: false,
 };
 
