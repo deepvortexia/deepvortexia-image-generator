@@ -54,6 +54,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* TODO: Replace hardcoded credits with dynamic value from user profile/API */}
       <Header credits={439} />
       
       <main className="container mx-auto px-4 py-8 max-w-4xl">

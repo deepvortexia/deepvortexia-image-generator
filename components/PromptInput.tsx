@@ -7,10 +7,11 @@ interface PromptInputProps {
 export default function PromptInput({ value, onChange, disabled }: PromptInputProps) {
   return (
     <div className="mb-6">
-      <label className="block text-sm font-medium text-gray-300 mb-2">
+      <label htmlFor="prompt-input" className="block text-sm font-medium text-gray-300 mb-2">
         Describe your image
       </label>
       <textarea
+        id="prompt-input"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Describe the image you want to create..."

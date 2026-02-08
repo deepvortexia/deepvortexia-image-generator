@@ -18,6 +18,7 @@ export default function AspectRatioSelector({ value, onChange }: AspectRatioSele
           <button
             key={ratio}
             onClick={() => onChange(ratio)}
+            aria-pressed={value === ratio}
             className={`px-4 py-2 rounded-lg border transition-colors ${
               value === ratio
                 ? "bg-yellow-400 text-black border-yellow-400 font-semibold"

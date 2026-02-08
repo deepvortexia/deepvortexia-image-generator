@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       "google/imagen-4-fast:latest",
       {
         input: {
-          prompt: prompt,
+          prompt,
           aspect_ratio: aspectRatio || "1:1",
           output_format: "jpg",
           safety_tolerance: 2,
