@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient, type CookieOptions } from '@supabase/ssr'
 
 export const createClient = () => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -28,7 +28,7 @@ export const createClient = () => {
         const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
         return match ? match[2] : undefined
       },
-      set(name: string, value: string, options: { path?: string; maxAge?: number; domain?: string; sameSite?: string; secure?: boolean }) {
+      set(name: string, value: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
         let cookie = `${name}=${value}`
         if (options.path) cookie += `; path=${options.path}`
@@ -38,7 +38,7 @@ export const createClient = () => {
         if (options.secure) cookie += `; secure`
         document.cookie = cookie
       },
-      remove(name: string, options: { path?: string }) {
+      remove(name: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
         document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}`
       },
