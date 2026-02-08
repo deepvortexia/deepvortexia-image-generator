@@ -1,0 +1,338 @@
+/* App Header - Clean & Centered - Compact padding */
+.app-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1rem 2rem;
+  background: var(--bg-primary);
+  position: relative;
+  z-index: 100;
+}
+
+/* Back to Home Button */
+.back-to-home-link {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  z-index: 101;
+}
+
+.back-to-home-link:hover {
+  color: var(--gold-primary);
+}
+
+.back-to-home-text-short {
+  display: none;
+}
+
+.back-to-home-text-full {
+  display: inline;
+}
+
+/* Logo Container with Magic */
+.logo-container-magic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+}
+
+/* Magic Effects Wrapper */
+.magic-effects-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* App Logo - Large & Visible */
+.app-logo-large {
+  width: 200px;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 10;
+  filter: drop-shadow(0 0 15px var(--glow-gold));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.app-logo-large:hover {
+  transform: scale(1.05) translateZ(0);
+  filter: drop-shadow(0 0 25px var(--glow-gold-strong));
+}
+
+/* Pulsing Mystical Glow */
+.magic-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent 70%);
+  border-radius: 50%;
+  animation: pulse-glow 3s ease-in-out infinite;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Rotating Magic Circles */
+.magic-circles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  pointer-events: none;
+}
+
+.circle {
+  position: absolute;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
+  animation: rotate-circle 20s linear infinite;
+  will-change: transform;
+}
+
+.circle-1 {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  animation-duration: 20s;
+  border-style: dashed;
+}
+
+.circle-2 {
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  animation-duration: 15s;
+  animation-direction: reverse;
+}
+
+.circle-3 {
+  width: 60%;
+  height: 60%;
+  top: 20%;
+  left: 20%;
+  animation-duration: 25s;
+  border-style: dotted;
+}
+
+/* Floating Golden Particles */
+.magic-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.magic-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #E8C87C, #D4AF37);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: float-particle 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Particle positions with varied delays */
+.magic-particle:nth-child(1) {
+  top: 20%;
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.magic-particle:nth-child(2) {
+  top: 30%;
+  left: 80%;
+  animation-delay: 0.5s;
+}
+
+.magic-particle:nth-child(3) {
+  top: 40%;
+  left: 10%;
+  animation-delay: 1s;
+}
+
+.magic-particle:nth-child(4) {
+  top: 50%;
+  left: 85%;
+  animation-delay: 1.5s;
+}
+
+.magic-particle:nth-child(5) {
+  top: 60%;
+  left: 20%;
+  animation-delay: 2s;
+}
+
+.magic-particle:nth-child(6) {
+  top: 70%;
+  left: 75%;
+  animation-delay: 2.5s;
+}
+
+.magic-particle:nth-child(7) {
+  top: 15%;
+  left: 50%;
+  animation-delay: 3s;
+}
+
+.magic-particle:nth-child(8) {
+  top: 25%;
+  left: 40%;
+  animation-delay: 0.8s;
+}
+
+.magic-particle:nth-child(9) {
+  top: 55%;
+  left: 60%;
+  animation-delay: 1.3s;
+}
+
+.magic-particle:nth-child(10) {
+  top: 75%;
+  left: 35%;
+  animation-delay: 1.8s;
+}
+
+.magic-particle:nth-child(11) {
+  top: 35%;
+  left: 65%;
+  animation-delay: 2.3s;
+}
+
+.magic-particle:nth-child(12) {
+  top: 65%;
+  left: 55%;
+  animation-delay: 2.8s;
+}
+
+/* Brand Text - Orbitron with specific styling */
+.brand-text-orbitron {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  letter-spacing: 0.15em;
+  text-align: center;
+  margin: 1.5rem 0 0.5rem;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-shadow: 0 0 20px var(--glow-gold);
+}
+
+/* Brand Description */
+.brand-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  color: var(--gold-primary);
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  font-weight: 600;
+}
+
+/* Brand Subdescription */
+.brand-subdescription {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(212, 175, 55, 0.7);
+  text-align: center;
+  margin: 0.5rem 0 0;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* Action Buttons Section */
+.action-buttons-section {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem 1rem 1rem;
+  position: relative;
+  z-index: 100;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  background: rgba(26, 26, 26, 0.8);
+  border: 2px solid var(--gold-primary);
+  border-radius: 12px;
+  color: var(--gold-primary);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  will-change: transform;
+}
+
+.action-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--gold-light);
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 4px 15px var(--glow-gold-strong);
+}
+
+.action-btn .btn-icon {
+  font-size: 1.2rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767px) {
+  .back-to-home-text-full {
+    display: none;
+  }
+  
+  .back-to-home-text-short {
+    display: inline;
+  }
+  
+  .magic-effects-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .app-logo-large {
+    width: 150px;
+  }
+  
+  .brand-text-orbitron {
+    font-size: 1.5rem;
+  }
+  
+  .brand-description {
+    font-size: 0.9rem;
+  }
+  
+  .action-buttons-section {
+    gap: 1rem;
+  }
+  
+  .action-btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}

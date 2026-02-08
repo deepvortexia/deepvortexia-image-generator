@@ -9,7 +9,31 @@ export default function GenerateButton({ onClick, isLoading, disabled }: Generat
     <button
       onClick={onClick}
       disabled={isLoading || disabled}
-      className="w-full py-4 px-6 bg-yellow-400 text-black font-bold text-lg rounded-lg hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+      className="w-full py-4 px-6 font-bold text-lg rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+      style={{
+        background: isLoading || disabled ? 'rgba(212, 175, 55, 0.3)' : 'linear-gradient(135deg, #D4AF37, #E8C87C)',
+        color: '#0a0a0a',
+        fontFamily: "'Orbitron', sans-serif",
+        fontWeight: 700,
+        letterSpacing: '0.05em',
+        border: 'none',
+        boxShadow: isLoading || disabled ? 'none' : '0 4px 15px rgba(212, 175, 55, 0.4)',
+        transform: 'translateZ(0)'
+      }}
+      onMouseEnter={(e) => {
+        if (!isLoading && !disabled) {
+          e.currentTarget.style.background = 'linear-gradient(135deg, #E8C87C, #F4D88A)';
+          e.currentTarget.style.transform = 'translateY(-3px) translateZ(0)';
+          e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.6)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isLoading && !disabled) {
+          e.currentTarget.style.background = 'linear-gradient(135deg, #D4AF37, #E8C87C)';
+          e.currentTarget.style.transform = 'translateZ(0)';
+          e.currentTarget.style.boxShadow = '0 4px 15px rgba(212, 175, 55, 0.4)';
+        }
+      }}
     >
       {isLoading ? (
         <>
