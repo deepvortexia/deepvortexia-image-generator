@@ -24,9 +24,14 @@ export default function Home() {
       return;
     }
 
+    if (prompt.trim().length < 3) {
+      setError('Description is too short. Please be more descriptive.');
+      return;
+    }
+
     // Try to use a free generation (checks internally if user can generate)
     if (!useFreeGeneration()) {
-      setError("No free generations left. Sign in to continue!");
+      setError("You've used your 2 free generations. Sign in to continue!");
       return;
     }
 
@@ -46,10 +51,16 @@ export default function Home() {
       if (!response.ok) {
         // Restore the free generation if the API call failed
         restoreFreeGeneration();
-        throw new Error(data.error || "Failed to generate image");
+        throw new Error(data.error || data.details || "Failed to generate image");
       }
 
-      setImageUrl(data.imageUrl);
+      if (data.success && data.imageUrl) {
+        setImageUrl(data.imageUrl);
+      } else {
+        // Restore the free generation if response invalid
+        restoreFreeGeneration();
+        throw new Error('Invalid response from server');
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Something went wrong";
       setError(errorMessage);
