@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-const FREE_GENERATIONS_KEY = 'deepvortex_free_generations';
+const FREE_GENERATIONS_KEY = 'deepvortexia_free_generations';
 const INITIAL_FREE_GENERATIONS = 2;
 
 export function useFreeGenerations() {
