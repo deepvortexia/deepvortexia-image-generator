@@ -29,17 +29,20 @@ export const createClient = () => {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      storageKey: 'deepvortexia-image-generator-auth',
+      storageKey: 'sb-txznlbzrvbxjxujrmhee-auth-token',
       flowType: 'pkce',
     },
     cookies: {
       get(name: string) {
         if (typeof document === 'undefined') return undefined
         const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-        return match ? match[2] : undefined
+        const value = match ? match[2] : undefined
+        console.log('🍪 Client GET cookie:', name, value ? '(exists)' : '(missing)')
+        return value
       },
       set(name: string, value: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
+        console.log('🍪 Client SET cookie:', name)
         let cookie = `${name}=${value}`
         if (options.path) cookie += `; path=${options.path}`
         if (options.maxAge) cookie += `; max-age=${options.maxAge}`
@@ -50,6 +53,7 @@ export const createClient = () => {
       },
       remove(name: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
+        console.log('🍪 Client REMOVE cookie:', name)
         document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}`
       },
     },
