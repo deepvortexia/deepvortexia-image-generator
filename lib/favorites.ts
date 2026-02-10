@@ -21,7 +21,7 @@ export const favoritesStorage = {
 
   add: (imageUrl: string, prompt: string): FavoriteImage => {
     const favorite: FavoriteImage = {
-      id: `fav_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `fav_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       imageUrl,
       prompt,
       createdAt: new Date().toISOString(),

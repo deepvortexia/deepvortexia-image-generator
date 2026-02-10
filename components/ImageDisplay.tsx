@@ -35,7 +35,15 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate,
   };
 
   const handleAddToFavorites = () => {
-    if (!imageUrl || !prompt) return;
+    if (!imageUrl) {
+      alert('No image to save');
+      return;
+    }
+    
+    if (!prompt || prompt.trim().length === 0) {
+      alert('Cannot save to favorites: No prompt associated with this image');
+      return;
+    }
     
     try {
       favoritesStorage.add(imageUrl, prompt);
