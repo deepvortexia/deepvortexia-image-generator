@@ -13,12 +13,12 @@ export default function CreditsDisplay() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Force client-side render pour éviter problèmes d'hydratation
+  // Force client-side render to avoid hydration issues
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Rafraîchir le profil quand l'utilisateur se connecte
+  // Refresh profile when user logs in
   useEffect(() => {
     if (isLoggedIn && mounted) {
       refreshProfile();
