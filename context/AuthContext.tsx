@@ -207,13 +207,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [ensureProfile, supabase])
 
   const signInWithGoogle = async () => {
+    console.log('🚀 Initiating Google sign-in with PKCE flow')
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     })
-    if (error) throw error
+    if (error) {
+      console.error('❌ Google sign-in error:', error.message)
+      throw error
+    }
+    console.log('✅ Redirecting to Google OAuth...')
   }
 
   const signInWithEmail = async (email: string) => {

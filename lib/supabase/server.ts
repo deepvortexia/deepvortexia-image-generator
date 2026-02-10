@@ -21,11 +21,18 @@ export async function createClient() {
     url,
     key,
     {
+      auth: {
+        flowType: 'pkce',
+        storageKey: 'sb-txznlbzrvbxjxujrmhee-auth-token',
+      },
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value
+          const value = cookieStore.get(name)?.value
+          console.log('🍪 Server GET cookie:', name, value ? '(exists)' : '(missing)')
+          return value
         },
         set(name: string, value: string, options: CookieOptions) {
+          console.log('🍪 Server SET cookie:', name)
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
@@ -33,6 +40,7 @@ export async function createClient() {
           }
         },
         remove(name: string, options: CookieOptions) {
+          console.log('🍪 Server REMOVE cookie:', name)
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
