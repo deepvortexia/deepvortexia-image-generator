@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types/supabase'
 
 // Default credits given to new users on signup
-const DEFAULT_SIGNUP_CREDITS = 3;
+const DEFAULT_SIGNUP_CREDITS = 2;
 
 interface AuthContextType {
   user: User | null

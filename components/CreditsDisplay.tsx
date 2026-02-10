@@ -3,12 +3,27 @@
 import { useState, useEffect } from 'react';
 import { useFreeGenerations } from '@/hooks/useFreeGenerations';
 import { useCredits } from '@/hooks/useCredits';
+import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
 
 export default function CreditsDisplay() {
   const { freeGenerationsLeft, isLoggedIn, isClient } = useFreeGenerations();
-  const { credits } = useCredits();
+  const { credits, refreshProfile, loading } = useCredits();
+  const { loading: authLoading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Force client-side render to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Refresh profile when user logs in
+  useEffect(() => {
+    if (isLoggedIn && mounted) {
+      refreshProfile();
+    }
+  }, [isLoggedIn, mounted, refreshProfile]);
 
   // Debug logging for CreditsDisplay
   useEffect(() => {
@@ -16,9 +31,67 @@ export default function CreditsDisplay() {
       isLoggedIn, 
       credits, 
       freeGenerationsLeft,
-      isClient 
+      isClient,
+      mounted,
+      loading,
+      authLoading
     })
-  }, [isLoggedIn, credits, freeGenerationsLeft, isClient])
+  }, [isLoggedIn, credits, freeGenerationsLeft, isClient, mounted, loading, authLoading])
+
+  // Show loading state while not mounted or auth is loading
+  if (!mounted || authLoading) {
+    return (
+      <div className="credits-display-section">
+        <div className="credits-display-content">
+          <div className="credits-info">
+            <span className="credits-icon">⏳</span>
+            <span className="credits-amount">Chargement...</span>
+          </div>
+        </div>
+        
+        <style jsx>{`
+          .credits-display-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            margin: 0 auto;
+            max-width: 900px;
+          }
+
+          .credits-display-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 1rem 2rem;
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+          }
+
+          .credits-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .credits-icon {
+            font-size: 1.5rem;
+          }
+
+          .credits-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #D4AF37;
+            letter-spacing: 0.05em;
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <>
