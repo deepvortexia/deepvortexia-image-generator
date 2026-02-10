@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 
 export const useCredits = () => {
-  const { profile, refreshProfile } = useAuth()
+  const { profile, refreshProfile, loading } = useAuth()
 
   const hasCredits = profile && profile.credits > 0
 
@@ -40,5 +40,6 @@ export const useCredits = () => {
     hasCredits,
     deductCredit,
     refreshProfile,
+    loading,
   }
 }
