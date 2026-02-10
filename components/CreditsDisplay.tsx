@@ -5,12 +5,14 @@ import { useFreeGenerations } from '@/hooks/useFreeGenerations';
 import { useCredits } from '@/hooks/useCredits';
 import { useAuth } from '@/context/AuthContext';
 import { AuthModal } from '@/components/AuthModal';
+import { PricingModal } from '@/components/PricingModal';
 
 export default function CreditsDisplay() {
   const { freeGenerationsLeft, isLoggedIn, isClient } = useFreeGenerations();
   const { credits, refreshProfile, loading } = useCredits();
   const { loading: authLoading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Force client-side render to avoid hydration issues
@@ -122,14 +124,15 @@ export default function CreditsDisplay() {
               className="buy-credits-btn"
               onClick={() => {
                 if (isLoggedIn) {
-                  console.log('💳 Buy Credits - Coming Soon!');
+                  console.log('💳 Opening pricing modal...');
+                  setShowPricingModal(true);
                 } else {
                   console.log('🔐 Opening auth modal...')
                   setShowAuthModal(true);
                 }
               }}
               aria-label={isLoggedIn ? "Buy more credits" : "Sign in"}
-              title={isLoggedIn ? "Coming Soon" : "Sign in to get unlimited generations"}
+              title={isLoggedIn ? "Purchase credit packs" : "Sign in to get unlimited generations"}
             >
               <span aria-hidden="true">{isLoggedIn ? '💳' : '🔐'}</span>
               <span>{isLoggedIn ? 'Buy Credits' : 'Sign In'}</span>
@@ -263,6 +266,7 @@ export default function CreditsDisplay() {
       </div>
 
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <PricingModal isOpen={showPricingModal} onClose={() => setShowPricingModal(false)} />
     </>
   );
 }
