@@ -8,7 +8,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
 
 export default function Header() {
-  const { user, profile, signOut, loading } = useAuth();
+  const { user, profile, signOut, loading, refreshProfile } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
@@ -59,7 +59,10 @@ export default function Header() {
     console.log('🔄 Retrying authentication check...');
     setShowRetry(false);
     setLoadingTimeout(false);
-    window.location.reload();
+    // Instead of reloading the entire page, try to refresh the profile
+    if (user) {
+      refreshProfile();
+    }
   };
 
   const handleFavoritesClick = () => {
