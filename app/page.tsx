@@ -174,6 +174,7 @@ export default function Home() {
           isLoading={isLoading}
           error={error}
           onRegenerate={handleRegenerate}
+          prompt={prompt}
         />
 
         <footer className="footer">

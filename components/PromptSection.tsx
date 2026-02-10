@@ -27,13 +27,14 @@ export default function PromptSection({
       </h3>
       
       <div className="prompt-input-container">
-        <input
+        <textarea
           className="prompt-input-enhanced"
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}
-          placeholder="Describe your image (e.g., futuristic city at sunset)"
-          onKeyPress={(e) => e.key === 'Enter' && !isLoading && onGenerate()}
+          placeholder="Describe your image in detail (e.g., futuristic city at sunset with neon lights and flying cars) • Press Ctrl+Enter to generate"
+          onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && !isLoading && onGenerate()}
           disabled={isLoading}
+          rows={3}
         />
         
         {/* Aspect Ratio Selector */}
@@ -123,6 +124,9 @@ export default function PromptSection({
           color: #E8C87C;
           font-family: 'Inter', sans-serif;
           font-size: 1.05rem;
+          line-height: 1.5;
+          resize: vertical;
+          min-height: 80px;
           transition: all 0.3s ease;
           outline: none;
         }

@@ -1,11 +1,19 @@
+'use client';
+
+import { useState } from 'react';
+import { favoritesStorage } from '@/lib/favorites';
+
 interface ImageDisplayProps {
   imageUrl: string;
   isLoading: boolean;
   error: string;
   onRegenerate?: () => void;
+  prompt?: string;
 }
 
-export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate }: ImageDisplayProps) {
+export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate, prompt = '' }: ImageDisplayProps) {
+  const [isFavorited, setIsFavorited] = useState(false);
+
   const downloadImage = async () => {
     if (!imageUrl) return;
 
@@ -23,6 +31,27 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate 
     } catch (err) {
       console.error('Download error:', err);
       alert('Failed to download image. Please try right-clicking and "Save Image As..."');
+    }
+  };
+
+  const handleAddToFavorites = () => {
+    if (!imageUrl) {
+      alert('No image to save');
+      return;
+    }
+    
+    if (!prompt || prompt.trim().length === 0) {
+      alert('Cannot save to favorites: No prompt associated with this image');
+      return;
+    }
+    
+    try {
+      favoritesStorage.add(imageUrl, prompt);
+      setIsFavorited(true);
+      setTimeout(() => setIsFavorited(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Error adding to favorites:', err);
+      alert('Failed to add to favorites');
     }
   };
 
@@ -219,28 +248,19 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate 
           <button onClick={downloadImage} className="action-btn download-btn">
             <span>📥</span> Download
           </button>
+          <button
+            onClick={handleAddToFavorites}
+            className={`action-btn favorite-btn ${isFavorited ? 'favorited' : ''}`}
+            disabled={isFavorited}
+            title={isFavorited ? 'Added to favorites!' : 'Add to favorites'}
+          >
+            <span>{isFavorited ? '✅' : '⭐'}</span> {isFavorited ? 'Added!' : 'Favorite'}
+          </button>
           {onRegenerate && (
             <button onClick={onRegenerate} className="action-btn regenerate-btn">
               <span>🔄</span> Regenerate
             </button>
           )}
-          <button
-            className="action-btn copy-btn"
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(imageUrl);
-                console.log('Image URL copied to clipboard!');
-                // In a production app, show a toast notification here
-              } catch (err) {
-                console.error('Failed to copy:', err);
-                // Fallback: show the URL in a prompt
-                window.prompt('Copy this URL:', imageUrl);
-              }
-            }}
-            title="Copy image URL to clipboard"
-          >
-            <span>🔗</span> Copy URL
-          </button>
         </div>
 
         <style jsx>{`
@@ -370,18 +390,29 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate 
             box-shadow: 0 2px 8px var(--glow-gold);
           }
 
-          .copy-btn {
+          .favorite-btn {
             background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            color: var(--gold-primary);
+            border: 2px solid var(--gold-primary);
             backdrop-filter: blur(10px);
           }
 
-          .copy-btn:hover {
-            border-color: var(--gold-primary);
-            color: var(--gold-light);
+          .favorite-btn:hover:not(:disabled) {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold-light);
             transform: translateY(-1px) translateZ(0);
             box-shadow: 0 2px 8px var(--glow-gold);
+          }
+
+          .favorite-btn.favorited {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+          }
+
+          .favorite-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
           }
 
           @media (max-width: 480px) {
