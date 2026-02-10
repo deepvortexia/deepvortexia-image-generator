@@ -151,11 +151,14 @@ export async function POST(request: Request) {
 
       // Record transaction (non-critical)
       try {
+        if (!packName) {
+          console.warn('⚠️ packName missing in metadata - will record as "MISSING_PACK_NAME"');
+        }
         await supabase.from('transactions').insert({
           user_id: userId,
           stripe_session_id: session.id,
           stripe_payment_intent: session.payment_intent as string,
-          pack_name: packName || 'Unknown',
+          pack_name: packName || 'MISSING_PACK_NAME',
           amount_cents: session.amount_total || 0,
           credits_purchased: creditsToAdd,
           status: 'completed',
