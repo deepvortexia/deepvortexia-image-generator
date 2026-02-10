@@ -4,14 +4,14 @@ interface CompactSuggestionsProps {
 }
 
 const popularStyles = [
-  { emoji: '✨', text: 'sparkle', value: 'sparkling, magical' },
-  { emoji: '🎨', text: 'neon', value: 'neon colors, vibrant' },
-  { emoji: '🔮', text: 'mystical', value: 'mystical, ethereal' },
-  { emoji: '⚡', text: 'electric', value: 'electric, energy' },
-  { emoji: '🌈', text: 'rainbow', value: 'rainbow colors, vibrant' },
-  { emoji: '💎', text: 'crystal', value: 'crystalline, detailed' },
-  { emoji: '🌟', text: 'glowing', value: 'glowing, luminous' },
-  { emoji: '🔥', text: 'fire', value: 'fiery, intense' }
+  { emoji: '📸', text: 'Photorealistic', value: 'photorealistic style' },
+  { emoji: '🎨', text: 'Digital Art', value: 'digital art style' },
+  { emoji: '🖼️', text: 'Oil Painting', value: 'oil painting style' },
+  { emoji: '✏️', text: 'Sketch', value: 'pencil sketch style' },
+  { emoji: '🌈', text: 'Watercolor', value: 'watercolor painting style' },
+  { emoji: '🎭', text: 'Surreal', value: 'surrealist art style' },
+  { emoji: '💎', text: '3D Render', value: '3D rendered style' },
+  { emoji: '🔮', text: 'Fantasy', value: 'fantasy art style' }
 ];
 
 const quickIdeas = [

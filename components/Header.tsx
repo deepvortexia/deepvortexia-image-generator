@@ -5,10 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
+import { FavoritesModal } from "@/components/FavoritesModal";
 
 export default function Header() {
   const { user, profile, signOut, loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   
   // Debug logging for Header
   useEffect(() => {
@@ -33,6 +35,25 @@ export default function Header() {
       console.log('🔐 Opening auth modal')
       setShowAuthModal(true);
     }
+  };
+
+  const handleFavoritesClick = () => {
+    setShowFavoritesModal(true);
+  };
+
+  // Get user avatar URL from Google OAuth or profile
+  const getAvatarUrl = () => {
+    return user?.user_metadata?.avatar_url || profile?.avatar_url || null;
+  };
+
+  // Get user initials for fallback avatar
+  const getUserInitials = () => {
+    const name = profile?.full_name || profile?.email || user?.email || '';
+    const parts = name.split(/[\s@]/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   };
 
   return (
@@ -95,7 +116,16 @@ export default function Header() {
           disabled={loading}
           title={user ? `Signed in as ${user.email} - Click to sign out` : "Sign in to get unlimited generations"}
         >
-          <span className="btn-icon" aria-hidden="true">{user ? '👤' : '🔐'}</span>
+          {user && getAvatarUrl() ? (
+            <div className="user-avatar">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={getAvatarUrl()!} alt="User avatar" />
+            </div>
+          ) : user ? (
+            <div className="user-initials">{getUserInitials()}</div>
+          ) : (
+            <span className="btn-icon" aria-hidden="true">🔐</span>
+          )}
           <span>
             {loading ? 'Loading...' : user ? (
               profile?.email?.split('@')[0] || profile?.full_name || 'Profile'
@@ -104,8 +134,8 @@ export default function Header() {
         </button>
         <button 
           className="action-btn action-btn-favorites"
-          onClick={() => console.log('Favorites - Coming Soon!')}
-          title="Coming Soon"
+          onClick={handleFavoritesClick}
+          title="View your favorite images"
         >
           <span className="btn-icon" aria-hidden="true">⭐</span>
           <span>Favorites</span>
@@ -113,6 +143,7 @@ export default function Header() {
       </div>
 
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <FavoritesModal isOpen={showFavoritesModal} onClose={() => setShowFavoritesModal(false)} />
 
       <style jsx>{`
         .app-header {
@@ -371,6 +402,34 @@ export default function Header() {
 
         .action-btn .btn-icon {
           font-size: 1.2rem;
+        }
+
+        .user-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 2px solid var(--gold-primary);
+        }
+
+        .user-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .user-initials {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #D4AF37, #E8C87C);
+          color: #0a0a0a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 0.9rem;
+          border: 2px solid var(--gold-primary);
         }
 
         @media (max-width: 480px) {

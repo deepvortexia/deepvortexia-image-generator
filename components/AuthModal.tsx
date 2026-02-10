@@ -61,7 +61,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             🌀
           </div>
           <h2>Welcome to Deep Vortex</h2>
-          <p>Sign in to get 3 free credits and explore the ecosystem!</p>
+          <p>Sign in to get 2 free credits and explore the ecosystem!</p>
         </div>
 
         {!emailSent ? (
@@ -123,7 +123,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         )}
 
         <div className="auth-modal-footer">
-          <p>🎁 Get 3 free credits upon sign up!</p>
+          <p>🎁 Get 2 free credits upon sign up!</p>
         </div>
       </div>
 
