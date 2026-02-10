@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
@@ -10,14 +10,27 @@ export default function Header() {
   const { user, profile, signOut, loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   
+  // Debug logging for Header
+  useEffect(() => {
+    console.log('🎯 Header: Auth state changed', { 
+      hasUser: !!user,
+      email: user?.email || 'null',
+      hasProfile: !!profile,
+      credits: profile?.credits || 0,
+      loading 
+    })
+  }, [user, profile, loading])
+  
   const handleAuthAction = () => {
     if (user) {
       // User is logged in, show sign out confirmation
+      console.log('🚪 Signing out user:', user.email)
       if (confirm('Are you sure you want to sign out?')) {
         signOut();
       }
     } else {
       // User is not logged in, show auth modal
+      console.log('🔐 Opening auth modal')
       setShowAuthModal(true);
     }
   };
@@ -80,10 +93,14 @@ export default function Header() {
           className="action-btn action-btn-signin"
           onClick={handleAuthAction}
           disabled={loading}
-          title={user ? "Sign out" : "Sign in to get unlimited generations"}
+          title={user ? `Signed in as ${user.email} - Click to sign out` : "Sign in to get unlimited generations"}
         >
           <span className="btn-icon" aria-hidden="true">{user ? '👤' : '🔐'}</span>
-          <span>{loading ? 'Loading...' : user ? (profile?.email?.split('@')[0] || 'Profile') : 'Sign In'}</span>
+          <span>
+            {loading ? 'Loading...' : user ? (
+              profile?.email?.split('@')[0] || profile?.full_name || 'Profile'
+            ) : 'Sign In'}
+          </span>
         </button>
         <button 
           className="action-btn action-btn-favorites"

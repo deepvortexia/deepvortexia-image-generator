@@ -14,6 +14,16 @@ export function useFreeGenerations() {
   // Derive isLoggedIn from auth context
   const isLoggedIn = !loading && !!user;
 
+  // Debug logging for auth state
+  useEffect(() => {
+    console.log('🎮 useFreeGenerations: Auth state changed', { 
+      user: user?.email || 'null', 
+      loading, 
+      isLoggedIn,
+      freeGenerationsLeft 
+    })
+  }, [user, loading, isLoggedIn, freeGenerationsLeft])
+
   useEffect(() => {
     // Mark that we're on the client
     setIsClient(true);
@@ -24,6 +34,7 @@ export function useFreeGenerations() {
       const parsedValue = parseInt(saved, 10);
       if (!isNaN(parsedValue)) {
         setFreeGenerationsLeft(parsedValue);
+        console.log('💾 Loaded free generations from localStorage:', parsedValue)
       }
     }
   }, []);
@@ -31,10 +42,12 @@ export function useFreeGenerations() {
   const useFreeGeneration = (): boolean => {
     if (isLoggedIn) {
       // For logged-in users, handle credit deduction separately
+      console.log('✅ Logged in user - allowing generation')
       return true;
     }
 
     if (freeGenerationsLeft <= 0) {
+      console.log('❌ No free generations left')
       return false; // No free generations left
     }
 
@@ -42,6 +55,7 @@ export function useFreeGenerations() {
     setFreeGenerationsLeft(newCount);
     if (isClient) {
       localStorage.setItem(FREE_GENERATIONS_KEY, newCount.toString());
+      console.log('💳 Used free generation, remaining:', newCount)
     }
     return true;
   };
@@ -52,6 +66,7 @@ export function useFreeGenerations() {
       setFreeGenerationsLeft(newCount);
       if (isClient) {
         localStorage.setItem(FREE_GENERATIONS_KEY, newCount.toString());
+        console.log('🔄 Restored free generation, now at:', newCount)
       }
     }
   };

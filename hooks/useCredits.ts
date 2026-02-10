@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 
 export const useCredits = () => {
@@ -10,6 +11,15 @@ export const useCredits = () => {
   const getCredits = () => {
     return profile?.credits || 0
   }
+
+  // Debug logging for credits state
+  useEffect(() => {
+    console.log('💰 useCredits: Profile changed', { 
+      hasProfile: !!profile,
+      credits: profile?.credits || 0,
+      email: profile?.email || 'null'
+    })
+  }, [profile])
 
   const deductCredit = async () => {
     if (!profile) return false

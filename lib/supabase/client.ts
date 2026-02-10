@@ -8,11 +8,21 @@ export const createClient = () => {
   // This allows the app to build without Supabase configuration
   // and run in free-tier-only mode
   if (!url || !key) {
-    console.warn('Supabase URL or API key not configured')
+    console.warn('⚠️ Supabase configuration missing:', {
+      hasUrl: !!url,
+      hasKey: !!key,
+      NEXT_PUBLIC_SUPABASE_URL: url ? '(set)' : '(missing)',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: key ? '(set)' : '(missing)'
+    })
     // We use `as any` here intentionally to allow graceful degradation
     // The AuthContext checks for null and provides a fallback
     return null as any
   }
+
+  console.log('✅ Supabase client configured:', { 
+    url: url.substring(0, 30) + '...',
+    hasKey: true 
+  })
 
   return createBrowserClient(url, key, {
     auth: {

@@ -60,6 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
+      console.log('🔍 Fetching profile for user:', userId)
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -68,19 +69,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) {
         if (error.code === 'PGRST116') {
+          console.log('⚠️ Profile not found for user:', userId)
           return null
         }
+        console.error('❌ Error fetching profile:', error)
         throw error
       }
+      console.log('✅ Profile fetched successfully:', { id: data.id, email: data.email, credits: data.credits })
       return data
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('❌ Error fetching profile:', error)
       return null
     }
   }, [supabase])
 
   const createProfile = useCallback(async (currentUser: User): Promise<Profile | null> => {
     try {
+      console.log('🆕 Creating new profile for user:', currentUser.email)
       const { error } = await supabase
         .from('profiles')
         .insert({
@@ -92,28 +97,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         })
 
       if (error && error.code !== '23505') {
+        console.error('❌ Error creating profile:', error)
         throw error
       }
       
+      console.log('✅ Profile created, fetching...')
       return await fetchProfile(currentUser.id)
     } catch (error) {
-      console.error('Error creating profile:', error)
+      console.error('❌ Error creating profile:', error)
       return null
     }
   }, [fetchProfile, supabase])
 
   const ensureProfile = useCallback(async (currentUser: User) => {
+    console.log('🔄 Ensuring profile exists for user:', currentUser.email)
     let profileData = await fetchProfile(currentUser.id)
     if (!profileData) {
+      console.log('⚠️ Profile not found, creating...')
       profileData = await createProfile(currentUser)
+    }
+    if (profileData) {
+      console.log('✅ Profile ensured:', { email: profileData.email, credits: profileData.credits })
     }
     return profileData
   }, [fetchProfile, createProfile])
 
   const refreshProfile = useCallback(async () => {
     if (user) {
+      console.log('🔄 Refreshing profile for user:', user.email)
       const profileData = await fetchProfile(user.id)
       setProfile(profileData)
+      console.log('✅ Profile refreshed:', profileData ? { credits: profileData.credits } : 'null')
     }
   }, [user, fetchProfile])
 
@@ -122,26 +136,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (initialized.current) return
     initialized.current = true
 
+    console.log('🚀 AuthContext: Initializing...')
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: any, currentSession: any) => {
-        console.log('Auth event:', event)
+        console.log('📡 Auth event:', event)
+        console.log('🔍 Auth State:', { 
+          hasUser: !!currentSession?.user, 
+          email: currentSession?.user?.email,
+          loading 
+        })
 
         if (currentSession?.user) {
           setSession(currentSession)
           setUser(currentSession.user)
           
-          // Use setTimeout to avoid blocking the auth state change
-          setTimeout(async () => {
-            const profileData = await ensureProfile(currentSession.user)
-            setProfile(profileData)
-            setLoading(false)
-          }, 0)
+          // Ensure profile is fetched synchronously to update state properly
+          const profileData = await ensureProfile(currentSession.user)
+          setProfile(profileData)
+          setLoading(false)
+          
+          console.log('✅ Auth state updated:', { 
+            user: currentSession.user.email, 
+            profile: profileData ? { credits: profileData.credits } : null,
+            loading: false
+          })
         } else {
           setSession(null)
           setUser(null)
           setProfile(null)
           setLoading(false)
+          console.log('🚪 User signed out')
         }
       }
     )
@@ -149,18 +175,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Then check for existing session
     supabase.auth.getSession().then(async ({ data: { session: initialSession }, error }: any) => {
       if (error) {
-        console.error('Error getting session:', error)
+        console.error('❌ Error getting session:', error)
         setLoading(false)
         return
       }
 
+      console.log('🔍 Initial session check:', { hasSession: !!initialSession })
+
       if (initialSession?.user) {
+        console.log('✅ Found existing session for:', initialSession.user.email)
         setSession(initialSession)
         setUser(initialSession.user)
         const profileData = await ensureProfile(initialSession.user)
         setProfile(profileData)
+        console.log('📝 Profile data loaded:', profileData ? { email: profileData.email, credits: profileData.credits } : 'null')
       }
       setLoading(false)
+      console.log('✅ Auth initialization complete')
     })
 
     return () => {
