@@ -3,6 +3,8 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
 // Disable body parsing - critical for Stripe signature verification
+// 'runtime': Use Node.js runtime for proper request handling
+// 'force-dynamic': Ensure route is always dynamically rendered (no caching) for webhook processing
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
       console.log('✅ Credits updated successfully!', { userId, newCredits });
 
       // Create transaction record (optional, don't fail if it errors)
+      // Note: Credits have already been added. Transaction is for record-keeping only.
       const { error: txError } = await supabase.from('transactions').insert({
         user_id: userId,
         stripe_session_id: session.id,
@@ -120,7 +123,7 @@ export async function POST(req: NextRequest) {
       });
 
       if (txError) {
-        console.warn('⚠️ Transaction record failed (non-critical):', txError);
+        console.error('⚠️ Transaction record failed (non-critical - credits already added):', txError);
       }
 
       return NextResponse.json({ received: true, creditsAdded: creditsNumber });
