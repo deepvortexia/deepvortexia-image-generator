@@ -170,16 +170,6 @@ export default function Header() {
             <span>Retry</span>
           </button>
         )}
-        <Link 
-          href="https://emoticons.deepvortexai.art"
-          className="action-btn action-btn-emoticons"
-          title="Create AI Emoticons"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span className="btn-icon" aria-hidden="true">🎭</span>
-          <span>Emoticons</span>
-        </Link>
         <button 
           className="action-btn action-btn-favorites"
           onClick={handleFavoritesClick}
