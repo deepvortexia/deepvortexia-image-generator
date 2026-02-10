@@ -33,6 +33,10 @@ export default function Home() {
     const authError = params.get('auth_error');
     
     if (sessionId && user) {
+      console.log('💳 Payment success detected, refreshing profile...');
+      // Refresh the profile to get updated credits
+      refreshProfile();
+      // Show success notification
       setShowNotification(true);
       // Clean the URL
       window.history.replaceState({}, '', window.location.pathname);
@@ -45,7 +49,7 @@ export default function Home() {
       // Clean the URL
       window.history.replaceState({}, '', window.location.pathname);
     }
-  }, [user]);
+  }, [user, refreshProfile]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {

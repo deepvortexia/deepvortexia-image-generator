@@ -14,11 +14,26 @@ export default function CreditsDisplay() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
   // Force client-side render to avoid hydration issues
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Add safety timeout for loading state
+  useEffect(() => {
+    if (authLoading) {
+      const timer = setTimeout(() => {
+        console.log('⏰ CreditsDisplay: Loading timeout reached after 5 seconds');
+        setLoadingTimeout(true);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [authLoading]);
 
   // Refresh profile when user logs in
   useEffect(() => {
@@ -40,8 +55,8 @@ export default function CreditsDisplay() {
     })
   }, [isLoggedIn, credits, freeGenerationsLeft, isClient, mounted, loading, authLoading])
 
-  // Show loading state while not mounted or auth is loading
-  if (!mounted || authLoading) {
+  // Show loading state while not mounted or auth is loading (with timeout)
+  if (!mounted || (authLoading && !loadingTimeout)) {
     return (
       <div className="credits-display-section">
         <div className="credits-display-content">

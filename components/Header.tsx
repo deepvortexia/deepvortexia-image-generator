@@ -8,9 +8,11 @@ import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
 
 export default function Header() {
-  const { user, profile, signOut, loading } = useAuth();
+  const { user, profile, signOut, loading, refreshProfile } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [showRetry, setShowRetry] = useState(false);
   
   // Debug logging for Header
   useEffect(() => {
@@ -22,6 +24,22 @@ export default function Header() {
       loading 
     })
   }, [user, profile, loading])
+
+  // Add safety timeout for loading state
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        console.log('⏰ Header: Loading timeout reached after 5 seconds');
+        setLoadingTimeout(true);
+        setShowRetry(true);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+      setShowRetry(false);
+    }
+  }, [loading])
   
   const handleAuthAction = () => {
     if (user) {
@@ -34,6 +52,16 @@ export default function Header() {
       // User is not logged in, show auth modal
       console.log('🔐 Opening auth modal')
       setShowAuthModal(true);
+    }
+  };
+
+  const handleRetry = () => {
+    console.log('🔄 Retrying authentication check...');
+    setShowRetry(false);
+    setLoadingTimeout(false);
+    // Instead of reloading the entire page, try to refresh the profile
+    if (user) {
+      refreshProfile();
     }
   };
 
@@ -113,7 +141,7 @@ export default function Header() {
         <button 
           className="action-btn action-btn-signin"
           onClick={handleAuthAction}
-          disabled={loading}
+          disabled={loading && !loadingTimeout}
           title={user ? `Signed in as ${user.email} - Click to sign out` : "Sign in to get unlimited generations"}
         >
           {user && getAvatarUrl() ? (
@@ -127,11 +155,31 @@ export default function Header() {
             <span className="btn-icon" aria-hidden="true">🔐</span>
           )}
           <span>
-            {loading ? 'Loading...' : user ? (
+            {(loading && !loadingTimeout) ? 'Loading...' : user ? (
               profile?.email?.split('@')[0] || profile?.full_name || 'Profile'
             ) : 'Sign In'}
           </span>
         </button>
+        {showRetry && (
+          <button 
+            className="action-btn action-btn-retry"
+            onClick={handleRetry}
+            title="Retry loading"
+          >
+            <span className="btn-icon" aria-hidden="true">🔄</span>
+            <span>Retry</span>
+          </button>
+        )}
+        <Link 
+          href="https://emoticons.deepvortexai.art"
+          className="action-btn action-btn-emoticons"
+          title="Create AI Emoticons"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="btn-icon" aria-hidden="true">🎭</span>
+          <span>Emoticons</span>
+        </Link>
         <button 
           className="action-btn action-btn-favorites"
           onClick={handleFavoritesClick}
@@ -391,6 +439,7 @@ export default function Header() {
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
           will-change: transform;
+          text-decoration: none;
         }
 
         .action-btn:hover {
