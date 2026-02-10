@@ -152,16 +152,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(currentSession)
           setUser(currentSession.user)
           
-          // Ensure profile is fetched synchronously to update state properly
-          const profileData = await ensureProfile(currentSession.user)
-          setProfile(profileData)
-          setLoading(false)
-          
-          console.log('✅ Auth state updated:', { 
-            user: currentSession.user.email, 
-            profile: profileData ? { credits: profileData.credits } : null,
-            loading: false
-          })
+          // Ensure profile is fetched to update state properly
+          // Handle errors gracefully to avoid blocking auth flow
+          try {
+            const profileData = await ensureProfile(currentSession.user)
+            setProfile(profileData)
+            console.log('✅ Auth state updated:', { 
+              user: currentSession.user.email, 
+              profile: profileData ? { credits: profileData.credits } : null,
+              loading: false
+            })
+          } catch (error) {
+            console.error('❌ Error ensuring profile:', error)
+            // Still set profile to null and continue - user is authenticated
+            setProfile(null)
+          } finally {
+            setLoading(false)
+          }
         } else {
           setSession(null)
           setUser(null)

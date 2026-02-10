@@ -19,10 +19,10 @@ export const createClient = () => {
     return null as any
   }
 
-  console.log('✅ Supabase client configured:', { 
-    url: url.substring(0, 30) + '...',
-    hasKey: true 
-  })
+  // Only log in development mode to avoid exposing infrastructure details
+  if (process.env.NODE_ENV === 'development') {
+    console.log('✅ Supabase client configured')
+  }
 
   return createBrowserClient(url, key, {
     auth: {
