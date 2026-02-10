@@ -30,9 +30,18 @@ export default function Home() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
+    const authError = params.get('auth_error');
     
     if (sessionId && user) {
       setShowNotification(true);
+      // Clean the URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
+    // Handle auth errors from OAuth callback
+    if (authError) {
+      console.error('🔐 Authentication error:', authError)
+      setError(`Authentication failed: ${authError}`);
       // Clean the URL
       window.history.replaceState({}, '', window.location.pathname);
     }
