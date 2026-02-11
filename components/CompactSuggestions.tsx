@@ -4,25 +4,25 @@ interface CompactSuggestionsProps {
 }
 
 const popularStyles = [
-  { emoji: '📸', text: 'Photorealistic', value: 'photorealistic style' },
-  { emoji: '🎨', text: 'Digital Art', value: 'digital art style' },
-  { emoji: '🖼️', text: 'Oil Painting', value: 'oil painting style' },
-  { emoji: '✏️', text: 'Sketch', value: 'pencil sketch style' },
-  { emoji: '🌈', text: 'Watercolor', value: 'watercolor painting style' },
-  { emoji: '🎭', text: 'Surreal', value: 'surrealist art style' },
-  { emoji: '💎', text: '3D Render', value: '3D rendered style' },
-  { emoji: '🔮', text: 'Fantasy', value: 'fantasy art style' }
+  { emoji: '📸', text: 'Photorealistic', value: 'photorealistic' },
+  { emoji: '🎨', text: 'Digital Art', value: 'digital art' },
+  { emoji: '🖼️', text: 'Oil Painting', value: 'oil painting' },
+  { emoji: '✏️', text: 'Sketch', value: 'pencil sketch' },
+  { emoji: '🌈', text: 'Watercolor', value: 'watercolor' },
+  { emoji: '🎭', text: 'Surreal', value: 'surrealist' },
+  { emoji: '💎', text: '3D Render', value: '3D render' },
+  { emoji: '🔮', text: 'Fantasy', value: 'fantasy art' }
 ];
 
 const quickIdeas = [
-  { emoji: '🏔️', text: 'Landscape', prompt: 'Breathtaking mountain landscape at sunset' },
-  { emoji: '👤', text: 'Portrait', prompt: 'Professional portrait with cinematic lighting' },
-  { emoji: '🎭', text: 'Abstract', prompt: 'Abstract composition with flowing colors' },
-  { emoji: '🏙️', text: 'Urban', prompt: 'Futuristic cyberpunk city at night' },
-  { emoji: '🌌', text: 'Space', prompt: 'Stunning view of space with nebulas' },
-  { emoji: '🐾', text: 'Animals', prompt: 'Majestic lion in the wild' },
-  { emoji: '🍕', text: 'Food', prompt: 'Professional food photography' },
-  { emoji: '🏛️', text: 'Architecture', prompt: 'Modern architectural masterpiece' }
+  { emoji: '🏔️', text: 'Landscape', prompt: 'Mountain sunset golden light' },
+  { emoji: '👤', text: 'Portrait', prompt: 'Cinematic portrait dramatic lighting' },
+  { emoji: '🎭', text: 'Abstract', prompt: 'Colorful abstract fluid art' },
+  { emoji: '🏙️', text: 'Cyberpunk', prompt: 'Neon cyberpunk city night' },
+  { emoji: '🌌', text: 'Space', prompt: 'Nebula stars deep space' },
+  { emoji: '🐾', text: 'Animals', prompt: 'Majestic lion wild savanna' },
+  { emoji: '🍕', text: 'Food', prompt: 'Gourmet dish food photography' },
+  { emoji: '🏠', text: 'Interior', prompt: 'Modern luxury interior design' }
 ];
 
 const mobileSuggestions = [
@@ -100,7 +100,7 @@ export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: Comp
         }
 
         .suggestion-row {
-          margin-bottom: 1rem;
+          margin-bottom: 1.5rem;
         }
 
         .suggestion-row:last-child {
@@ -109,31 +109,32 @@ export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: Comp
 
         .suggestion-row-title {
           font-family: 'Inter', sans-serif;
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: rgba(212, 175, 55, 0.8);
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: rgba(212, 175, 55, 0.6);
           text-align: center;
-          margin-bottom: 0.6rem;
+          margin-bottom: 0.8rem;
           letter-spacing: 0.02em;
         }
 
         .suggestion-tags-compact {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          justify-content: center;
-          align-items: center;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.6rem;
+          max-width: 900px;
+          margin: 0 auto;
         }
 
         .suggestion-tag-compact {
-          display: inline-flex;
+          display: flex;
           align-items: center;
-          gap: 0.35rem;
-          padding: 0.45rem 0.8rem;
-          background: rgba(26, 26, 26, 0.6);
+          justify-content: center;
+          gap: 0.4rem;
+          padding: 0.6rem 1rem;
+          background: rgba(212, 175, 55, 0.08);
           border: 1px solid rgba(212, 175, 55, 0.2);
           border-radius: 8px;
-          color: rgba(232, 200, 124, 0.9);
+          color: rgba(255, 255, 255, 0.8);
           font-family: 'Inter', sans-serif;
           font-size: 0.85rem;
           font-weight: 500;
@@ -143,8 +144,8 @@ export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: Comp
         }
 
         .suggestion-tag-compact:hover {
-          background: rgba(212, 175, 55, 0.1);
-          border-color: rgba(212, 175, 55, 0.5);
+          background: rgba(212, 175, 55, 0.15);
+          border-color: rgba(212, 175, 55, 0.6);
           transform: translateY(-1px);
           box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
         }
@@ -182,12 +183,13 @@ export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: Comp
           .suggestion-row-mobile .suggestion-tags-mobile {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.5rem;
+            gap: 0.6rem;
           }
           
           .suggestion-tag-compact {
             width: 100%;
             justify-content: center;
+            padding: 0.6rem 0.8rem;
           }
           
           .suggestions-compact-section {
@@ -195,8 +197,8 @@ export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: Comp
           }
           
           .suggestion-row-title {
-            font-size: 0.9rem;
-            margin-bottom: 0.6rem;
+            font-size: 0.75rem;
+            margin-bottom: 0.7rem;
           }
         }
 
@@ -206,7 +208,7 @@ export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: Comp
           }
           
           .suggestion-tags-compact {
-            gap: 0.45rem;
+            gap: 0.5rem;
           }
         }
 
@@ -216,20 +218,20 @@ export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: Comp
           }
           
           .suggestion-row {
-            margin-bottom: 0.8rem;
+            margin-bottom: 1.2rem;
           }
           
           .suggestion-row-title {
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.7rem;
+            margin-bottom: 0.6rem;
           }
           
           .suggestion-tags-compact {
-            gap: 0.4rem;
+            gap: 0.5rem;
           }
           
           .suggestion-tag-compact {
-            padding: 0.4rem 0.7rem;
+            padding: 0.5rem 0.6rem;
             font-size: 0.8rem;
           }
           

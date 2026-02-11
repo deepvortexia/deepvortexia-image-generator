@@ -5,14 +5,14 @@ interface QuickIdeasProps {
 }
 
 const ideas: QuickIdea[] = [
-  { emoji: "🏔️", label: "Landscape", prompt: "A breathtaking mountain landscape at sunset" },
-  { emoji: "👤", label: "Portrait", prompt: "A professional portrait with cinematic lighting" },
-  { emoji: "🎭", label: "Abstract", prompt: "An abstract composition with flowing colors" },
-  { emoji: "🏙️", label: "Urban", prompt: "A futuristic cyberpunk city at night" },
-  { emoji: "🌌", label: "Space", prompt: "A stunning view of space with nebulas and stars" },
-  { emoji: "🐾", label: "Animals", prompt: "A majestic lion in the wild" },
-  { emoji: "🍕", label: "Food", prompt: "Professional food photography of a gourmet dish" },
-  { emoji: "🏛️", label: "Architecture", prompt: "Modern architectural masterpiece" },
+  { emoji: "🏔️", label: "Landscape", prompt: "Mountain sunset golden light" },
+  { emoji: "👤", label: "Portrait", prompt: "Cinematic portrait dramatic lighting" },
+  { emoji: "🎭", label: "Abstract", prompt: "Colorful abstract fluid art" },
+  { emoji: "🏙️", label: "Cyberpunk", prompt: "Neon cyberpunk city night" },
+  { emoji: "🌌", label: "Space", prompt: "Nebula stars deep space" },
+  { emoji: "🐾", label: "Animals", prompt: "Majestic lion wild savanna" },
+  { emoji: "🍕", label: "Food", prompt: "Gourmet dish food photography" },
+  { emoji: "🏠", label: "Interior", prompt: "Modern luxury interior design" },
 ];
 
 export default function QuickIdeas({ onSelect }: QuickIdeasProps) {
