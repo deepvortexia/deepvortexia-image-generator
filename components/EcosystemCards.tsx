@@ -14,7 +14,7 @@ export default function EcosystemCards() {
         <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-active no-underline" role="listitem">
           <span className="tool-icon" aria-hidden="true">😊</span>
           <span className="tool-name">Emoticons</span>
-          <span className="tool-status" aria-label="Available">Available Now</span>
+          <span className="tool-status" aria-label="Currently available">Available Now</span>
         </Link>
         
         <div className="tool-card tool-card-soon" role="listitem">
