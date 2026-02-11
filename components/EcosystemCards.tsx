@@ -14,7 +14,7 @@ export default function EcosystemCards() {
         <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-active no-underline" role="listitem">
           <span className="tool-icon" aria-hidden="true">😊</span>
           <span className="tool-name">Emoticons</span>
-          <span className="tool-status" aria-label="Currently available">Available Now</span>
+          <span className="tool-status tool-status-green" aria-label="Available now">Available Now</span>
         </Link>
         
         <div className="tool-card tool-card-soon" role="listitem">
@@ -120,6 +120,11 @@ export default function EcosystemCards() {
 
         .tool-card-active .tool-status {
           color: #D4AF37;
+          font-weight: 600;
+        }
+        
+        .tool-card-active .tool-status-green {
+          color: #10b981;
           font-weight: 600;
         }
         
