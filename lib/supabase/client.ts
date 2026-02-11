@@ -1,6 +1,14 @@
 import { createBrowserClient, type CookieOptions } from '@supabase/ssr'
 
+// Singleton instance to prevent multiple clients and listeners
+let clientInstance: ReturnType<typeof createBrowserClient> | null = null
+
 export const createClient = () => {
+  // Return existing instance if already created
+  if (clientInstance) {
+    return clientInstance
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -72,5 +80,7 @@ export const createClient = () => {
     }
   })
 
+  // Store singleton instance
+  clientInstance = client
   return client
 }
