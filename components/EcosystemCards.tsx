@@ -5,16 +5,16 @@ export default function EcosystemCards() {
     <section className="tools-preview-section" role="region" aria-label="Available and upcoming AI tools">
       <h3 className="tools-preview-title">Complete AI Ecosystem</h3>
       <div className="tools-preview-grid" role="list">
-        <div className="tool-card tool-card-active" role="listitem">
+        <div className="tool-card tool-card-current" role="listitem">
           <span className="tool-icon" aria-hidden="true">🖼️</span>
           <span className="tool-name">Image Gen</span>
-          <span className="tool-status" aria-label="Currently available">Available Now</span>
+          <span className="tool-button tool-button-current" aria-label="Currently using this tool">Current Tool</span>
         </div>
         
-        <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-active no-underline" role="listitem">
+        <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-link no-underline" role="listitem">
           <span className="tool-icon" aria-hidden="true">😊</span>
           <span className="tool-name">Emoticons</span>
-          <span className="tool-status tool-status-green" aria-label="Available now">Available Now</span>
+          <span className="tool-button tool-button-link" aria-label="Open emoticons tool">Open Emoticons</span>
         </Link>
         
         <div className="tool-card tool-card-soon" role="listitem">
@@ -69,14 +69,14 @@ export default function EcosystemCards() {
           cursor: default;
         }
 
-        .tool-card-active {
+        .tool-card-current {
           border-color: #D4AF37;
           background: rgba(212, 175, 55, 0.05);
         }
         
-        .tool-card-available {
-          border-color: rgba(212, 175, 55, 0.4);
-          background: rgba(212, 175, 55, 0.03);
+        .tool-card-link {
+          border-color: #D4AF37;
+          background: rgba(212, 175, 55, 0.05);
           cursor: pointer;
         }
 
@@ -90,13 +90,13 @@ export default function EcosystemCards() {
           box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
         }
 
-        .tool-card-active:hover {
+        .tool-card-current:hover {
           box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
         }
         
-        .tool-card-available:hover {
-          border-color: #D4AF37;
-          box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        .tool-card-link:hover {
+          border-color: #E8C87C;
+          box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
         }
 
         .tool-icon {
@@ -118,23 +118,32 @@ export default function EcosystemCards() {
           letter-spacing: 0.05em;
         }
 
-        .tool-card-active .tool-status {
-          color: #D4AF37;
-          font-weight: 600;
-        }
-        
-        .tool-card-active .tool-status-green {
-          color: #10b981;
-          font-weight: 600;
-        }
-        
-        .tool-status-available {
+        .tool-button {
           font-family: 'Inter', sans-serif;
           font-size: 0.8rem;
-          color: rgba(212, 175, 55, 0.8);
+          padding: 0.4rem 0.8rem;
+          border-radius: 6px;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          font-weight: 500;
+          font-weight: 600;
+          transition: all 0.2s ease;
+        }
+
+        .tool-button-current {
+          color: #D4AF37;
+          background: rgba(212, 175, 55, 0.1);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .tool-button-link {
+          color: #10b981;
+          background: rgba(16, 185, 129, 0.1);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .tool-card-link:hover .tool-button-link {
+          background: rgba(16, 185, 129, 0.2);
+          border-color: rgba(16, 185, 129, 0.5);
         }
         
         .no-underline {
@@ -169,8 +178,9 @@ export default function EcosystemCards() {
             font-size: 0.9rem;
           }
           
-          .tool-status, .tool-status-available {
+          .tool-status, .tool-button {
             font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
           }
         }
 
