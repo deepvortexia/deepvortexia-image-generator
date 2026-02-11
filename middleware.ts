@@ -66,18 +66,20 @@ export async function middleware(request: NextRequest) {
     const { error } = await supabase.auth.getSession()
     
     if (error) {
-      console.warn('⚠️ Middleware auth error:', error.message)
-      
-      // Handle refresh token errors gracefully
+      // Handle expected refresh token errors gracefully
       if (error.message?.includes('refresh_token_not_found') || 
           error.code === 'refresh_token_not_found') {
-        console.log('🔄 Clearing invalid refresh token in middleware')
+        console.warn('⚠️ Middleware: Invalid refresh token detected')
         await supabase.auth.signOut({ scope: 'local' })
         console.log('✅ Cleared invalid refresh token')
+      } else {
+        // Log other auth errors as they may indicate security or system issues
+        console.error('❌ Unexpected auth error in middleware:', error.message, error.code)
       }
     }
   } catch (err) {
-    console.error('❌ Middleware auth error:', err)
+    // Log unexpected exceptions separately
+    console.error('❌ Critical error in middleware auth:', err)
     // Continue despite errors to avoid blocking requests
   }
 
