@@ -14,11 +14,13 @@ export const useCredits = () => {
 
   // Debug logging for credits state
   useEffect(() => {
-    console.log('💰 useCredits: Profile changed', { 
-      hasProfile: !!profile,
-      credits: profile?.credits || 0,
-      email: profile?.email || 'null'
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('💰 useCredits: Profile changed', { 
+        hasProfile: !!profile,
+        credits: profile?.credits || 0,
+        email: profile?.email || 'null'
+      })
+    }
   }, [profile])
 
   const deductCredit = async () => {

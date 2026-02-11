@@ -25,7 +25,9 @@ export default function CreditsDisplay() {
   useEffect(() => {
     if (authLoading) {
       const timer = setTimeout(() => {
-        console.log('⏰ CreditsDisplay: Loading timeout reached after 5 seconds');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('⏰ CreditsDisplay: Loading timeout reached after 5 seconds');
+        }
         setLoadingTimeout(true);
       }, 5000);
 
@@ -44,15 +46,17 @@ export default function CreditsDisplay() {
 
   // Debug logging for CreditsDisplay
   useEffect(() => {
-    console.log('🎨 CreditsDisplay: State changed', { 
-      isLoggedIn, 
-      credits, 
-      freeGenerationsLeft,
-      isClient,
-      mounted,
-      loading,
-      authLoading
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🎨 CreditsDisplay: State changed', { 
+        isLoggedIn, 
+        credits, 
+        freeGenerationsLeft,
+        isClient,
+        mounted,
+        loading,
+        authLoading
+      })
+    }
   }, [isLoggedIn, credits, freeGenerationsLeft, isClient, mounted, loading, authLoading])
 
   // Show loading state while not mounted or auth is loading (with timeout)
@@ -139,10 +143,14 @@ export default function CreditsDisplay() {
               className="buy-credits-btn"
               onClick={() => {
                 if (isLoggedIn) {
-                  console.log('💳 Opening pricing modal...');
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log('💳 Opening pricing modal...');
+                  }
                   setShowPricingModal(true);
                 } else {
-                  console.log('🔐 Opening auth modal...')
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log('🔐 Opening auth modal...')
+                  }
                   setShowAuthModal(true);
                 }
               }}
