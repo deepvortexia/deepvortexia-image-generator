@@ -61,8 +61,21 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired
-  await supabase.auth.getSession()
+  // Refresh session if expired - handle errors gracefully
+  try {
+    const { error } = await supabase.auth.getSession()
+    
+    if (error && error.code === 'refresh_token_not_found') {
+      // Expected error when token expired - not critical
+      console.log('⚠️ Refresh token not found in middleware - user needs to re-authenticate')
+    } else if (error) {
+      // Unexpected error
+      console.error('❌ Unexpected auth error in middleware:', error)
+    }
+  } catch (err) {
+    // Catch any unexpected errors
+    console.error('❌ Failed to refresh session in middleware:', err)
+  }
 
   return response
 }
