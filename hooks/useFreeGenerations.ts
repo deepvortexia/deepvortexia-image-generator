@@ -16,12 +16,14 @@ export function useFreeGenerations() {
 
   // Debug logging for auth state
   useEffect(() => {
-    console.log('🎮 useFreeGenerations: Auth state changed', { 
-      user: user?.email || 'null', 
-      loading, 
-      isLoggedIn,
-      freeGenerationsLeft 
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🎮 useFreeGenerations: Auth state changed', { 
+        user: user?.email || 'null', 
+        loading, 
+        isLoggedIn,
+        freeGenerationsLeft 
+      })
+    }
   }, [user, loading, isLoggedIn, freeGenerationsLeft])
 
   useEffect(() => {
@@ -34,7 +36,9 @@ export function useFreeGenerations() {
       const parsedValue = parseInt(saved, 10);
       if (!isNaN(parsedValue)) {
         setFreeGenerationsLeft(parsedValue);
-        console.log('💾 Loaded free generations from localStorage:', parsedValue)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('💾 Loaded free generations from localStorage:', parsedValue)
+        }
       }
     }
   }, []);
@@ -42,12 +46,16 @@ export function useFreeGenerations() {
   const useFreeGeneration = (): boolean => {
     if (isLoggedIn) {
       // For logged-in users, handle credit deduction separately
-      console.log('✅ Logged in user - allowing generation')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Logged in user - allowing generation')
+      }
       return true;
     }
 
     if (freeGenerationsLeft <= 0) {
-      console.log('❌ No free generations left')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('❌ No free generations left')
+      }
       return false; // No free generations left
     }
 
@@ -55,7 +63,9 @@ export function useFreeGenerations() {
     setFreeGenerationsLeft(newCount);
     if (isClient) {
       localStorage.setItem(FREE_GENERATIONS_KEY, newCount.toString());
-      console.log('💳 Used free generation, remaining:', newCount)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('💳 Used free generation, remaining:', newCount)
+      }
     }
     return true;
   };
@@ -66,7 +76,9 @@ export function useFreeGenerations() {
       setFreeGenerationsLeft(newCount);
       if (isClient) {
         localStorage.setItem(FREE_GENERATIONS_KEY, newCount.toString());
-        console.log('🔄 Restored free generation, now at:', newCount)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔄 Restored free generation, now at:', newCount)
+        }
       }
     }
   };

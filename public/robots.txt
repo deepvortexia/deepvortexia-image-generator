@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://images.deepvortexai.art/sitemap.xml

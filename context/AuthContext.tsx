@@ -60,7 +60,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
     try {
-      console.log('🔍 Fetching profile for user:', userId)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 Fetching profile for user:', userId)
+      }
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -69,23 +71,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          console.log('⚠️ Profile not found for user:', userId)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('⚠️ Profile not found for user:', userId)
+          }
           return null
         }
-        console.error('❌ Error fetching profile:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Error fetching profile:', error)
+        }
         throw error
       }
-      console.log('✅ Profile fetched successfully:', { id: data.id, email: data.email, credits: data.credits })
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Profile fetched successfully:', { id: data.id, email: data.email, credits: data.credits })
+      }
       return data
     } catch (error) {
-      console.error('❌ Error fetching profile:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Error fetching profile:', error)
+      }
       return null
     }
   }, [supabase])
 
   const createProfile = useCallback(async (currentUser: User): Promise<Profile | null> => {
     try {
-      console.log('🆕 Creating new profile for user:', currentUser.email)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🆕 Creating new profile for user:', currentUser.email)
+      }
       const { error } = await supabase
         .from('profiles')
         .insert({
@@ -97,26 +109,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         })
 
       if (error && error.code !== '23505') {
-        console.error('❌ Error creating profile:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Error creating profile:', error)
+        }
         throw error
       }
       
-      console.log('✅ Profile created, fetching...')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Profile created, fetching...')
+      }
       return await fetchProfile(currentUser.id)
     } catch (error) {
-      console.error('❌ Error creating profile:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Error creating profile:', error)
+      }
       return null
     }
   }, [fetchProfile, supabase])
 
   const ensureProfile = useCallback(async (currentUser: User) => {
-    console.log('🔄 Ensuring profile exists for user:', currentUser.email)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔄 Ensuring profile exists for user:', currentUser.email)
+    }
     let profileData = await fetchProfile(currentUser.id)
     if (!profileData) {
-      console.log('⚠️ Profile not found, creating...')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️ Profile not found, creating...')
+      }
       profileData = await createProfile(currentUser)
     }
-    if (profileData) {
+    if (profileData && process.env.NODE_ENV === 'development') {
       console.log('✅ Profile ensured:', { email: profileData.email, credits: profileData.credits })
     }
     return profileData
@@ -124,10 +146,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshProfile = useCallback(async () => {
     if (user) {
-      console.log('🔄 Refreshing profile for user:', user.email)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔄 Refreshing profile for user:', user.email)
+      }
       const profileData = await fetchProfile(user.id)
       setProfile(profileData)
-      console.log('✅ Profile refreshed:', profileData ? { credits: profileData.credits } : 'null')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Profile refreshed:', profileData ? { credits: profileData.credits } : 'null')
+      }
     }
   }, [user, fetchProfile])
 
@@ -136,17 +162,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (initialized.current) return
     initialized.current = true
 
-    console.log('🚀 AuthContext: Initializing...')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 AuthContext: Initializing...')
+    }
+
+    // Safety timeout - ensure loading never exceeds 8 seconds
+    const loadingTimeout = setTimeout(() => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⏰ Auth loading timeout reached after 8 seconds - forcing loading to false')
+      }
+      setLoading(false)
+    }, 8000)
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: any, currentSession: any) => {
-        console.log('📡 Auth event:', event)
-        console.log('🔍 Auth State:', { 
-          hasUser: !!currentSession?.user, 
-          email: currentSession?.user?.email,
-          loading 
-        })
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📡 Auth event:', event)
+          console.log('🔍 Auth State:', { 
+            hasUser: !!currentSession?.user, 
+            email: currentSession?.user?.email,
+            loading 
+          })
+        }
 
         if (currentSession?.user) {
           setSession(currentSession)
@@ -157,13 +195,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             const profileData = await ensureProfile(currentSession.user)
             setProfile(profileData)
-            console.log('✅ Auth state updated:', { 
-              user: currentSession.user.email, 
-              profile: profileData ? { credits: profileData.credits } : null,
-              loading: false
-            })
+            if (process.env.NODE_ENV === 'development') {
+              console.log('✅ Auth state updated:', { 
+                user: currentSession.user.email, 
+                profile: profileData ? { credits: profileData.credits } : null,
+                loading: false
+              })
+            }
           } catch (error) {
-            console.error('❌ Error ensuring profile:', error)
+            if (process.env.NODE_ENV === 'development') {
+              console.error('❌ Error ensuring profile:', error)
+            }
             // Still set profile to null and continue - user is authenticated
             setProfile(null)
           } finally {
@@ -174,7 +216,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(null)
           setProfile(null)
           setLoading(false)
-          console.log('🚪 User signed out')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🚪 User signed out')
+          }
         }
       }
     )
@@ -182,10 +226,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Then check for existing session
     supabase.auth.getSession().then(async ({ data: { session: initialSession }, error }: any) => {
       if (error) {
-        // Handle refresh token not found - clear invalid session
-        // Check for both possible refresh token error codes
-        if (error?.code === 'refresh_token_not_found' || error?.code === 'invalid_refresh_token') {
-          console.log('⚠️ Refresh token not found - clearing invalid session')
+        // Handle refresh token not found - clear invalid session immediately
+        // Check for both possible refresh token error codes or message containing 'refresh_token'
+        if (error?.code === 'refresh_token_not_found' || 
+            error?.code === 'invalid_refresh_token' ||
+            error?.message?.toLowerCase().includes('refresh_token')) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('⚠️ Refresh token error - clearing invalid session')
+          }
           await supabase.auth.signOut({ scope: 'local' })
           setUser(null)
           setSession(null)
@@ -195,32 +243,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         
         // Other errors
-        console.error('❌ Error getting session:', error)
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Error getting session:', error)
+        }
         setLoading(false)
         return
       }
 
-      console.log('🔍 Initial session check:', { hasSession: !!initialSession })
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 Initial session check:', { hasSession: !!initialSession })
+      }
 
       if (initialSession?.user) {
-        console.log('✅ Found existing session for:', initialSession.user.email)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Found existing session for:', initialSession.user.email)
+        }
         setSession(initialSession)
         setUser(initialSession.user)
         const profileData = await ensureProfile(initialSession.user)
         setProfile(profileData)
-        console.log('📝 Profile data loaded:', profileData ? { email: profileData.email, credits: profileData.credits } : 'null')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📝 Profile data loaded:', profileData ? { email: profileData.email, credits: profileData.credits } : 'null')
+        }
       }
       setLoading(false)
-      console.log('✅ Auth initialization complete')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Auth initialization complete')
+      }
     })
 
     return () => {
+      clearTimeout(loadingTimeout)
       subscription.unsubscribe()
     }
   }, [ensureProfile, supabase])
 
   const signInWithGoogle = async () => {
-    console.log('🚀 Initiating Google sign-in with PKCE flow')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 Initiating Google sign-in with PKCE flow')
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -228,10 +289,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       },
     })
     if (error) {
-      console.error('❌ Google sign-in error:', error.message)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Google sign-in error:', error.message)
+      }
       throw error
     }
-    console.log('✅ Redirecting to Google OAuth...')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Redirecting to Google OAuth...')
+    }
   }
 
   const signInWithEmail = async (email: string) => {
