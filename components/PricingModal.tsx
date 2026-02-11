@@ -17,6 +17,15 @@ const PRICING_PACKS: PricingPack[] = [
   { name: 'Ultimate', credits: 500, price: 84.99 },
 ];
 
+// Exact price in cents to avoid floating point errors
+const PRICE_IN_CENTS: Record<string, number> = {
+  'Starter': 349,
+  'Basic': 799,
+  'Popular': 1699,
+  'Pro': 3999,
+  'Ultimate': 8499,
+};
+
 interface PricingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,7 +39,9 @@ export function PricingModal({ isOpen, onClose }: PricingModalProps) {
   const handlePurchase = async (pack: PricingPack) => {
     try {
       setLoading(pack.name);
-      console.log('💳 Creating checkout session for:', pack.name);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('💳 Creating checkout session for:', pack.name);
+      }
 
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
@@ -40,7 +51,7 @@ export function PricingModal({ isOpen, onClose }: PricingModalProps) {
         body: JSON.stringify({
           packName: pack.name,
           credits: pack.credits,
-          price: Math.round(pack.price * 100), // Convert to cents
+          price: PRICE_IN_CENTS[pack.name], // Use exact cent value
         }),
       });
 
@@ -54,7 +65,9 @@ export function PricingModal({ isOpen, onClose }: PricingModalProps) {
       // Redirect to Stripe Checkout
       window.location.href = url;
     } catch (error) {
-      console.error('❌ Purchase error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Purchase error:', error);
+      }
       alert(error instanceof Error ? error.message : 'Failed to start checkout');
       setLoading(null);
     }

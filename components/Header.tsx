@@ -16,20 +16,24 @@ export default function Header() {
   
   // Debug logging for Header
   useEffect(() => {
-    console.log('🎯 Header: Auth state changed', { 
-      hasUser: !!user,
-      email: user?.email || 'null',
-      hasProfile: !!profile,
-      credits: profile?.credits || 0,
-      loading 
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🎯 Header: Auth state changed', { 
+        hasUser: !!user,
+        email: user?.email || 'null',
+        hasProfile: !!profile,
+        credits: profile?.credits || 0,
+        loading 
+      })
+    }
   }, [user, profile, loading])
 
   // Add safety timeout for loading state
   useEffect(() => {
     if (loading) {
       const timer = setTimeout(() => {
-        console.log('⏰ Header: Loading timeout reached after 5 seconds');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('⏰ Header: Loading timeout reached after 5 seconds');
+        }
         setLoadingTimeout(true);
         setShowRetry(true);
       }, 5000);
@@ -44,19 +48,25 @@ export default function Header() {
   const handleAuthAction = () => {
     if (user) {
       // User is logged in, show sign out confirmation
-      console.log('🚪 Signing out user:', user.email)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🚪 Signing out user:', user.email)
+      }
       if (confirm('Are you sure you want to sign out?')) {
         signOut();
       }
     } else {
       // User is not logged in, show auth modal
-      console.log('🔐 Opening auth modal')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 Opening auth modal')
+      }
       setShowAuthModal(true);
     }
   };
 
   const handleRetry = () => {
-    console.log('🔄 Retrying authentication check...');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔄 Retrying authentication check...');
+    }
     setShowRetry(false);
     setLoadingTimeout(false);
     // Instead of reloading the entire page, try to refresh the profile
@@ -86,11 +96,12 @@ export default function Header() {
 
   return (
     <>
-      <header className="app-header">
+      <header className="app-header" role="banner">
         {/* Back to Home Button */}
         <Link 
           href="https://deepvortexai.art"
           className="back-to-home-link"
+          aria-label="Navigate back to Deep Vortex AI home"
         >
           <span className="back-to-home-text-full">← Back to Home</span>
           <span className="back-to-home-text-short">← Home</span>
@@ -111,7 +122,7 @@ export default function Header() {
             
             {/* Floating particles */}
             <div className="magic-particles">
-              {Array.from({ length: 12 }).map((_, i) => (
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div key={`particle-${i}`} className="magic-particle"></div>
               ))}
             </div>
@@ -120,8 +131,8 @@ export default function Header() {
             <Image 
               src="/deepgoldremoveetiny.png" 
               alt="Deep Vortex Logo" 
-              width={200}
-              height={200}
+              width={120}
+              height={120}
               className="app-logo-large"
               aria-label="Deep Vortex AI - Image Generator"
               priority
@@ -188,7 +199,7 @@ export default function Header() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 1rem 1rem 2rem;
+          padding: 0.5rem 1rem 0.8rem;
           background: var(--bg-primary);
           position: relative;
           z-index: 100;
@@ -198,7 +209,7 @@ export default function Header() {
           position: absolute;
           top: 1rem;
           left: 1rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: rgba(255, 255, 255, 0.7);
           text-decoration: none;
           font-size: 0.9rem;
           transition: color 0.3s ease;
@@ -226,16 +237,16 @@ export default function Header() {
 
         .magic-effects-wrapper {
           position: relative;
-          width: 300px;
-          height: 300px;
+          width: 180px;
+          height: 180px;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 1.5rem;
+          margin-bottom: 0.5rem;
         }
 
         .app-logo-large {
-          width: 200px;
+          width: 120px;
           height: auto;
           display: block;
           position: relative;
@@ -254,8 +265,8 @@ export default function Header() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 250px;
-          height: 250px;
+          width: 150px;
+          height: 150px;
           background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent 70%);
           border-radius: 50%;
           animation: pulse-glow 3s ease-in-out infinite;
@@ -279,8 +290,8 @@ export default function Header() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 280px;
-          height: 280px;
+          width: 170px;
+          height: 170px;
           pointer-events: none;
         }
 
@@ -345,7 +356,6 @@ export default function Header() {
           border-radius: 50%;
           opacity: 0.7;
           animation: float-particle 4s ease-in-out infinite;
-          will-change: transform, opacity;
         }
 
         .magic-particle:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
@@ -354,12 +364,7 @@ export default function Header() {
         .magic-particle:nth-child(4) { top: 50%; left: 85%; animation-delay: 1.5s; }
         .magic-particle:nth-child(5) { top: 60%; left: 20%; animation-delay: 2s; }
         .magic-particle:nth-child(6) { top: 70%; left: 75%; animation-delay: 2.5s; }
-        .magic-particle:nth-child(7) { top: 15%; left: 50%; animation-delay: 3s; }
-        .magic-particle:nth-child(8) { top: 25%; left: 40%; animation-delay: 0.8s; }
-        .magic-particle:nth-child(9) { top: 55%; left: 60%; animation-delay: 1.3s; }
-        .magic-particle:nth-child(10) { top: 75%; left: 35%; animation-delay: 1.8s; }
-        .magic-particle:nth-child(11) { top: 35%; left: 65%; animation-delay: 2.3s; }
-        .magic-particle:nth-child(12) { top: 65%; left: 55%; animation-delay: 2.8s; }
+        .magic-particle:nth-child(n+7) { display: none; }
 
         @keyframes float-particle {
           0%, 100% {
@@ -382,12 +387,12 @@ export default function Header() {
 
         .brand-text-orbitron {
           font-family: 'Orbitron', sans-serif;
-          font-size: 2rem;
+          font-size: 1.5rem;
           font-weight: 700;
           color: var(--gold-primary);
           letter-spacing: 0.15em;
           text-align: center;
-          margin: 1.5rem 0 0.5rem;
+          margin: 0.3rem 0 0.2rem;
           text-transform: uppercase;
           line-height: 1.2;
           text-shadow: 0 0 20px var(--glow-gold);
@@ -395,7 +400,7 @@ export default function Header() {
 
         .brand-description {
           font-family: 'Inter', sans-serif;
-          font-size: 1.1rem;
+          font-size: 0.95rem;
           color: var(--gold-primary);
           text-align: center;
           margin: 0;
@@ -408,7 +413,7 @@ export default function Header() {
           gap: 1.5rem;
           justify-content: center;
           align-items: center;
-          padding: 1.5rem 1rem 1rem;
+          padding: 0.8rem 1rem 0.5rem;
           position: relative;
           z-index: 100;
         }
@@ -418,7 +423,7 @@ export default function Header() {
           align-items: center;
           gap: 0.5rem;
           padding: 0.8rem 2rem;
-          background: rgba(26, 26, 26, 0.8);
+          background: rgba(20, 20, 20, 0.95);
           border: 2px solid var(--gold-primary);
           border-radius: 12px;
           color: var(--gold-primary);
@@ -427,7 +432,6 @@ export default function Header() {
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
-          backdrop-filter: blur(10px);
           will-change: transform;
           text-decoration: none;
         }
@@ -473,7 +477,7 @@ export default function Header() {
 
         @media (max-width: 480px) {
           .app-header {
-            padding: 0.8rem 1rem 1.5rem;
+            padding: 0.5rem 1rem 0.6rem;
           }
           
           .back-to-home-text-full {
@@ -493,31 +497,27 @@ export default function Header() {
           }
           
           .magic-effects-wrapper {
-            width: 200px;
-            height: 200px;
+            width: 140px;
+            height: 140px;
           }
           
           .app-logo-large {
-            width: 140px;
+            width: 100px;
           }
           
           .brand-text-orbitron {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             letter-spacing: 0.1em;
           }
           
           .brand-description {
-            font-size: 0.9rem;
-          }
-          
-          .magic-particle:nth-child(n+7) {
-            visibility: hidden;
+            font-size: 0.85rem;
           }
           
           .action-buttons-section {
             flex-direction: column;
             gap: 1rem;
-            padding: 1rem 1rem 0.8rem;
+            padding: 0.6rem 1rem 0.5rem;
           }
           
           .action-btn {
@@ -529,16 +529,16 @@ export default function Header() {
 
         @media (min-width: 768px) and (max-width: 1024px) {
           .magic-effects-wrapper {
-            width: 240px;
-            height: 240px;
+            width: 180px;
+            height: 180px;
           }
           
           .app-logo-large {
-            width: 160px;
+            width: 120px;
           }
           
           .brand-text-orbitron {
-            font-size: 1.7rem;
+            font-size: 1.5rem;
           }
         }
 

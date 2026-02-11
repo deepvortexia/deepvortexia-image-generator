@@ -9,6 +9,7 @@ import PromptSection from "@/components/PromptSection";
 import ImageDisplay from "@/components/ImageDisplay";
 import { Notification } from "@/components/Notification";
 import { AuthModal } from "@/components/AuthModal";
+import { PricingModal } from "@/components/PricingModal";
 import { useFreeGenerations } from "@/hooks/useFreeGenerations";
 import { useCredits } from "@/hooks/useCredits";
 import { useAuth } from "@/context/AuthContext";
@@ -21,10 +22,43 @@ export default function Home() {
   const [error, setError] = useState("");
   const [showNotification, setShowNotification] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   
   const { canGenerate, useFreeGeneration, restoreFreeGeneration, freeGenerationsLeft, isLoggedIn } = useFreeGenerations();
   const { hasCredits, refreshProfile } = useCredits();
   const { user, loading: authLoading } = useAuth();
+
+  // Handle ?buy=PACK_NAME URL parameter
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const buyParam = params.get('buy');
+    
+    if (buyParam && !authLoading) {
+      if (user) {
+        // User is logged in, open pricing modal
+        setShowPricingModal(true);
+        // Clean the URL
+        window.history.replaceState({}, '', window.location.pathname);
+      } else {
+        // User not logged in, open auth modal first
+        setShowAuthModal(true);
+        // After auth, we'll check again and open pricing modal
+      }
+    }
+  }, [user, authLoading]);
+
+  // Open pricing modal after login if buy parameter was present
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const buyParam = params.get('buy');
+    
+    if (buyParam && user && !authLoading) {
+      setShowPricingModal(true);
+      setShowAuthModal(false);
+      // Clean the URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [user, authLoading]);
 
   // Handle successful Stripe payments (session_id in URL)
   useEffect(() => {
@@ -33,7 +67,9 @@ export default function Home() {
     const authError = params.get('auth_error');
     
     if (sessionId && user) {
-      console.log('💳 Payment success detected, refreshing profile...');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('💳 Payment success detected, refreshing profile...');
+      }
       // Refresh the profile to get updated credits
       refreshProfile();
       // Show success notification
@@ -44,7 +80,9 @@ export default function Home() {
 
     // Handle auth errors from OAuth callback
     if (authError) {
-      console.error('🔐 Authentication error:', authError)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('🔐 Authentication error:', authError)
+      }
       setError(`Authentication failed: ${authError}`);
       // Clean the URL
       window.history.replaceState({}, '', window.location.pathname);
@@ -195,6 +233,7 @@ export default function Home() {
       {/* Notifications and Modals */}
       <Notification show={showNotification} onClose={() => setShowNotification(false)} />
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <PricingModal isOpen={showPricingModal} onClose={() => setShowPricingModal(false)} />
 
       <style jsx>{`
         .app {
