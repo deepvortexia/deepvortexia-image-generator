@@ -1,6 +1,14 @@
 import { createBrowserClient, type CookieOptions } from '@supabase/ssr'
 
+// Singleton instance to prevent multiple clients and listeners
+let clientInstance: ReturnType<typeof createBrowserClient> | null = null
+
 export const createClient = () => {
+  // Return existing instance if already created
+  if (clientInstance) {
+    return clientInstance
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -24,7 +32,7 @@ export const createClient = () => {
     console.log('✅ Supabase client configured')
   }
 
-  return createBrowserClient(url, key, {
+  const client = createBrowserClient(url, key, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
@@ -58,4 +66,22 @@ export const createClient = () => {
       },
     },
   })
+
+  // Listen to auth state changes for better error visibility
+  // This listener is registered only once due to singleton pattern above
+  client.auth.onAuthStateChange((event, session) => {
+    if (event === 'TOKEN_REFRESHED') {
+      console.log('✅ Auth token refreshed successfully')
+    }
+    if (event === 'SIGNED_OUT') {
+      console.log('✅ User signed out')
+    }
+    if (event === 'USER_UPDATED') {
+      console.log('✅ User updated')
+    }
+  })
+
+  // Store singleton instance
+  clientInstance = client
+  return client
 }
