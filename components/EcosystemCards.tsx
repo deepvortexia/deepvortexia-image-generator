@@ -123,8 +123,8 @@ export default function EcosystemCards() {
           font-weight: 600;
         }
         
-        .tool-status-green {
-          color: #10b981 !important;
+        .tool-card-active .tool-status-green {
+          color: #10b981;
           font-weight: 600;
         }
         
