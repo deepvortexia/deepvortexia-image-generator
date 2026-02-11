@@ -182,7 +182,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Then check for existing session
     supabase.auth.getSession().then(async ({ data: { session: initialSession }, error }: any) => {
       if (error) {
-        console.error('❌ Error getting session:', error)
+        console.warn('⚠️ Auth error:', error.message)
+        
+        // Handle refresh token errors gracefully
+        if (error.message?.includes('refresh_token_not_found') || 
+            error.code === 'refresh_token_not_found') {
+          console.log('🔄 Clearing invalid refresh token')
+          await supabase.auth.signOut({ scope: 'local' })
+          console.log('✅ Cleared invalid refresh token')
+        } else {
+          console.error('❌ Error getting session:', error)
+        }
+        
         setLoading(false)
         return
       }

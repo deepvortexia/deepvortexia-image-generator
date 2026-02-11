@@ -61,8 +61,25 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired
-  await supabase.auth.getSession()
+  // Refresh session if expired - handle errors gracefully
+  try {
+    const { error } = await supabase.auth.getSession()
+    
+    if (error) {
+      console.warn('⚠️ Middleware auth error:', error.message)
+      
+      // Handle refresh token errors gracefully
+      if (error.message?.includes('refresh_token_not_found') || 
+          error.code === 'refresh_token_not_found') {
+        console.log('🔄 Clearing invalid refresh token in middleware')
+        await supabase.auth.signOut({ scope: 'local' })
+        console.log('✅ Cleared invalid refresh token')
+      }
+    }
+  } catch (err) {
+    console.error('❌ Middleware auth error:', err)
+    // Continue despite errors to avoid blocking requests
+  }
 
   return response
 }

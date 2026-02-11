@@ -24,7 +24,7 @@ export const createClient = () => {
     console.log('✅ Supabase client configured')
   }
 
-  return createBrowserClient(url, key, {
+  const client = createBrowserClient(url, key, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
@@ -58,4 +58,16 @@ export const createClient = () => {
       },
     },
   })
+
+  // Auto-handle auth state changes and refresh token errors
+  client.auth.onAuthStateChange((event, session) => {
+    if (event === 'TOKEN_REFRESHED') {
+      console.log('✅ Token refreshed successfully')
+    }
+    if (event === 'SIGNED_OUT') {
+      console.log('✅ User signed out')
+    }
+  })
+
+  return client
 }
