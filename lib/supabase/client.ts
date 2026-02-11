@@ -68,6 +68,7 @@ export const createClient = () => {
   })
 
   // Listen to auth state changes for better error visibility
+  // This listener is registered only once due to singleton pattern above
   client.auth.onAuthStateChange((event, session) => {
     if (event === 'TOKEN_REFRESHED') {
       console.log('✅ Auth token refreshed successfully')

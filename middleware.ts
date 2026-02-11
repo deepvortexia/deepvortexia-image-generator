@@ -65,7 +65,8 @@ export async function middleware(request: NextRequest) {
   try {
     const { error } = await supabase.auth.getSession()
     
-    if (error?.code === 'refresh_token_not_found') {
+    // Check for both possible refresh token error codes
+    if (error?.code === 'refresh_token_not_found' || error?.code === 'invalid_refresh_token') {
       // Expected error when token expired - not critical
       console.log('⚠️ Refresh token not found in middleware - user needs to re-authenticate')
     } else if (error) {
