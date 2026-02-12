@@ -8,7 +8,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { PricingModal } from '@/components/PricingModal';
 
 export default function CreditsDisplay() {
-  const { freeGenerationsLeft, isLoggedIn, isClient } = useFreeGenerations();
+  const { isLoggedIn, isClient } = useFreeGenerations();
   const { credits, refreshProfile, loading } = useCredits();
   const { loading: authLoading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -50,14 +50,13 @@ export default function CreditsDisplay() {
       console.log('🎨 CreditsDisplay: State changed', { 
         isLoggedIn, 
         credits, 
-        freeGenerationsLeft,
         isClient,
         mounted,
         loading,
         authLoading
       })
     }
-  }, [isLoggedIn, credits, freeGenerationsLeft, isClient, mounted, loading, authLoading])
+  }, [isLoggedIn, credits, isClient, mounted, loading, authLoading])
 
   // Show loading state while not mounted or auth is loading (with timeout)
   if (!mounted || (authLoading && !loadingTimeout)) {
@@ -126,13 +125,9 @@ export default function CreditsDisplay() {
               </>
             ) : (
               <>
-                <span className="credits-icon">🎁</span>
+                <span className="credits-icon">🔐</span>
                 <span className="credits-amount">
-                  {isClient ? (
-                    freeGenerationsLeft > 0 
-                      ? `${freeGenerationsLeft} free generation${freeGenerationsLeft !== 1 ? 's' : ''} remaining`
-                      : 'Sign in for unlimited generations!'
-                  ) : '2 free generations remaining'}
+                  Sign in to start generating
                 </span>
               </>
             )}

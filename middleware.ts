@@ -19,6 +19,10 @@ export async function middleware(request: NextRequest) {
     supabaseUrl,
     supabaseAnonKey,
     {
+      auth: {
+        flowType: 'pkce',
+        storageKey: 'deepvortex-shared-auth',
+      },
       cookies: {
         get(name: string) {
           return request.cookies.get(name)?.value
