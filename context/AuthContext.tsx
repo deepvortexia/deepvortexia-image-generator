@@ -165,6 +165,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (initialized.current) return
     initialized.current = true
 
+    // Guard to prevent multiple auth listeners
+    if (authListenerSet.current) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ Auth listener already set, skipping...')
+      }
+      return
+    }
+    authListenerSet.current = true
+
     if (process.env.NODE_ENV === 'development') {
       console.log('🚀 AuthContext: Initializing...')
     }
@@ -176,15 +185,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       setLoading(false)
     }, 8000)
-
-    // Guard to prevent multiple auth listeners
-    if (authListenerSet.current) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('⚠️ Auth listener already set, skipping...')
-      }
-      return
-    }
-    authListenerSet.current = true
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

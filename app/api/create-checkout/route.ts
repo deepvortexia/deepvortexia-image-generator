@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
       }
       const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
       if (refreshError || !refreshData.user) {
-        console.error('❌ Authentication failed even after refresh:', authError || refreshError);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Authentication failed even after refresh:', authError || refreshError);
+        }
         return NextResponse.json(
           { error: 'You must be logged in to purchase credits. Please sign in again.' },
           { status: 401 }

@@ -54,8 +54,12 @@ export const createClient = () => {
         let cookie = `${name}=${value}`
         if (options.path) cookie += `; path=${options.path}`
         if (options.maxAge) cookie += `; max-age=${options.maxAge}`
-        // Set domain to .deepvortexai.art for cross-subdomain auth
-        cookie += `; domain=.deepvortexai.art`
+        // Set domain to .deepvortexai.art for cross-subdomain auth in production
+        // In development, don't set domain to allow localhost to work
+        const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
+        if (hostname.includes('deepvortexai.art')) {
+          cookie += `; domain=.deepvortexai.art`
+        }
         if (options.sameSite) cookie += `; samesite=${options.sameSite}`
         if (options.secure) cookie += `; secure`
         document.cookie = cookie
@@ -63,7 +67,9 @@ export const createClient = () => {
       remove(name: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
         console.log('🍪 Client REMOVE cookie:', name)
-        document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}; domain=.deepvortexai.art`
+        const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
+        const domainPart = hostname.includes('deepvortexai.art') ? '; domain=.deepvortexai.art' : ''
+        document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}${domainPart}`
       },
     },
   })
