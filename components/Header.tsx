@@ -209,15 +209,22 @@ export default function Header() {
           position: absolute;
           top: 1rem;
           left: 1rem;
-          color: rgba(255, 255, 255, 0.7);
+          background: rgba(212, 175, 55, 0.1);
+          border: 1px solid rgba(212, 175, 55, 0.5);
+          color: #D4AF37;
           text-decoration: none;
+          font-family: 'Inter', sans-serif;
           font-size: 0.9rem;
-          transition: color 0.3s ease;
+          font-weight: 600;
+          padding: 0.4rem 1rem;
+          border-radius: 8px;
+          transition: all 0.3s ease;
           z-index: 101;
         }
 
         .back-to-home-link:hover {
-          color: var(--gold-primary);
+          background: rgba(212, 175, 55, 0.2);
+          border-color: #D4AF37;
         }
 
         .back-to-home-text-short {

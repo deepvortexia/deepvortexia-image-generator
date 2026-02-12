@@ -17,6 +17,7 @@ interface AuthContextType {
   signInWithEmail: (email: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
+  refreshSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const initialized = useRef(false)
+  const authListenerSet = useRef(false)
   const supabase = createClient()
 
   // If Supabase is not configured, just render children without auth
@@ -52,6 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signInWithEmail: async () => ({ error: new Error('Supabase not configured') as AuthError }),
         signOut: async () => {},
         refreshProfile: async () => {},
+        refreshSession: async () => {},
       }}>
         {children}
       </AuthContext.Provider>
@@ -174,6 +177,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false)
     }, 8000)
 
+    // Guard to prevent multiple auth listeners
+    if (authListenerSet.current) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ Auth listener already set, skipping...')
+      }
+      return
+    }
+    authListenerSet.current = true
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: any, currentSession: any) => {
@@ -274,7 +286,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => {
       clearTimeout(loadingTimeout)
-      subscription.unsubscribe()
+      if (subscription) {
+        subscription.unsubscribe()
+      }
+      authListenerSet.current = false
     }
   }, [ensureProfile, supabase])
 
@@ -313,6 +328,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setProfile(null)
   }
 
+  const refreshSession = async () => {
+    try {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔄 Refreshing session...')
+      }
+      const { data, error } = await supabase.auth.refreshSession()
+      if (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Session refresh failed:', error)
+        }
+        throw error
+      }
+      if (data.user) {
+        setUser(data.user)
+        setSession(data.session)
+        await ensureProfile(data.user)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Session refreshed successfully')
+        }
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Session refresh failed:', err)
+      }
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -323,6 +365,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       signInWithEmail,
       signOut,
       refreshProfile,
+      refreshSession,
     }}>
       {children}
     </AuthContext.Provider>

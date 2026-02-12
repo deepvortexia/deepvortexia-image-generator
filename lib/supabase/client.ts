@@ -37,7 +37,7 @@ export const createClient = () => {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      storageKey: 'sb-txznlbzrvbxjxujrmhee-auth-token',
+      storageKey: 'deepvortex-shared-auth',
       flowType: 'pkce',
     },
     cookies: {
@@ -54,7 +54,8 @@ export const createClient = () => {
         let cookie = `${name}=${value}`
         if (options.path) cookie += `; path=${options.path}`
         if (options.maxAge) cookie += `; max-age=${options.maxAge}`
-        if (options.domain) cookie += `; domain=${options.domain}`
+        // Set domain to .deepvortexai.art for cross-subdomain auth
+        cookie += `; domain=.deepvortexai.art`
         if (options.sameSite) cookie += `; samesite=${options.sameSite}`
         if (options.secure) cookie += `; secure`
         document.cookie = cookie
@@ -62,7 +63,7 @@ export const createClient = () => {
       remove(name: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
         console.log('🍪 Client REMOVE cookie:', name)
-        document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}`
+        document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}; domain=.deepvortexai.art`
       },
     },
   })
