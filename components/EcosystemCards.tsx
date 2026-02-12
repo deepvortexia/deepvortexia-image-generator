@@ -5,13 +5,21 @@ export default function EcosystemCards() {
     <section className="tools-preview-section" role="region" aria-label="Available and upcoming AI tools">
       <h3 className="tools-preview-title">Complete AI Ecosystem</h3>
       <div className="tools-preview-grid" role="list">
-        <div className="tool-card tool-card-current" role="listitem">
+        <Link href="https://images.deepvortexai.art/" className="tool-card tool-card-available no-underline" role="listitem">
+          <span className="available-badge" aria-label="This tool is available">✅ Available</span>
           <span className="tool-icon" aria-hidden="true">🖼️</span>
           <span className="tool-name">Image Gen</span>
           <span className="tool-button tool-button-current" aria-label="Currently using this tool">Current Tool</span>
+        </Link>
+        
+        <div className="tool-card tool-card-soon" role="listitem">
+          <span className="tool-icon" aria-hidden="true">🎬</span>
+          <span className="tool-name">Video</span>
+          <span className="tool-status" aria-label="Coming in the future">Coming Soon</span>
         </div>
         
-        <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-link no-underline" role="listitem">
+        <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-available no-underline" role="listitem">
+          <span className="available-badge" aria-label="This tool is available">✅ Available</span>
           <span className="tool-icon" aria-hidden="true">😊</span>
           <span className="tool-name">Emoticons</span>
           <span className="tool-button tool-button-link" aria-label="Open emoticons tool">Open Emoticons</span>
@@ -67,14 +75,10 @@ export default function EcosystemCards() {
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
           cursor: default;
+          position: relative;
         }
 
-        .tool-card-current {
-          border-color: #D4AF37;
-          background: rgba(212, 175, 55, 0.05);
-        }
-        
-        .tool-card-link {
+        .tool-card-available {
           border-color: #D4AF37;
           background: rgba(212, 175, 55, 0.05);
           cursor: pointer;
@@ -90,13 +94,25 @@ export default function EcosystemCards() {
           box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
         }
 
-        .tool-card-current:hover {
+        .tool-card-available:hover {
+          border-color: #E8C87C;
           box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
         }
         
-        .tool-card-link:hover {
-          border-color: #E8C87C;
-          box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        .available-badge {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.7rem;
+          font-weight: 600;
+          padding: 0.3rem 0.6rem;
+          border-radius: 6px;
+          background: rgba(16, 185, 129, 0.2);
+          color: #10b981;
+          border: 1px solid #10b981;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
 
         .tool-icon {
@@ -141,7 +157,7 @@ export default function EcosystemCards() {
           border: 1px solid rgba(16, 185, 129, 0.3);
         }
         
-        .tool-card-link:hover .tool-button-link {
+        .tool-card-available:hover .tool-button-link {
           background: rgba(16, 185, 129, 0.2);
           border-color: rgba(16, 185, 129, 0.5);
         }
@@ -181,6 +197,11 @@ export default function EcosystemCards() {
           .tool-status, .tool-button {
             font-size: 0.7rem;
             padding: 0.3rem 0.6rem;
+          }
+          
+          .available-badge {
+            font-size: 0.6rem;
+            padding: 0.25rem 0.5rem;
           }
         }
 

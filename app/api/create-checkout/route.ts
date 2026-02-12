@@ -52,14 +52,27 @@ export async function POST(req: NextRequest) {
 
     // Verify authentication
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    let { data: { user }, error: authError } = await supabase.auth.getUser();
 
+    // If auth failed, try refreshing the session first
     if (authError || !user) {
-      console.error('❌ Authentication failed:', authError);
-      return NextResponse.json(
-        { error: 'You must be logged in to purchase credits' },
-        { status: 401 }
-      );
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️ Initial auth failed, attempting session refresh...');
+      }
+      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError || !refreshData.user) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Authentication failed even after refresh:', authError || refreshError);
+        }
+        return NextResponse.json(
+          { error: 'You must be logged in to purchase credits. Please sign in again.' },
+          { status: 401 }
+        );
+      }
+      user = refreshData.user;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Session refreshed successfully');
+      }
     }
 
     console.log('✅ Creating checkout session for user:', user.id, 'Pack:', packName);

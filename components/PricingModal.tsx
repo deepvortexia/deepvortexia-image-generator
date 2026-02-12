@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 interface PricingPack {
   name: string;
@@ -33,6 +34,7 @@ interface PricingModalProps {
 
 export function PricingModal({ isOpen, onClose }: PricingModalProps) {
   const [loading, setLoading] = useState<string | null>(null);
+  const { refreshSession } = useAuth();
 
   if (!isOpen) return null;
 
@@ -41,6 +43,15 @@ export function PricingModal({ isOpen, onClose }: PricingModalProps) {
       setLoading(pack.name);
       if (process.env.NODE_ENV === 'development') {
         console.log('💳 Creating checkout session for:', pack.name);
+      }
+
+      // Refresh session before checkout to prevent expired token errors
+      try {
+        await refreshSession();
+      } catch (refreshError) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('⚠️ Session refresh failed, continuing with checkout:', refreshError);
+        }
       }
 
       const response = await fetch('/api/create-checkout', {
