@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 /**
- * This hook has been gutted to remove free generations.
- * Now it only provides auth state and always requires login to generate.
+ * This hook has been refactored to remove free generation functionality.
+ * It now provides authentication state and requires users to be logged in to generate.
  */
 export function useFreeGenerations() {
   const [isClient, setIsClient] = useState<boolean>(false);
@@ -24,9 +24,9 @@ export function useFreeGenerations() {
     return isLoggedIn;
   };
 
-  // No-op restore function
+  // Stub function maintained for backward compatibility
   const restoreFreeGeneration = (): void => {
-    // No-op: free generations removed
+    // No-op: free generations have been removed
   };
 
   return {

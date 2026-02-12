@@ -126,7 +126,6 @@ export default function Home() {
       const data = await response.json();
 
       if (!response.ok) {
-        // For logged-in users, credit is restored server-side
         throw new Error(data.error || data.details || "Failed to generate image");
       }
 
