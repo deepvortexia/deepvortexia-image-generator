@@ -5,7 +5,7 @@ interface NavigationTab {
   toolName: string;
   toolDescription: string;
   statusLabel: string;
-  isActive: boolean;
+  isAvailable: boolean;
   targetUrl?: string;
 }
 
@@ -15,7 +15,7 @@ const navigationTabs: NavigationTab[] = [
     toolName: 'Emoticons',
     toolDescription: 'Custom emoji creation',
     statusLabel: 'Available Now',
-    isActive: true,
+    isAvailable: true,
     targetUrl: 'https://emoticons.deepvortexai.art'
   },
   {
@@ -23,22 +23,22 @@ const navigationTabs: NavigationTab[] = [
     toolName: 'Image Gen',
     toolDescription: 'AI artwork',
     statusLabel: 'Available Now',
-    isActive: true,
-    targetUrl: '/' // Page actuelle
+    isAvailable: true,
+    targetUrl: '/' // Current page
   },
   {
     iconSymbol: '🎬',
     toolName: 'Video',
     toolDescription: 'Create stunning AI-generated videos from text prompts',
     statusLabel: 'Coming Soon',
-    isActive: false
+    isAvailable: false
   },
   {
     iconSymbol: '🎨',
     toolName: 'Remove Background',
     toolDescription: 'Remove backgrounds from images instantly with AI precision',
     statusLabel: 'Coming Soon',
-    isActive: false
+    isAvailable: false
   }
 ];
 
@@ -49,7 +49,7 @@ export default function NavigationTabs() {
         {navigationTabs.map((tab) => {
           const isCurrentPage = tab.targetUrl === '/';
           
-          if (tab.isActive && tab.targetUrl) {
+          if (tab.isAvailable && tab.targetUrl) {
             return (
               <Link 
                 key={tab.toolName}
