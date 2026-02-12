@@ -24,7 +24,7 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
   
-  const { canGenerate, useFreeGeneration, restoreFreeGeneration, freeGenerationsLeft, isLoggedIn } = useFreeGenerations();
+  const { isLoggedIn } = useFreeGenerations();
   const { hasCredits, refreshProfile } = useCredits();
   const { user, loading: authLoading } = useAuth();
 
@@ -100,21 +100,16 @@ export default function Home() {
       return;
     }
 
-    // Check if user can generate
-    if (isLoggedIn) {
-      // For logged-in users, check if they have credits
-      if (!hasCredits) {
-        setError("You have run out of credits. Please purchase more to continue.");
-        // Could show pricing modal here
-        return;
-      }
-    } else {
-      // For non-logged users, use free generation system
-      if (!useFreeGeneration()) {
-        setError("You've used your 2 free generations. Sign in to continue!");
-        setShowAuthModal(true);
-        return;
-      }
+    // Check if user is logged in and has credits
+    if (!isLoggedIn) {
+      setError("Please sign in to generate images.");
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!hasCredits) {
+      setError("You have run out of credits. Please purchase more to continue.");
+      return;
     }
 
     setIsLoading(true);
@@ -131,10 +126,6 @@ export default function Home() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Restore the free generation if the API call failed (for non-logged users)
-        if (!isLoggedIn) {
-          restoreFreeGeneration();
-        }
         // For logged-in users, credit is restored server-side
         throw new Error(data.error || data.details || "Failed to generate image");
       }
@@ -142,15 +133,9 @@ export default function Home() {
       if (data.success && data.imageUrl) {
         setImageUrl(data.imageUrl);
         
-        // Refresh profile to update credits display (for logged-in users)
-        if (isLoggedIn) {
-          await refreshProfile();
-        }
+        // Refresh profile to update credits display
+        await refreshProfile();
       } else {
-        // Restore the free generation if response invalid (for non-logged users)
-        if (!isLoggedIn) {
-          restoreFreeGeneration();
-        }
         throw new Error('Invalid response from server');
       }
     } catch (err) {

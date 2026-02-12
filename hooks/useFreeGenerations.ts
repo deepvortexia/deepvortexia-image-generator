@@ -1,97 +1,38 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-const FREE_GENERATIONS_KEY = 'deepvortexia_free_generations';
-const INITIAL_FREE_GENERATIONS = 2;
-
+/**
+ * This hook has been gutted to remove free generations.
+ * Now it only provides auth state and always requires login to generate.
+ */
 export function useFreeGenerations() {
-  const [freeGenerationsLeft, setFreeGenerationsLeft] = useState<number>(INITIAL_FREE_GENERATIONS);
   const [isClient, setIsClient] = useState<boolean>(false);
   const { user, loading } = useAuth();
   
   // Derive isLoggedIn from auth context
   const isLoggedIn = !loading && !!user;
 
-  // Debug logging for auth state
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🎮 useFreeGenerations: Auth state changed', { 
-        user: user?.email || 'null', 
-        loading, 
-        isLoggedIn,
-        freeGenerationsLeft 
-      })
-    }
-  }, [user, loading, isLoggedIn, freeGenerationsLeft])
-
   useEffect(() => {
     // Mark that we're on the client
     setIsClient(true);
-    
-    // Load from localStorage
-    const saved = localStorage.getItem(FREE_GENERATIONS_KEY);
-    if (saved !== null) {
-      const parsedValue = parseInt(saved, 10);
-      if (!isNaN(parsedValue)) {
-        setFreeGenerationsLeft(parsedValue);
-        if (process.env.NODE_ENV === 'development') {
-          console.log('💾 Loaded free generations from localStorage:', parsedValue)
-        }
-      }
-    }
   }, []);
 
+  // Always return false for non-logged-in users
   const useFreeGeneration = (): boolean => {
-    if (isLoggedIn) {
-      // For logged-in users, handle credit deduction separately
-      if (process.env.NODE_ENV === 'development') {
-        console.log('✅ Logged in user - allowing generation')
-      }
-      return true;
-    }
-
-    if (freeGenerationsLeft <= 0) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('❌ No free generations left')
-      }
-      return false; // No free generations left
-    }
-
-    const newCount = freeGenerationsLeft - 1;
-    setFreeGenerationsLeft(newCount);
-    if (isClient) {
-      localStorage.setItem(FREE_GENERATIONS_KEY, newCount.toString());
-      if (process.env.NODE_ENV === 'development') {
-        console.log('💳 Used free generation, remaining:', newCount)
-      }
-    }
-    return true;
+    return isLoggedIn;
   };
 
+  // No-op restore function
   const restoreFreeGeneration = (): void => {
-    if (!isLoggedIn && freeGenerationsLeft < INITIAL_FREE_GENERATIONS) {
-      const newCount = freeGenerationsLeft + 1;
-      setFreeGenerationsLeft(newCount);
-      if (isClient) {
-        localStorage.setItem(FREE_GENERATIONS_KEY, newCount.toString());
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🔄 Restored free generation, now at:', newCount)
-        }
-      }
-    }
+    // No-op: free generations removed
   };
-
-  // Compute canGenerate dynamically
-  const canGenerate = useMemo(() => {
-    return isLoggedIn || freeGenerationsLeft > 0;
-  }, [isLoggedIn, freeGenerationsLeft]);
 
   return {
-    freeGenerationsLeft,
+    freeGenerationsLeft: 0, // Always 0 - no free generations
     isLoggedIn,
-    canGenerate,
+    canGenerate: isLoggedIn, // Can only generate if logged in
     useFreeGeneration,
     restoreFreeGeneration,
     isClient,
