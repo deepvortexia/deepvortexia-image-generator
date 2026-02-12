@@ -58,7 +58,7 @@ export default function NavigationTabs() {
                 aria-current={isCurrentPage ? 'page' : undefined}
               >
                 <div className="nav-tool-content">
-                  {tab.statusLabel === 'Available Now' && (
+                  {tab.isAvailable && (
                     <span className="nav-status-badge nav-status-available" aria-label={tab.statusLabel}>
                       {tab.statusLabel}
                     </span>
@@ -141,8 +141,9 @@ export default function NavigationTabs() {
 
         .nav-tool-card-current {
           border-color: #D4AF37;
-          background: rgba(212, 175, 55, 0.08);
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(212, 175, 55, 0.2);
+          border-width: 3px;
+          background: rgba(212, 175, 55, 0.12);
+          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(212, 175, 55, 0.3);
           cursor: default;
         }
 
@@ -233,8 +234,13 @@ export default function NavigationTabs() {
         }
 
         .nav-tool-card-current .nav-tool-name {
-          color: #D4AF37;
-          text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+          color: #F4D03F;
+          font-weight: 800;
+          text-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+          text-decoration: underline;
+          text-decoration-color: rgba(212, 175, 55, 0.4);
+          text-decoration-thickness: 2px;
+          text-underline-offset: 4px;
         }
 
         .nav-tool-description {
@@ -246,7 +252,8 @@ export default function NavigationTabs() {
         }
 
         .nav-tool-card-current .nav-tool-description {
-          color: rgba(255, 255, 255, 0.75);
+          color: rgba(255, 255, 255, 0.85);
+          font-weight: 500;
         }
 
         /* Tablet: 2 columns */
