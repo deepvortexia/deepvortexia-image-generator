@@ -30,12 +30,6 @@ export default function EcosystemCards() {
           <span className="tool-name">AI Chat</span>
           <span className="tool-status" aria-label="Coming in the future">Coming Soon</span>
         </div>
-        
-        <div className="tool-card tool-card-soon" role="listitem">
-          <span className="tool-icon" aria-hidden="true">✨</span>
-          <span className="tool-name">More Tools</span>
-          <span className="tool-status" aria-label="Currently in development">In Development</span>
-        </div>
       </div>
       
       <style jsx>{`
@@ -57,9 +51,9 @@ export default function EcosystemCards() {
 
         .tools-preview-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          grid-template-columns: repeat(4, 1fr);
           gap: 1rem;
-          max-width: 800px;
+          max-width: 900px;
           margin: 0 auto;
         }
 
