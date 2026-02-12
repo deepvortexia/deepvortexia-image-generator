@@ -10,6 +10,7 @@ export default function NavigationTabs() {
           href="https://emoticons.deepvortexai.art"
           className="tab-item"
           aria-label="Emoticon generator"
+          rel="noopener noreferrer"
         >
           <span className="tab-icon" aria-hidden="true">😊</span>
           <span className="tab-label">Emoticon</span>

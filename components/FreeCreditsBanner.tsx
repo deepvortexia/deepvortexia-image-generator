@@ -97,6 +97,16 @@ export default function FreeCreditsBanner() {
             line-height: 1.3;
           }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+          .banner-content {
+            animation: none;
+          }
+
+          .banner-icon {
+            animation: none;
+          }
+        }
       `}</style>
     </div>
   );
