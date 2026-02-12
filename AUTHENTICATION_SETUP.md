@@ -26,7 +26,7 @@ CREATE TABLE profiles (
   email TEXT,
   full_name TEXT,
   avatar_url TEXT,
-  credits INTEGER DEFAULT 3,
+  credits INTEGER DEFAULT 2,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -126,7 +126,7 @@ npm start
 1. Click "Sign In" button in the header
 2. Choose Google or Email authentication
 3. Complete the auth flow
-4. You should see your credits (default: 3)
+4. You should see your credits (default: 2)
 5. Header should show your email/username
 
 ### Test Credit Deduction:
@@ -157,7 +157,7 @@ Redirected to /auth/callback
   ↓
 Session established
   ↓
-Profile fetched/created with 3 credits
+Profile fetched/created with 2 credits
   ↓
 User sees their credits in CreditsDisplay
 ```
@@ -203,7 +203,7 @@ Frontend refreshes profile
 - `email` (TEXT): User's email
 - `full_name` (TEXT): User's name
 - `avatar_url` (TEXT): Profile picture URL
-- `credits` (INTEGER): Available credits (default: 3)
+- `credits` (INTEGER): Available credits (default: 2)
 - `created_at` (TIMESTAMPTZ): Account creation
 - `updated_at` (TIMESTAMPTZ): Last profile update
 
@@ -227,7 +227,7 @@ Frontend refreshes profile
 
 ## 🎁 Default Credits
 
-New users receive **3 free credits** upon signup (configurable in AuthContext.tsx line 71).
+New users receive **2 free credits** upon signup (configured via the `DEFAULT_SIGNUP_CREDITS` constant in AuthContext.tsx).
 
 ## 🐛 Troubleshooting
 
