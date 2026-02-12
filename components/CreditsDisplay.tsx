@@ -4,14 +4,12 @@ import { useState, useEffect } from 'react';
 import { useFreeGenerations } from '@/hooks/useFreeGenerations';
 import { useCredits } from '@/hooks/useCredits';
 import { useAuth } from '@/context/AuthContext';
-import { AuthModal } from '@/components/AuthModal';
 import { PricingModal } from '@/components/PricingModal';
 
 export default function CreditsDisplay() {
   const { isLoggedIn, isClient } = useFreeGenerations();
   const { credits, refreshProfile, loading } = useCredits();
   const { loading: authLoading } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
@@ -113,47 +111,34 @@ export default function CreditsDisplay() {
     );
   }
 
+  // Don't show anything if not logged in - user can use header Sign In button
+  if (!isLoggedIn) {
+    return null;
+  }
+
   return (
     <>
       <div className="credits-display-section">
         <div className="credits-display-content">
           <div className="credits-info">
-            {isLoggedIn ? (
-              <>
-                <span className="credits-icon">💰</span>
-                <span className="credits-amount">{credits} credits</span>
-              </>
-            ) : (
-              <>
-                <span className="credits-icon">🔐</span>
-                <span className="credits-amount">
-                  Sign in to start generating
-                </span>
-              </>
-            )}
+            <span className="credits-icon">💰</span>
+            <span className="credits-amount">{credits} credits</span>
           </div>
           
           <div className="credits-actions">
             <button 
               className="buy-credits-btn"
               onClick={() => {
-                if (isLoggedIn) {
-                  if (process.env.NODE_ENV === 'development') {
-                    console.log('💳 Opening pricing modal...');
-                  }
-                  setShowPricingModal(true);
-                } else {
-                  if (process.env.NODE_ENV === 'development') {
-                    console.log('🔐 Opening auth modal...')
-                  }
-                  setShowAuthModal(true);
+                if (process.env.NODE_ENV === 'development') {
+                  console.log('💳 Opening pricing modal...');
                 }
+                setShowPricingModal(true);
               }}
-              aria-label={isLoggedIn ? "Buy more credits" : "Sign in"}
-              title={isLoggedIn ? "Purchase credit packs" : "Sign in to get unlimited generations"}
+              aria-label="Buy more credits"
+              title="Purchase credit packs"
             >
-              <span aria-hidden="true">{isLoggedIn ? '💳' : '🔐'}</span>
-              <span>{isLoggedIn ? 'Buy Credits' : 'Sign In'}</span>
+              <span aria-hidden="true">💳</span>
+              <span>Buy Credits</span>
             </button>
           </div>
         </div>
@@ -283,7 +268,6 @@ export default function CreditsDisplay() {
         `}</style>
       </div>
 
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
       <PricingModal isOpen={showPricingModal} onClose={() => setShowPricingModal(false)} />
     </>
   );
