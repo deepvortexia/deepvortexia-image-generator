@@ -23,7 +23,7 @@ export async function createClient() {
     {
       auth: {
         flowType: 'pkce',
-        storageKey: 'sb-txznlbzrvbxjxujrmhee-auth-token',
+        storageKey: 'deepvortex-shared-auth',
       },
       cookies: {
         get(name: string) {
