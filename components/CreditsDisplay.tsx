@@ -125,37 +125,32 @@ export default function CreditsDisplay() {
               </>
             ) : (
               <>
-                <span className="credits-icon">🔐</span>
+                <span className="credits-icon">✨</span>
                 <span className="credits-amount">
-                  Sign in to start generating
+                  Ready to create amazing images
                 </span>
               </>
             )}
           </div>
           
-          <div className="credits-actions">
-            <button 
-              className="buy-credits-btn"
-              onClick={() => {
-                if (isLoggedIn) {
+          {isLoggedIn && (
+            <div className="credits-actions">
+              <button 
+                className="buy-credits-btn"
+                onClick={() => {
                   if (process.env.NODE_ENV === 'development') {
                     console.log('💳 Opening pricing modal...');
                   }
                   setShowPricingModal(true);
-                } else {
-                  if (process.env.NODE_ENV === 'development') {
-                    console.log('🔐 Opening auth modal...')
-                  }
-                  setShowAuthModal(true);
-                }
-              }}
-              aria-label={isLoggedIn ? "Buy more credits" : "Sign in"}
-              title={isLoggedIn ? "Purchase credit packs" : "Sign in to get unlimited generations"}
-            >
-              <span aria-hidden="true">{isLoggedIn ? '💳' : '🔐'}</span>
-              <span>{isLoggedIn ? 'Buy Credits' : 'Sign In'}</span>
-            </button>
-          </div>
+                }}
+                aria-label="Buy more credits"
+                title="Purchase credit packs"
+              >
+                <span aria-hidden="true">💳</span>
+                <span>Buy Credits</span>
+              </button>
+            </div>
+          )}
         </div>
         
         <style jsx>{`

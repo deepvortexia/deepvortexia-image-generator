@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
+import NavigationTabs from "@/components/NavigationTabs";
+import FreeCreditsBanner from "@/components/FreeCreditsBanner";
 import EcosystemCards from "@/components/EcosystemCards";
 import CreditsDisplay from "@/components/CreditsDisplay";
 import CompactSuggestions from "@/components/CompactSuggestions";
@@ -176,7 +178,9 @@ export default function Home() {
 
       <Header />
       
-      <EcosystemCards />
+      <NavigationTabs />
+      
+      <FreeCreditsBanner />
       
       <CreditsDisplay />
       
