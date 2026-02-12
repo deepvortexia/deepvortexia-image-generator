@@ -2,7 +2,7 @@
 
 export default function FreeCreditsBanner() {
   return (
-    <div className="free-credits-banner" role="banner" aria-label="Free credits promotion">
+    <div className="free-credits-banner" role="region" aria-label="Free credits promotion">
       <div className="banner-content">
         <span className="banner-icon" aria-hidden="true">🎁</span>
         <span className="banner-text">Get 2 free credits upon sign up!</span>

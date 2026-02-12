@@ -11,6 +11,7 @@ export default function NavigationTabs() {
           className="tab-item"
           aria-label="Emoticon generator"
           rel="noopener noreferrer"
+          target="_blank"
         >
           <span className="tab-icon" aria-hidden="true">😊</span>
           <span className="tab-label">Emoticon</span>
