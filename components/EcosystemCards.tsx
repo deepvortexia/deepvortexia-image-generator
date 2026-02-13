@@ -23,7 +23,7 @@ export default function EcosystemCards() {
     {
       name: "Remove Background",
       icon: "🎨",
-      desc: "Remove backgrounds from images instantly",
+      desc: "Remove backgrounds instantly",
       status: "Coming Soon",
       isActive: false
     },
@@ -41,7 +41,8 @@ export default function EcosystemCards() {
       <h2 className="section-heading">Complete AI Ecosystem</h2>
       <div className="preview-tools-grid">
         {tools.map((tool, idx) => {
-          const cardClass = `preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'current-tool-border' : ''}`;
+          // Construction de la classe CSS unique
+          const cardClasses = `preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'current-tool-glow' : ''}`;
           
           const CardContent = (
             <>
@@ -57,12 +58,13 @@ export default function EcosystemCards() {
             </>
           );
 
+          // Application du style sur le bon élément (Link ou div)
           return tool.isActive ? (
-            <Link key={idx} href={tool.href || "#"} className={cardClass} style={{ textDecoration: 'none' }}>
+            <Link key={idx} href={tool.href || "#"} className={cardClasses} style={{ textDecoration: 'none' }}>
               {CardContent}
             </Link>
           ) : (
-            <div key={idx} className={cardClass}>
+            <div key={idx} className={cardClasses}>
               {CardContent}
             </div>
           );
@@ -73,17 +75,27 @@ export default function EcosystemCards() {
         .preview-tools-section { padding: 4rem 1rem; max-width: 1200px; margin: 0 auto; }
         .section-heading { font-family: 'Orbitron', sans-serif; font-size: 2rem; text-align: center; margin-bottom: 3rem; color: #D4AF37; }
         .preview-tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        
+        /* Style de base pour TOUTES les cartes */
         .preview-card {
-          background: rgba(26, 26, 26, 0.6); border: 1px solid rgba(212, 175, 55, 0.2);
+          background: rgba(26, 26, 26, 0.8) !important; /* Force le fond sombre */
+          border: 1px solid rgba(212, 175, 55, 0.3);
           border-radius: 16px; padding: 2rem 1.5rem; text-align: center; transition: all 0.3s ease;
           backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; min-height: 280px; justify-content: space-between;
         }
-        .current-tool-border { border: 2px solid #D4AF37 !important; background: rgba(212, 175, 55, 0.05); }
-        .preview-card.card-active:hover { border-color: #D4AF37; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2); }
+        
+        /* Le nouveau GLOW plus intense */
+        .current-tool-glow { 
+          border: 2px solid #D4AF37 !important; 
+          box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.1) !important;
+          background: rgba(212, 175, 55, 0.05) !important;
+        }
+        
+        .preview-card.card-active:hover { border-color: #D4AF37; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3); }
         .preview-icon { font-size: 3rem; margin-bottom: 1rem; }
         .preview-title { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: #fff; margin: 0; }
-        .preview-desc { font-size: 0.85rem; color: #888; line-height: 1.4; margin: 0.5rem 0; }
-        .status-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; align-items: center; }
+        .preview-desc { font-size: 0.85rem; color: #ccc; line-height: 1.4; margin: 0.5rem 0; }
+        .status-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; align-items: center; margin-top: auto; }
         .status-badge { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; border: 1px solid; }
         .badge-active { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border-color: #2ecc71; }
         .badge-upcoming { background: rgba(241, 196, 15, 0.1); color: #f1c40f; border-color: rgba(241, 196, 15, 0.3); }
