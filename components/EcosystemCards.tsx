@@ -1,12 +1,11 @@
 import Link from "next/link";
 
 export default function EcosystemCards() {
-  // Configuration unique pour toutes les cartes (Ordre Image 1 + Icônes Hub)
   const tools = [
-    { name: "Emoticons", icon: "😃", status: "available", href: "https://emoticons.deepvortexai.art", btn: "CURRENT TOOL", isCurrent: true },
-    { name: "Video", icon: "🎥", status: "soon", btn: "COMING SOON" },
-    { name: "Image Gen", icon: "🖼️", status: "available", href: "https://images.deepvortexai.art/", btn: "OPEN IMAGE GEN" },
-    { name: "AI Chat", icon: "💬", status: "soon", btn: "COMING SOON" }
+    { name: "Emoticons", icon: "😃", status: "available", href: "https://emoticons.deepvortexai.art", btn: "OPEN EMOTICONS", isCurrent: false },
+    { name: "Video", icon: "🎥", status: "soon", btn: "COMING SOON", isCurrent: false },
+    { name: "Image Gen", icon: "🖼️", status: "available", href: "https://images.deepvortexai.art/", btn: "CURRENT TOOL", isCurrent: true },
+    { name: "AI Chat", icon: "💬", status: "soon", btn: "COMING SOON", isCurrent: false }
   ];
 
   return (
@@ -16,17 +15,15 @@ export default function EcosystemCards() {
         {tools.map((tool, i) => {
           const isLink = tool.status === "available";
           const Tag = isLink ? Link : "div";
-          
           return (
-            <Tag key={i} href={isLink ? tool.href : undefined} 
-                 className={`tool-card ${tool.status} ${tool.isCurrent ? 'current' : ''} ${!isLink ? 'no-link' : ''}`}>
-              
-              <div className="card-badge">{isLink ? "✅ Available" : ""}</div>
-              <div className="tool-icon">{tool.icon}</div>
-              <div className="tool-name">{tool.name}</div>
-              
-              <div className={`tool-btn ${tool.isCurrent ? 'gold' : isLink ? 'green' : 'gray'}`}>
-                {tool.btn}
+            <Tag key={i} href={isLink ? tool.href : undefined} className={`tool-card ${tool.status} ${tool.isCurrent ? 'active-tool' : ''}`}>
+              <div className="status-indicator">{isLink ? "● Available" : "○ Soon"}</div>
+              <div className="tool-icon-wrapper">{tool.icon}</div>
+              <div className="tool-info">
+                <span className="tool-name-text">{tool.name}</span>
+                <div className={`action-label ${tool.isCurrent ? 'gold-label' : isLink ? 'green-label' : 'gray-label'}`}>
+                  {tool.btn}
+                </div>
               </div>
             </Tag>
           );
@@ -34,31 +31,52 @@ export default function EcosystemCards() {
       </div>
 
       <style jsx>{`
-        .tools-preview-section { padding: 2rem 1rem; max-width: 1000px; margin: 0 auto; }
-        .tools-preview-title { font-family: 'Orbitron', sans-serif; color: #D4AF37; text-align: center; margin-bottom: 2rem; font-size: 1.3rem; letter-spacing: 1px; }
+        .tools-preview-section { padding: 40px 20px; max-width: 1100px; margin: 0 auto; }
+        .tools-preview-title { font-family: 'Orbitron', sans-serif; color: #D4AF37; text-align: center; margin-bottom: 30px; font-size: 1.5rem; text-transform: uppercase; }
         
-        /* Grille de 4 colonnes parfaite */
-        .tools-preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-        
-        .tool-card { 
-            background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(212, 175, 55, 0.2); 
-            border-radius: 16px; padding: 1.5rem 0.5rem; display: flex; flex-direction: column; 
-            align-items: center; text-decoration: none; transition: 0.3s ease; position: relative;
+        .tools-preview-grid { 
+          display: grid; 
+          grid-template-columns: repeat(4, 1fr); 
+          gap: 20px; 
         }
+
+        .tool-card {
+          background: #111;
+          border: 1px solid #222;
+          border-radius: 12px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+          text-decoration: none;
+          min-height: 180px;
+          transition: 0.3s;
+        }
+
+        .tool-card.active-tool { border: 2px solid #D4AF37; background: rgba(212, 175, 55, 0.05); }
+        .tool-card.available:hover { border-color: #D4AF37; transform: translateY(-5px); }
+
+        .status-indicator { font-size: 0.65rem; color: #10b981; margin-bottom: 10px; font-weight: bold; }
+        .tool-icon-wrapper { font-size: 2.5rem; margin-bottom: 10px; }
         
-        .tool-card.current { border: 2px solid #D4AF37; background: rgba(212, 175, 55, 0.05); }
-        .tool-card.available:hover { transform: translateY(-5px); border-color: #D4AF37; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        
-        .card-badge { height: 20px; font-size: 0.65rem; color: #10b981; font-weight: 800; margin-bottom: 5px; }
-        .tool-icon { font-size: 2.2rem; margin-bottom: 10px; }
-        .tool-name { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1rem; margin-bottom: 15px; }
-        
-        .tool-btn { font-size: 0.7rem; font-weight: 800; padding: 6px 12px; border-radius: 6px; width: 85%; text-align: center; border: 1px solid; }
-        .gold { color: #D4AF37; border-color: #D4AF37; background: rgba(212, 175, 55, 0.1); }
-        .green { color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
-        .gray { color: #555; border-color: #333; background: transparent; }
-        
-        @media (max-width: 850px) { .tools-preview-grid { grid-template-columns: repeat(2, 1fr); } }
+        .tool-info { text-align: center; width: 100%; }
+        .tool-name-text { font-family: 'Orbitron', sans-serif; color: #fff; display: block; margin-bottom: 15px; font-size: 1rem; }
+
+        .action-label {
+          font-size: 0.7rem;
+          font-weight: 800;
+          padding: 8px;
+          border-radius: 5px;
+          border: 1px solid;
+          text-align: center;
+        }
+
+        .gold-label { color: #D4AF37; border-color: #D4AF37; background: rgba(212, 175, 55, 0.1); }
+        .green-label { color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+        .gray-label { color: #444; border-color: #333; }
+
+        @media (max-width: 900px) { .tools-preview-grid { grid-template-columns: repeat(2, 1fr); } }
       `}</style>
     </section>
   );
