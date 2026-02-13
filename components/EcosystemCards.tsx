@@ -23,7 +23,7 @@ export default function EcosystemCards() {
     {
       name: "Remove Background",
       icon: "🎨",
-      desc: "Remove backgrounds instantly",
+      desc: "Remove backgrounds from images instantly",
       status: "Coming Soon",
       isActive: false
     },
@@ -41,25 +41,30 @@ export default function EcosystemCards() {
       <h2 className="section-heading">Complete AI Ecosystem</h2>
       <div className="preview-tools-grid">
         {tools.map((tool, idx) => {
-          const Tag = tool.isActive ? Link : "div";
-          return (
-            <Tag 
-              key={idx}
-              href={tool.isActive ? tool.href : undefined}
-              className={`preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'current-tool-border' : ''}`}
-              style={{ textDecoration: 'none', cursor: tool.isActive ? 'pointer' : 'default' }}
-            >
+          const cardClass = `preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'current-tool-border' : ''}`;
+          
+          const CardContent = (
+            <>
               <div className="preview-icon">{tool.icon}</div>
               <h3 className="preview-title">{tool.name}</h3>
               <p className="preview-desc">{tool.desc}</p>
-              
               <div className="status-container">
                 <span className={`status-badge ${tool.isActive ? 'badge-active' : 'badge-upcoming'}`}>
                   {tool.status}
                 </span>
                 {tool.isCurrent && <div className="current-tool-label">CURRENT TOOL</div>}
               </div>
-            </Tag>
+            </>
+          );
+
+          return tool.isActive ? (
+            <Link key={idx} href={tool.href || "#"} className={cardClass} style={{ textDecoration: 'none' }}>
+              {CardContent}
+            </Link>
+          ) : (
+            <div key={idx} className={cardClass}>
+              {CardContent}
+            </div>
           );
         })}
       </div>
@@ -76,8 +81,8 @@ export default function EcosystemCards() {
         .current-tool-border { border: 2px solid #D4AF37 !important; background: rgba(212, 175, 55, 0.05); }
         .preview-card.card-active:hover { border-color: #D4AF37; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2); }
         .preview-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .preview-title { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: #fff; }
-        .preview-desc { font-size: 0.85rem; color: #888; line-height: 1.4; }
+        .preview-title { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: #fff; margin: 0; }
+        .preview-desc { font-size: 0.85rem; color: #888; line-height: 1.4; margin: 0.5rem 0; }
         .status-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; align-items: center; }
         .status-badge { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; border: 1px solid; }
         .badge-active { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border-color: #2ecc71; }
