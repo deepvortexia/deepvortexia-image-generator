@@ -12,12 +12,6 @@ export default function EcosystemCards() {
           <span className="tool-button tool-button-current" aria-label="Currently using this tool">Current Tool</span>
         </Link>
         
-        <div className="tool-card tool-card-soon" role="listitem">
-          <span className="tool-icon" aria-hidden="true">🎬</span>
-          <span className="tool-name">Video</span>
-          <span className="tool-status" aria-label="Coming in the future">Coming Soon</span>
-        </div>
-        
         <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-available no-underline" role="listitem">
           <span className="available-badge" aria-label="This tool is available">✅ Available</span>
           <span className="tool-icon" aria-hidden="true">😊</span>
@@ -26,9 +20,15 @@ export default function EcosystemCards() {
         </Link>
         
         <div className="tool-card tool-card-soon" role="listitem">
-          <span className="tool-icon" aria-hidden="true">💬</span>
-          <span className="tool-name">AI Chat</span>
+          <span className="tool-icon" aria-hidden="true">🎨</span>
+          <span className="tool-name">Remove Background</span>
           <span className="tool-status" aria-label="Coming in the future">Coming Soon</span>
+        </div>
+        
+        <div className="tool-card tool-card-soon" role="listitem">
+          <span className="tool-icon" aria-hidden="true">✨</span>
+          <span className="tool-name">More Tools</span>
+          <span className="tool-status" aria-label="Currently in development">In Development</span>
         </div>
       </div>
       
