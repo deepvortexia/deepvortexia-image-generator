@@ -1,209 +1,64 @@
 import Link from "next/link";
 
 export default function EcosystemCards() {
+  // Configuration unique pour toutes les cartes (Ordre Image 1 + Icônes Hub)
+  const tools = [
+    { name: "Emoticons", icon: "😃", status: "available", href: "https://emoticons.deepvortexai.art", btn: "CURRENT TOOL", isCurrent: true },
+    { name: "Video", icon: "🎥", status: "soon", btn: "COMING SOON" },
+    { name: "Image Gen", icon: "🖼️", status: "available", href: "https://images.deepvortexai.art/", btn: "OPEN IMAGE GEN" },
+    { name: "AI Chat", icon: "💬", status: "soon", btn: "COMING SOON" }
+  ];
+
   return (
-    <section className="tools-preview-section" role="region" aria-label="Available and upcoming AI tools">
+    <section className="tools-preview-section">
       <h3 className="tools-preview-title">Complete AI Ecosystem</h3>
-      <div className="tools-preview-grid" role="list">
-        <Link href="https://images.deepvortexai.art/" className="tool-card tool-card-available no-underline" role="listitem">
-          <span className="available-badge" aria-label="This tool is available">✅ Available</span>
-          <span className="tool-icon" aria-hidden="true">🖼️</span>
-          <span className="tool-name">Image Gen</span>
-          <span className="tool-button tool-button-current" aria-label="Currently using this tool">Current Tool</span>
-        </Link>
-        
-        <Link href="https://emoticons.deepvortexai.art" className="tool-card tool-card-available no-underline" role="listitem">
-          <span className="available-badge" aria-label="This tool is available">✅ Available</span>
-          <span className="tool-icon" aria-hidden="true">😊</span>
-          <span className="tool-name">Emoticons</span>
-          <span className="tool-button tool-button-link" aria-label="Open emoticons tool">Open Emoticons</span>
-        </Link>
-        
-        <div className="tool-card tool-card-soon" role="listitem">
-          <span className="tool-icon" aria-hidden="true">🎨</span>
-          <span className="tool-name">Remove Background</span>
-          <span className="tool-status" aria-label="Coming in the future">Coming Soon</span>
-        </div>
-        
-        <div className="tool-card tool-card-soon" role="listitem">
-          <span className="tool-icon" aria-hidden="true">✨</span>
-          <span className="tool-name">More Tools</span>
-          <span className="tool-status" aria-label="Currently in development">In Development</span>
-        </div>
+      <div className="tools-preview-grid">
+        {tools.map((tool, i) => {
+          const isLink = tool.status === "available";
+          const Tag = isLink ? Link : "div";
+          
+          return (
+            <Tag key={i} href={isLink ? tool.href : undefined} 
+                 className={`tool-card ${tool.status} ${tool.isCurrent ? 'current' : ''} ${!isLink ? 'no-link' : ''}`}>
+              
+              <div className="card-badge">{isLink ? "✅ Available" : ""}</div>
+              <div className="tool-icon">{tool.icon}</div>
+              <div className="tool-name">{tool.name}</div>
+              
+              <div className={`tool-btn ${tool.isCurrent ? 'gold' : isLink ? 'green' : 'gray'}`}>
+                {tool.btn}
+              </div>
+            </Tag>
+          );
+        })}
       </div>
-      
+
       <style jsx>{`
-        .tools-preview-section {
-          padding: 1.5rem 1rem 1rem;
-          max-width: 900px;
-          margin: 0 auto;
-        }
-
-        .tools-preview-title {
-          font-family: 'Orbitron', sans-serif;
-          font-size: 1.3rem;
-          font-weight: 600;
-          color: #D4AF37;
-          text-align: center;
-          margin-bottom: 1rem;
-          letter-spacing: 0.05em;
-        }
-
-        .tools-preview-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1rem;
-          max-width: 900px;
-          margin: 0 auto;
-        }
-
-        .tool-card {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.4rem;
-          padding: 1.2rem 0.8rem;
-          background: rgba(26, 26, 26, 0.6);
-          border: 2px solid rgba(212, 175, 55, 0.2);
-          border-radius: 16px;
-          transition: all 0.3s ease;
-          backdrop-filter: blur(10px);
-          cursor: default;
-          position: relative;
-        }
-
-        .tool-card-available {
-          border-color: #D4AF37;
-          background: rgba(212, 175, 55, 0.05);
-          cursor: pointer;
-        }
-
-        .tool-card-soon {
-          opacity: 0.7;
-        }
-
-        .tool-card:hover {
-          transform: translateY(-4px);
-          border-color: #E8C87C;
-          box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
-        }
-
-        .tool-card-available:hover {
-          border-color: #E8C87C;
-          box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        .tools-preview-section { padding: 2rem 1rem; max-width: 1000px; margin: 0 auto; }
+        .tools-preview-title { font-family: 'Orbitron', sans-serif; color: #D4AF37; text-align: center; margin-bottom: 2rem; font-size: 1.3rem; letter-spacing: 1px; }
+        
+        /* Grille de 4 colonnes parfaite */
+        .tools-preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        
+        .tool-card { 
+            background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(212, 175, 55, 0.2); 
+            border-radius: 16px; padding: 1.5rem 0.5rem; display: flex; flex-direction: column; 
+            align-items: center; text-decoration: none; transition: 0.3s ease; position: relative;
         }
         
-        .available-badge {
-          position: absolute;
-          top: 0.5rem;
-          right: 0.5rem;
-          font-family: 'Inter', sans-serif;
-          font-size: 0.7rem;
-          font-weight: 600;
-          padding: 0.3rem 0.6rem;
-          border-radius: 6px;
-          background: rgba(16, 185, 129, 0.2);
-          color: #10b981;
-          border: 1px solid #10b981;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .tool-icon {
-          font-size: 1.8rem;
-        }
-
-        .tool-name {
-          font-family: 'Orbitron', sans-serif;
-          font-size: 1rem;
-          font-weight: 600;
-          color: #E8C87C;
-        }
-
-        .tool-status {
-          font-family: 'Inter', sans-serif;
-          font-size: 0.8rem;
-          color: rgba(212, 175, 55, 0.6);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .tool-button {
-          font-family: 'Inter', sans-serif;
-          font-size: 0.8rem;
-          padding: 0.4rem 0.8rem;
-          border-radius: 6px;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          font-weight: 600;
-          transition: all 0.2s ease;
-        }
-
-        .tool-button-current {
-          color: #D4AF37;
-          background: rgba(212, 175, 55, 0.1);
-          border: 1px solid rgba(212, 175, 55, 0.3);
-        }
+        .tool-card.current { border: 2px solid #D4AF37; background: rgba(212, 175, 55, 0.05); }
+        .tool-card.available:hover { transform: translateY(-5px); border-color: #D4AF37; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         
-        .tool-button-link {
-          color: #10b981;
-          background: rgba(16, 185, 129, 0.1);
-          border: 1px solid rgba(16, 185, 129, 0.3);
-        }
+        .card-badge { height: 20px; font-size: 0.65rem; color: #10b981; font-weight: 800; margin-bottom: 5px; }
+        .tool-icon { font-size: 2.2rem; margin-bottom: 10px; }
+        .tool-name { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1rem; margin-bottom: 15px; }
         
-        .tool-card-available:hover .tool-button-link {
-          background: rgba(16, 185, 129, 0.2);
-          border-color: rgba(16, 185, 129, 0.5);
-        }
+        .tool-btn { font-size: 0.7rem; font-weight: 800; padding: 6px 12px; border-radius: 6px; width: 85%; text-align: center; border: 1px solid; }
+        .gold { color: #D4AF37; border-color: #D4AF37; background: rgba(212, 175, 55, 0.1); }
+        .green { color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+        .gray { color: #555; border-color: #333; background: transparent; }
         
-        .no-underline {
-          text-decoration: none;
-        }
-
-        @media (max-width: 480px) {
-          .tools-preview-section {
-            padding: 1rem 1rem 0.8rem;
-          }
-          
-          .tools-preview-title {
-            font-size: 1.2rem;
-            margin-bottom: 0.8rem;
-          }
-          
-          .tools-preview-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-          }
-          
-          .tool-card {
-            padding: 1rem 0.6rem;
-            gap: 0.3rem;
-          }
-          
-          .tool-icon {
-            font-size: 1.4rem;
-          }
-          
-          .tool-name {
-            font-size: 0.9rem;
-          }
-          
-          .tool-status, .tool-button {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.6rem;
-          }
-          
-          .available-badge {
-            font-size: 0.6rem;
-            padding: 0.25rem 0.5rem;
-          }
-        }
-
-        @media (min-width: 768px) and (max-width: 1024px) {
-          .tools-preview-section {
-            padding: 1.2rem 1rem 0.9rem;
-          }
-        }
+        @media (max-width: 850px) { .tools-preview-grid { grid-template-columns: repeat(2, 1fr); } }
       `}</style>
     </section>
   );
