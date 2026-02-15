@@ -2,87 +2,38 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let supabaseResponse = NextResponse.next({
+    request,
   })
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    return response
+    return supabaseResponse
   }
 
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      auth: {
-        flowType: 'pkce',
-        storageKey: 'deepvortex-shared-auth',
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
       },
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-        },
+      setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+        supabaseResponse = NextResponse.next({
+          request,
+        })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        )
       },
-    }
-  )
+    },
+  })
 
-  // Refresh session if expired - handle errors gracefully
-  try {
-    const { error } = await supabase.auth.getSession()
-    
-    // Check for both possible refresh token error codes
-    if (error?.code === 'refresh_token_not_found' || error?.code === 'invalid_refresh_token') {
-      // Expected error when token expired - not critical
-      console.log('⚠️ Refresh token not found in middleware - user needs to re-authenticate')
-    } else if (error) {
-      // Unexpected error
-      console.error('❌ Unexpected auth error in middleware:', error)
-    }
-  } catch (err) {
-    // Catch any unexpected errors
-    console.error('❌ Failed to refresh session in middleware:', err)
-  }
+  // Refresh session if expired
+  await supabase.auth.getUser()
 
-  return response
+  return supabaseResponse
 }
 
 export const config = {

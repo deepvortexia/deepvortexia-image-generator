@@ -244,7 +244,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     )
 
     // Then check for existing session
-    supabase.auth.getSession().then(async ({ data: { session: initialSession }, error }: any) => {
+    supabase.auth.getUser().then(async (response: { data: { user: User | null }, error: AuthError | null }) => {
+      const { data: { user: initialUser }, error } = response
       if (error) {
         // Handle refresh token not found - clear invalid session immediately
         // Check for both possible refresh token error codes or message containing 'refresh_token'
@@ -264,23 +265,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         // Other errors
         if (process.env.NODE_ENV === 'development') {
-          console.error('❌ Error getting session:', error)
+          console.error('❌ Error getting user:', error)
         }
         setLoading(false)
         return
       }
 
       if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 Initial session check:', { hasSession: !!initialSession })
+        console.log('🔍 Initial user check:', { hasUser: !!initialUser })
       }
 
-      if (initialSession?.user) {
+      if (initialUser) {
         if (process.env.NODE_ENV === 'development') {
-          console.log('✅ Found existing session for:', initialSession.user.email)
+          console.log('✅ Found existing user:', initialUser.email)
         }
-        // Only set user/session here - onAuthStateChange will handle ensureProfile
-        setSession(initialSession)
-        setUser(initialSession.user)
+        // Set user - onAuthStateChange will handle session and ensureProfile
+        setUser(initialUser)
+        // Also get the session for completeness
+        const { data: { session: currentSession } } = await supabase.auth.getSession()
+        if (currentSession) {
+          setSession(currentSession)
+        }
       }
       setLoading(false)
       if (process.env.NODE_ENV === 'development') {
