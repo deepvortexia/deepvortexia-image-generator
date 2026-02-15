@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import Link from 'next/link'; // Importé pour la bannière cliquable
+import Link from 'next/link';
 import EcosystemCards from '../components/EcosystemCards';
 import Header from '../components/Header';
 import CompactSuggestions from '../components/CompactSuggestions';
@@ -42,15 +42,46 @@ export default function Home() {
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [userPrompt, setUserPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // NOUVEAU : On ajoute les états pour l'image et les erreurs
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleStyleSelect = (style: string) => setUserPrompt((prev) => `${prev} ${style}`.trim());
   const handleIdeaSelect = (idea: string) => setUserPrompt(idea);
 
-  const handleGenerate = () => {
+  // GÉNÉRATION RÉELLE
+  const handleGenerate = async () => {
     if (!userPrompt.trim()) return;
+    
     setIsGenerating(true);
-    // Simulation de délai pour le visuel
-    setTimeout(() => setIsGenerating(false), 3000);
+    setError(null);
+    setImageUrl(null);
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          prompt: userPrompt, 
+          aspectRatio: aspectRatio 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate image');
+      }
+
+      // On affiche l'image reçue de Replicate
+      setImageUrl(data.imageUrl);
+    } catch (err: any) {
+      setError(err.message);
+      console.error("Generation error:", err);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -70,14 +101,13 @@ export default function Home() {
             onChange={setAspectRatio} 
           />
 
-          {/* RÉPARATION DES 3 PROPS MANQUANTES */}
           <PromptSection 
             prompt={userPrompt}
             onPromptChange={setUserPrompt}
             aspectRatio={aspectRatio}
-            onAspectRatioChange={setAspectRatio} // Prop manquante 1
-            onGenerate={handleGenerate}          // Prop manquante 2
-            isLoading={isGenerating}             // Prop manquante 3
+            onAspectRatioChange={setAspectRatio}
+            onGenerate={handleGenerate}
+            isLoading={isGenerating}
           />
 
           <GenerateButton 
@@ -86,7 +116,13 @@ export default function Home() {
           />
         </div>
 
-        <ImageDisplay />
+        {/* RÉPARATION CRITIQUE : Branchement des props manquantes */}
+        <ImageDisplay 
+          imageUrl={imageUrl} 
+          isLoading={isGenerating} 
+          error={error} 
+        />
+        
         <LocalSignBanner />
 
         <div className="mt-16 border-t border-[#d4af37]/10 pt-10">
