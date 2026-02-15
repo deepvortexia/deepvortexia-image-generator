@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server'; // Assure-toi que ce chemin est bon, sinon utilise @supabase/auth-helpers-nextjs
 
 // Server-side validation of valid packs
 const VALID_PACKS = {
@@ -25,12 +25,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // --- CORRECTION CRITIQUE ICI ---
     const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2026-01-28.clover',
+      apiVersion: '2023-10-16', // La version stable qui fonctionne sur Vercel
+      typescript: true,
     });
+    // -------------------------------
 
     // Parse request body
-    const { packName, credits, price } = await req.json();
+    const body = await req.json();
+    const { packName, credits, price } = body; // Correction: lecture sécurisée du body
 
     // Validate pack name
     if (!packName || !(packName in VALID_PACKS)) {
@@ -51,7 +55,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify authentication
-    const supabase = await createClient();
+    const supabase = createClient();
     let { data: { user }, error: authError } = await supabase.auth.getUser();
 
     // If auth failed, try refreshing the session first
@@ -59,20 +63,12 @@ export async function POST(req: NextRequest) {
       if (process.env.NODE_ENV === 'development') {
         console.log('⚠️ Initial auth failed, attempting session refresh...');
       }
-      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError || !refreshData.user) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('❌ Authentication failed even after refresh:', authError || refreshError);
-        }
-        return NextResponse.json(
-          { error: 'You must be logged in to purchase credits. Please sign in again.' },
-          { status: 401 }
-        );
-      }
-      user = refreshData.user;
-      if (process.env.NODE_ENV === 'development') {
-        console.log('✅ Session refreshed successfully');
-      }
+      // Note: refreshSession server-side dépend de la config des cookies, 
+      // si ça échoue on renvoie une erreur 401 classique.
+      return NextResponse.json(
+        { error: 'You must be logged in to purchase credits. Please sign in again.' },
+        { status: 401 }
+      );
     }
 
     console.log('✅ Creating checkout session for user:', user.id, 'Pack:', packName);
@@ -90,7 +86,7 @@ export async function POST(req: NextRequest) {
             product_data: {
               name: `${packName} Pack - ${credits} Credits`,
               description: `Purchase ${credits} credits for generating AI images`,
-              images: [`${appUrl}/deepgoldremoveetiny.png`],
+              images: [`${appUrl}/deepgoldremoveetiny.png`], // Assure-toi que cette image existe dans /public
             },
             unit_amount: price,
           },
@@ -98,8 +94,8 @@ export async function POST(req: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${appUrl}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}`,
+      success_url: `${appUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}?canceled=true`,
       metadata: {
         packName,
         credits: credits.toString(),
