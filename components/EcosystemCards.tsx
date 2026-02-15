@@ -1,7 +1,6 @@
-import Link from "next/link";
+"use client"; // Important pour gérer le onClick
 
 export default function EcosystemCards() {
-  // Configuration exacte de ton Hub
   const tools = [
     {
       name: "Emoticons",
@@ -37,6 +36,12 @@ export default function EcosystemCards() {
     }
   ];
 
+  const handleCardClick = (tool: any) => {
+    if (tool.isActive && tool.href) {
+      window.location.assign(tool.href);
+    }
+  };
+
   return (
     <section className="preview-tools-section">
       <h2 className="section-heading">Complete AI Ecosystem</h2>
@@ -45,8 +50,14 @@ export default function EcosystemCards() {
           // Construction dynamique des classes
           const cardClasses = `preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'glow-active' : ''}`;
           
-          const CardContent = (
-            <>
+          return (
+            <div 
+              key={idx} 
+              className={cardClasses}
+              onClick={() => handleCardClick(tool)}
+              role={tool.isActive ? "button" : "presentation"}
+              style={{ cursor: tool.isActive ? 'pointer' : 'default' }}
+            >
               <div className="preview-icon">{tool.icon}</div>
               <h3 className="preview-title">{tool.name}</h3>
               <p className="preview-desc">{tool.desc}</p>
@@ -57,16 +68,6 @@ export default function EcosystemCards() {
                 </span>
                 {tool.isCurrent && <div className="current-tool-label">CURRENT TOOL</div>}
               </div>
-            </>
-          );
-
-          return tool.isActive ? (
-            <Link key={idx} href={tool.href || "#"} className={cardClasses} style={{ textDecoration: 'none' }}>
-              {CardContent}
-            </Link>
-          ) : (
-            <div key={idx} className={cardClasses}>
-              {CardContent}
             </div>
           );
         })}
@@ -76,31 +77,30 @@ export default function EcosystemCards() {
         .preview-tools-section { padding: 4rem 1rem; max-width: 1200px; margin: 0 auto; }
         .section-heading { font-family: 'Orbitron', sans-serif; font-size: 2rem; text-align: center; margin-bottom: 3rem; color: #D4AF37; }
         
-        /* Grille parfaite de 4 colonnes */
         .preview-tools-grid { 
           display: grid; 
           grid-template-columns: repeat(4, 1fr); 
           gap: 1.5rem; 
         }
 
-        /* FORCE LE STYLE SUR TOUS LES ÉLÉMENTS (Link ou Div) */
         .preview-card {
-          background: rgba(26, 26, 26, 0.8) !important; /* Force le fond sombre */
-          border: 1px solid rgba(212, 175, 55, 0.2) !important; /* Force la bordure */
+          background: rgba(26, 26, 26, 0.8) !important;
+          border: 1px solid rgba(212, 175, 55, 0.2) !important;
           border-radius: 16px;
           padding: 2rem 1rem;
           text-align: center;
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
-          display: flex; /* Assure l'alignement vertical */
+          display: flex;
           flex-direction: column;
           align-items: center;
-          min-height: 320px; /* Hauteur fixe pour égaliser */
+          min-height: 320px;
           justify-content: space-between;
           color: white !important;
+          width: 100%; /* Force la largeur */
+          box-sizing: border-box; /* Évite les débordements */
         }
 
-        /* L'effet GLOW doré pour l'onglet actif */
         .glow-active {
           border: 2px solid #D4AF37 !important;
           box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.1) !important;
