@@ -1,6 +1,6 @@
 import Replicate from "replicate";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -28,94 +28,104 @@ export async function POST(req: NextRequest) {
       ? aspectRatio 
       : '1:1';
 
-    // Check if user is authenticated (optional for this app)
-    const supabase = await createClient();
-    let user: any = null;
+    // Create Supabase client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
     
-    // If Supabase is not configured, just allow generation (free tier only)
-    if (supabase) {
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-      user = authUser;
-
-      // If user is logged in, verify and deduct credits
-      if (user) {
-        try {
-          // Get user's profile with credits
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('credits')
-            .eq('id', user.id)
-            .single();
-
-          if (profileError) {
-            return NextResponse.json(
-              { 
-                error: 'Failed to fetch user profile',
-                success: false 
-              },
-              { status: 500 }
-            );
-          }
-
-          // Check if user has enough credits
-          if (!profile || profile.credits < 1) {
-            return NextResponse.json(
-              { 
-                error: 'Insufficient credits. Please purchase more credits to continue.',
-                success: false 
-              },
-              { status: 402 }
-            );
-          }
-
-          // Deduct credit before generation using atomic operation
-          // This prevents race conditions by ensuring credits don't go below 0
-          const { data: updatedProfile, error: updateError } = await supabase
-            .from('profiles')
-            .update({
-              credits: profile.credits - 1,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', user.id)
-            .eq('credits', profile.credits) // Only update if credits haven't changed (optimistic locking)
-            .select()
-            .single();
-
-          if (updateError || !updatedProfile) {
-            // If update failed, it means credits were changed by another request
-            return NextResponse.json(
-              { 
-                error: 'Credit check failed, please try again',
-                success: false 
-              },
-              { status: 409 }
-            );
-          }
-
-          console.log('✅ Credit deducted. Remaining:', updatedProfile.credits);
-        } catch (error: unknown) {
-          console.error('Error deducting credit:', error);
-          return NextResponse.json(
-            { 
-              error: 'Failed to deduct credit',
-              success: false 
-            },
-            { status: 500 }
-          );
-        }
-      }
-    } else {
-      console.log('⚠️ Supabase not configured, allowing free generation');
-    }
-    
-    // SECURITY: Block ALL generation for non-authenticated users
-    if (!user) {
+    if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json(
         { 
-          error: 'Please sign in to generate images. Create a free account to get started!',
+          error: 'Server configuration error: Supabase credentials not configured',
           success: false 
         },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createSupabaseClient(supabaseUrl, supabaseKey)
+
+    // Get token from Authorization header
+    const authHeader = req.headers.get('authorization')
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: 'Please sign in to generate images. Create a free account to get started!', success: false },
         { status: 401 }
+      )
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token. Please sign in again.', success: false },
+        { status: 401 }
+      )
+    }
+
+    // User is authenticated, verify and deduct credits
+    try {
+      // Get user's profile with credits
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('credits')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        return NextResponse.json(
+          { 
+            error: 'Failed to fetch user profile',
+            success: false 
+          },
+          { status: 500 }
+        );
+      }
+
+      // Check if user has enough credits
+      if (!profile || profile.credits < 1) {
+        return NextResponse.json(
+          { 
+            error: 'Insufficient credits. Please purchase more credits to continue.',
+            success: false 
+          },
+          { status: 402 }
+        );
+      }
+
+      // Deduct credit before generation using atomic operation
+      // This prevents race conditions by ensuring credits don't go below 0
+      const { data: updatedProfile, error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          credits: profile.credits - 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
+        .eq('credits', profile.credits) // Only update if credits haven't changed (optimistic locking)
+        .select()
+        .single();
+
+      if (updateError || !updatedProfile) {
+        // If update failed, it means credits were changed by another request
+        return NextResponse.json(
+          { 
+            error: 'Credit check failed, please try again',
+            success: false 
+          },
+          { status: 409 }
+        );
+      }
+
+      console.log('✅ Credit deducted. Remaining:', updatedProfile.credits);
+    } catch (error: unknown) {
+      console.error('Error deducting credit:', error);
+      return NextResponse.json(
+        { 
+          error: 'Failed to deduct credit',
+          success: false 
+        },
+        { status: 500 }
       );
     }
 

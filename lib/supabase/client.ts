@@ -1,11 +1,9 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
-let clientInstance: ReturnType<typeof createBrowserClient> | null = null
+let clientInstance: ReturnType<typeof createSupabaseClient> | null = null
 
 export const createClient = () => {
-  if (clientInstance) {
-    return clientInstance
-  }
+  if (clientInstance) return clientInstance
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -17,8 +15,14 @@ export const createClient = () => {
     return null as any
   }
 
-  const client = createBrowserClient(url, key)
+  clientInstance = createSupabaseClient(url, key, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      storageKey: 'deepvortex-shared-auth',
+    }
+  })
 
-  clientInstance = client
-  return client
+  return clientInstance
 }
