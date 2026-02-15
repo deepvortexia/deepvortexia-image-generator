@@ -254,6 +254,20 @@ export default function PromptSection({
           }
         }
 
+        @media (max-width: 640px) {
+          .prompt-section-wrapper {
+            max-width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+          }
+          
+          .prompt-input-enhanced {
+            font-size: 0.95rem;
+            min-height: 100px;
+          }
+        }
+
         @media (max-width: 767px) {
           .prompt-section-wrapper {
             padding: 1.5rem 1rem;
