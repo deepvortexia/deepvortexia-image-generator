@@ -9,7 +9,7 @@ import GenerateButton from '../components/GenerateButton';
 import AspectRatioSelector from '../components/AspectRatioSelector';
 import ImageDisplay from '../components/ImageDisplay';
 
-// --- BANNIÈRE STYLE SÉCURISÉ (Inline Styles) ---
+// --- BANNIÈRE STYLE SÉCURISÉ ---
 const LocalSignBanner = () => (
   <div style={{
     width: '100%',
@@ -31,15 +31,12 @@ const LocalSignBanner = () => (
 );
 
 export default function Home() {
-  // Ces fonctions sont nécessaires pour calmer l'erreur TypeScript
-  // Plus tard, on pourra les relier au PromptSection pour écrire le texte automatiquement
-  const handleStyleSelect = (style: string) => {
-    console.log("Style selected:", style);
-  };
+  // 1. On crée une "mémoire" (state) pour le Ratio d'image
+  const [aspectRatio, setAspectRatio] = useState("1:1");
 
-  const handleIdeaSelect = (idea: string) => {
-    console.log("Idea selected:", idea);
-  };
+  // Fonctions pour calmer CompactSuggestions
+  const handleStyleSelect = (style: string) => console.log("Style:", style);
+  const handleIdeaSelect = (idea: string) => console.log("Idea:", idea);
 
   return (
     <div className="min-h-screen bg-black text-white font-sans pb-10" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, rgba(10, 10, 10, 1) 70%)' }}>
@@ -48,12 +45,18 @@ export default function Home() {
       <main className="max-w-[1200px] mx-auto px-5 flex flex-col gap-8">
         {/* 1. GÉNÉRATEUR EN HAUT */}
         <div className="flex flex-col gap-5 w-full max-w-[800px] mx-auto mt-5">
-          {/* CORRECTION ICI : On passe les fonctions obligatoires */}
+          
           <CompactSuggestions 
             onStyleSelect={handleStyleSelect} 
             onIdeaSelect={handleIdeaSelect} 
           />
-          <AspectRatioSelector />
+
+          {/* CORRECTION ICI : On passe value et onChange pour corriger l'erreur rouge */}
+          <AspectRatioSelector 
+            value={aspectRatio} 
+            onChange={setAspectRatio} 
+          />
+
           <PromptSection />
           <GenerateButton />
         </div>
