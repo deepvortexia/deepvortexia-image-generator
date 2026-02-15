@@ -10,7 +10,6 @@ import GenerateButton from '../components/GenerateButton';
 import AspectRatioSelector from '../components/AspectRatioSelector';
 import ImageDisplay from '../components/ImageDisplay';
 
-// --- BANNIÈRE CLIQUABLE ---
 const LocalSignBanner = () => (
   <Link href="/auth" style={{ textDecoration: 'none' }}>
     <div style={{
@@ -42,15 +41,12 @@ export default function Home() {
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [userPrompt, setUserPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // NOUVEAU : On ajoute les états pour l'image et les erreurs
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleStyleSelect = (style: string) => setUserPrompt((prev) => `${prev} ${style}`.trim());
   const handleIdeaSelect = (idea: string) => setUserPrompt(idea);
 
-  // GÉNÉRATION RÉELLE
   const handleGenerate = async () => {
     if (!userPrompt.trim()) return;
     
@@ -74,11 +70,9 @@ export default function Home() {
         throw new Error(data.error || 'Failed to generate image');
       }
 
-      // On affiche l'image reçue de Replicate
       setImageUrl(data.imageUrl);
     } catch (err: any) {
       setError(err.message);
-      console.error("Generation error:", err);
     } finally {
       setIsGenerating(false);
     }
@@ -116,9 +110,9 @@ export default function Home() {
           />
         </div>
 
-        {/* RÉPARATION CRITIQUE : Branchement des props manquantes */}
+        {/* RÉPARATION FINALE : Conversion null vers "" */}
         <ImageDisplay 
-          imageUrl={imageUrl} 
+          imageUrl={imageUrl || ""} 
           isLoading={isGenerating} 
           error={error} 
         />
