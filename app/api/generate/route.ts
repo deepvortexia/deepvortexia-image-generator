@@ -29,10 +29,20 @@ export async function POST(req: NextRequest) {
       : '1:1';
 
     // Create Supabase client
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
-    )
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
+    
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json(
+        { 
+          error: 'Server configuration error: Supabase credentials not configured',
+          success: false 
+        },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createSupabaseClient(supabaseUrl, supabaseKey)
 
     // Get token from Authorization header
     const authHeader = req.headers.get('authorization')
