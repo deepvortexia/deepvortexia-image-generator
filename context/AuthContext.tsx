@@ -279,12 +279,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (process.env.NODE_ENV === 'development') {
           console.log('✅ Found existing user:', initialUser.email)
         }
-        // Set user - onAuthStateChange will handle session and ensureProfile
         setUser(initialUser)
         // Also get the session for completeness
         const { data: { session: currentSession } } = await supabase.auth.getSession()
         if (currentSession) {
           setSession(currentSession)
+        }
+        // FIX: Load profile directly instead of relying on onAuthStateChange
+        // This prevents race condition where onAuthStateChange fires before this completes
+        try {
+          const profileData = await ensureProfile(initialUser)
+          setProfile(profileData)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('✅ Profile loaded during init:', profileData ? { credits: profileData.credits } : null)
+          }
+        } catch (err) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('❌ Failed to load profile during init:', err)
+          }
         }
       }
       setLoading(false)
