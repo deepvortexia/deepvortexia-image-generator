@@ -34,7 +34,7 @@ export default function PromptSection({
           placeholder="Describe your image in detail (e.g., futuristic city at sunset with neon lights and flying cars) • Press Ctrl+Enter to generate"
           onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && !isLoading && onGenerate()}
           disabled={isLoading}
-          rows={3}
+          rows={5}
         />
         
         {/* Aspect Ratio Selector */}
@@ -79,7 +79,7 @@ export default function PromptSection({
           border-radius: 20px;
           padding: 2rem 1.5rem;
           margin: 0 auto 2rem;
-          max-width: 700px;
+          max-width: 900px;
           box-shadow: 0 4px 20px rgba(212, 175, 55, 0.12);
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
@@ -126,7 +126,7 @@ export default function PromptSection({
           font-size: 1.05rem;
           line-height: 1.5;
           resize: vertical;
-          min-height: 80px;
+          min-height: 140px;
           transition: all 0.3s ease;
           outline: none;
         }

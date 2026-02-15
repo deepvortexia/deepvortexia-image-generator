@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import EcosystemCards from '../components/EcosystemCards';
 import Header from '../components/Header';
 import CompactSuggestions from '../components/CompactSuggestions';
@@ -9,33 +8,6 @@ import PromptSection from '../components/PromptSection';
 import GenerateButton from '../components/GenerateButton';
 import AspectRatioSelector from '../components/AspectRatioSelector';
 import ImageDisplay from '../components/ImageDisplay';
-
-const LocalSignBanner = () => (
-  <Link href="/auth" style={{ textDecoration: 'none' }}>
-    <div style={{
-      width: '100%',
-      maxWidth: '600px',
-      margin: '40px auto 20px',
-      padding: '20px',
-      textAlign: 'center',
-      border: '1px solid rgba(212, 175, 55, 0.3)',
-      borderRadius: '12px',
-      background: 'rgba(212, 175, 55, 0.05)',
-      color: '#D4AF37',
-      fontFamily: 'sans-serif',
-      fontWeight: 'bold',
-      letterSpacing: '1px',
-      textTransform: 'uppercase',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease'
-    }}
-    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.15)'}
-    onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.05)'}
-    >
-      ✨ Sign up and get 2 credits free ✨
-    </div>
-  </Link>
-);
 
 export default function Home() {
   const [aspectRatio, setAspectRatio] = useState("1:1");
@@ -117,11 +89,7 @@ export default function Home() {
           error={error} 
         />
         
-        <LocalSignBanner />
-
-        <div className="mt-16 border-t border-[#d4af37]/10 pt-10">
-          <EcosystemCards />
-        </div>
+        <EcosystemCards />
       </main>
     </div>
   );
