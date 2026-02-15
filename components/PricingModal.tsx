@@ -54,10 +54,22 @@ export function PricingModal({ isOpen, onClose }: PricingModalProps) {
         }
       }
 
+      // Get the session token
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+
+      if (!currentSession?.access_token) {
+        alert('Please sign in before purchasing credits.');
+        setLoading(null);
+        return;
+      }
+
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentSession.access_token}`,
         },
         body: JSON.stringify({
           packName: pack.name,
