@@ -45,12 +45,17 @@ export const createClient = () => {
         if (typeof document === 'undefined') return undefined
         const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
         const value = match ? match[2] : undefined
-        console.log('🍪 Client GET cookie:', name, value ? '(exists)' : '(missing)')
+        // Only log in development
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🍪 Client GET cookie:', name, value ? '(exists)' : '(missing)')
+        }
         return value
       },
       set(name: string, value: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
-        console.log('🍪 Client SET cookie:', name)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🍪 Client SET cookie:', name)
+        }
         let cookie = `${name}=${value}`
         if (options.path) cookie += `; path=${options.path}`
         if (options.maxAge) cookie += `; max-age=${options.maxAge}`
@@ -66,7 +71,9 @@ export const createClient = () => {
       },
       remove(name: string, options: CookieOptions) {
         if (typeof document === 'undefined') return
-        console.log('🍪 Client REMOVE cookie:', name)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🍪 Client REMOVE cookie:', name)
+        }
         const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
         const domainPart = hostname.includes('deepvortexai.art') ? '; domain=.deepvortexai.art' : ''
         document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}${domainPart}`

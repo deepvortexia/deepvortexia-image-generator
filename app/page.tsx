@@ -5,11 +5,11 @@ import EcosystemCards from '../components/EcosystemCards';
 import Header from '../components/Header';
 import CompactSuggestions from '../components/CompactSuggestions';
 import PromptSection from '../components/PromptSection';
-import GenerateButton from '../components/GenerateButton';
-import AspectRatioSelector from '../components/AspectRatioSelector';
 import ImageDisplay from '../components/ImageDisplay';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
+  const { refreshProfile } = useAuth();
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [userPrompt, setUserPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -43,6 +43,8 @@ export default function Home() {
       }
 
       setImageUrl(data.imageUrl);
+      // Refresh profile to update credit count in header
+      refreshProfile();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -62,11 +64,6 @@ export default function Home() {
             onIdeaSelect={handleIdeaSelect} 
           />
 
-          <AspectRatioSelector 
-            value={aspectRatio} 
-            onChange={setAspectRatio} 
-          />
-
           <PromptSection 
             prompt={userPrompt}
             onPromptChange={setUserPrompt}
@@ -75,18 +72,14 @@ export default function Home() {
             onGenerate={handleGenerate}
             isLoading={isGenerating}
           />
-
-          <GenerateButton 
-            onClick={handleGenerate}
-            isGenerating={isGenerating}
-          />
         </div>
 
-        {/* RÉPARATION FINALE : Conversion null vers "" */}
         <ImageDisplay 
-          imageUrl={imageUrl || ""} 
+          imageUrl={imageUrl} 
           isLoading={isGenerating} 
-          error={error} 
+          error={error}
+          prompt={userPrompt}
+          onRegenerate={handleGenerate}
         />
         
         <EcosystemCards />

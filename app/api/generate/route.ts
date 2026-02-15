@@ -108,27 +108,16 @@ export async function POST(req: NextRequest) {
       console.log('⚠️ Supabase not configured, allowing free generation');
     }
     
-    // For non-logged users, track free generations via cookie
+    // SECURITY: Block ALL generation for non-authenticated users
     if (!user) {
-      const { cookies } = await import('next/headers');
-      const cookieStore = await cookies();
-      const freeGenCookie = cookieStore.get('free_generations');
-      const freeGenCount = freeGenCookie ? parseInt(freeGenCookie.value, 10) : 0;
-      
-      if (freeGenCount >= 2) {
-        return NextResponse.json(
-          { 
-            error: 'You have used your 2 free generations. Sign in to get more credits!',
-            success: false 
-          },
-          { status: 402 }
-        );
-      }
-      
-      // Increment counter — will be set after successful generation
+      return NextResponse.json(
+        { 
+          error: 'Please sign in to generate images. Create a free account to get started!',
+          success: false 
+        },
+        { status: 401 }
+      );
     }
-    // For non-logged users, free generations are tracked client-side
-    // No server-side validation needed
 
     console.log('📥 Generate request received:', {
       prompt: prompt?.substring(0, 50) + '...',
@@ -307,21 +296,6 @@ export async function POST(req: NextRequest) {
       }
 
       console.log('✅ Image generated successfully:', imageUrl);
-
-      // Increment free generation counter for non-logged users
-      if (!user) {
-        const { cookies } = await import('next/headers');
-        const cookieStore = await cookies();
-        const freeGenCookie = cookieStore.get('free_generations');
-        const currentCount = freeGenCookie ? parseInt(freeGenCookie.value, 10) : 0;
-        cookieStore.set('free_generations', String(currentCount + 1), {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 365, // 1 year
-          path: '/',
-        });
-      }
 
       return NextResponse.json({ 
         imageUrl,
