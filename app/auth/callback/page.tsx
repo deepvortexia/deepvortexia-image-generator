@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
@@ -18,7 +19,7 @@ export default function AuthCallbackPage() {
     // With implicit flow + detectSessionInUrl: true,
     // Supabase auto-parses the hash fragment on page load.
     // We listen for the auth state change to confirm it worked.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       if (event === 'SIGNED_IN' && session) {
         // Session established, redirect home
         router.push('/')
@@ -32,11 +33,13 @@ export default function AuthCallbackPage() {
     }, 5000)
 
     // Also check if session already exists (in case onAuthStateChange already fired)
-    supabase.auth.getSession().then(({ data: { session } }: any) => {
-      if (session) {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession()
+      if (data.session) {
         router.push('/')
       }
-    })
+    }
+    checkSession()
 
     return () => {
       clearTimeout(timeout)
