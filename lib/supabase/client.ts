@@ -1,10 +1,8 @@
-import { createBrowserClient, type CookieOptions } from '@supabase/ssr'
+import { createBrowserClient } from '@supabase/ssr'
 
-// Singleton instance to prevent multiple clients and listeners
 let clientInstance: ReturnType<typeof createBrowserClient> | null = null
 
 export const createClient = () => {
-  // Return existing instance if already created
   if (clientInstance) {
     return clientInstance
   }
@@ -12,90 +10,15 @@ export const createClient = () => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  // Return null if env vars are not set (for build time)
-  // This allows the app to build without Supabase configuration
-  // and run in free-tier-only mode
   if (!url || !key) {
-    console.warn('⚠️ Supabase configuration missing:', {
-      hasUrl: !!url,
-      hasKey: !!key,
-      NEXT_PUBLIC_SUPABASE_URL: url ? '(set)' : '(missing)',
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: key ? '(set)' : '(missing)'
-    })
-    // We use `as any` here intentionally to allow graceful degradation
-    // The AuthContext checks for null and provides a fallback
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️ Supabase configuration missing')
+    }
     return null as any
   }
 
-  // Only log in development mode to avoid exposing infrastructure details
-  if (process.env.NODE_ENV === 'development') {
-    console.log('✅ Supabase client configured')
-  }
+  const client = createBrowserClient(url, key)
 
-  const client = createBrowserClient(url, key, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      storageKey: 'deepvortex-shared-auth',
-      flowType: 'pkce',
-    },
-    cookies: {
-      get(name: string) {
-        if (typeof document === 'undefined') return undefined
-        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-        const value = match ? match[2] : undefined
-        // Only log in development
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🍪 Client GET cookie:', name, value ? '(exists)' : '(missing)')
-        }
-        return value
-      },
-      set(name: string, value: string, options: CookieOptions) {
-        if (typeof document === 'undefined') return
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🍪 Client SET cookie:', name)
-        }
-        let cookie = `${name}=${value}`
-        if (options.path) cookie += `; path=${options.path}`
-        if (options.maxAge) cookie += `; max-age=${options.maxAge}`
-        // Set domain to .deepvortexai.art for cross-subdomain auth in production
-        // In development, don't set domain to allow localhost to work
-        const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
-        if (hostname.includes('deepvortexai.art')) {
-          cookie += `; domain=.deepvortexai.art`
-        }
-        if (options.sameSite) cookie += `; samesite=${options.sameSite}`
-        if (options.secure) cookie += `; secure`
-        document.cookie = cookie
-      },
-      remove(name: string, options: CookieOptions) {
-        if (typeof document === 'undefined') return
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🍪 Client REMOVE cookie:', name)
-        }
-        const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
-        const domainPart = hostname.includes('deepvortexai.art') ? '; domain=.deepvortexai.art' : ''
-        document.cookie = `${name}=; max-age=0${options.path ? `; path=${options.path}` : ''}${domainPart}`
-      },
-    },
-  })
-
-  // Listen to auth state changes for better error visibility
-  // This listener is registered only once due to singleton pattern above
-  client.auth.onAuthStateChange((event, session) => {
-    if (event === 'TOKEN_REFRESHED') {
-      console.log('✅ Auth token refreshed successfully')
-    }
-    if (event === 'SIGNED_OUT') {
-      console.log('✅ User signed out')
-    }
-    if (event === 'USER_UPDATED') {
-      console.log('✅ User updated')
-    }
-  })
-
-  // Store singleton instance
   clientInstance = client
   return client
 }

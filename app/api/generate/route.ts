@@ -150,45 +150,23 @@ export async function POST(req: NextRequest) {
         }
       );
 
-      // EXTENSIVE DEBUGGING
-      console.log('📦 Raw output received');
-      console.log('📦 Output type:', typeof output);
-      console.log('📦 Is array:', Array.isArray(output));
-      console.log('📦 Output constructor:', output?.constructor?.name);
-      
-      // Try to stringify safely
-      try {
-        console.log('📦 Output JSON:', JSON.stringify(output, (key, value) => {
-          if (typeof value === 'function') return '[Function]';
-          if (value instanceof URL) return value.toString();
-          return value;
-        }, 2));
-      } catch (e) {
-        console.log('📦 Could not stringify output:', e);
-      }
-
       // Extract image URL with comprehensive handling
       let imageUrl: string | null = null;
       
       // Case 1: Direct string URL
       if (typeof output === 'string') {
-        console.log('✅ Output is direct string');
         imageUrl = output;
       }
       // Case 2: URL object
       else if (output instanceof URL) {
-        console.log('✅ Output is URL object');
         imageUrl = output.toString();
       }
       // Case 3: Array
       else if (Array.isArray(output)) {
-        console.log('📦 Output is array with length:', output.length);
         if (output.length === 0) {
           throw new Error('No image generated - empty array');
         }
         const firstItem = output[0];
-        console.log('📦 First item type:', typeof firstItem);
-        console.log('📦 First item constructor:', firstItem?.constructor?.name);
         
         if (typeof firstItem === 'string') {
           imageUrl = firstItem;
@@ -198,7 +176,6 @@ export async function POST(req: NextRequest) {
           // Check for FileOutput with url() method
           if ('url' in firstItem) {
             const urlValue = firstItem.url;
-            console.log('📦 firstItem.url type:', typeof urlValue);
             if (typeof urlValue === 'function') {
               const result = await urlValue();
               imageUrl = typeof result === 'string' ? result : result?.toString?.() || String(result);
@@ -222,13 +199,9 @@ export async function POST(req: NextRequest) {
       }
       // Case 4: Single object (FileOutput)
       else if (output && typeof output === 'object') {
-        console.log('📦 Output is object');
-        console.log('📦 Object keys:', Object.keys(output as object));
-        
         // Check for url property/method
         if ('url' in output) {
           const urlValue = (output as any).url;
-          console.log('📦 output.url type:', typeof urlValue);
           if (typeof urlValue === 'function') {
             const result = await urlValue();
             imageUrl = typeof result === 'string' ? result : result?.toString?.() || String(result);
