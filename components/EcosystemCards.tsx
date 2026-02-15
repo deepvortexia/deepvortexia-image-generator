@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 export default function EcosystemCards() {
+  // Ordre exact du Hub numéroté (1: Emoticons, 2: Image Gen, 3: Remove Background, 4: More Tools)
   const tools = [
     {
       name: "Emoticons",
@@ -41,7 +42,8 @@ export default function EcosystemCards() {
       <h2 className="section-heading">Complete AI Ecosystem</h2>
       <div className="preview-tools-grid">
         {tools.map((tool, idx) => {
-          const cardClasses = `preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'glow-active' : ''}`;
+          // Utilise les classes exactes de ton HubPortal.css
+          const cardClasses = `preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'current-tool-glow' : ''}`;
           
           const CardContent = (
             <>
@@ -58,7 +60,7 @@ export default function EcosystemCards() {
           );
 
           return tool.isActive ? (
-            <Link key={idx} href={tool.href || "#"} className={cardClasses}>
+            <Link key={idx} href={tool.href || "#"} className={cardClasses} style={{ textDecoration: 'none' }}>
               {CardContent}
             </Link>
           ) : (
@@ -70,140 +72,60 @@ export default function EcosystemCards() {
       </div>
 
       <style jsx>{`
-        .preview-tools-section { 
-          padding: 4rem 1rem; 
-          max-width: 1200px; 
-          margin: 0 auto; 
-        }
+        .preview-tools-section { padding: 4rem 1rem; max-width: 1200px; margin: 0 auto; }
+        .section-heading { font-family: 'Orbitron', sans-serif; font-size: 2rem; text-align: center; margin-bottom: 3rem; color: #D4AF37; }
         
-        .section-heading { 
-          font-family: 'Orbitron', sans-serif; 
-          font-size: 2.2rem; 
-          text-align: center; 
-          margin-bottom: 3rem; 
-          color: #D4AF37; 
-          text-transform: uppercase; 
-          letter-spacing: 2px; 
-        }
-        
+        /* Grille 4 colonnes fixe comme dans ton Hub */
         .preview-tools-grid { 
           display: grid; 
           grid-template-columns: repeat(4, 1fr); 
           gap: 1.5rem; 
-          align-items: stretch; 
         }
 
+        /* Style de carte identique à ton HubPortal.css */
         .preview-card {
-          background: rgba(26, 26, 26, 0.9) !important;
-          border: 1px solid rgba(212, 175, 55, 0.3) !important;
+          background: rgba(26, 26, 26, 0.6) !important;
+          border: 1px solid rgba(212, 175, 55, 0.2) !important;
           border-radius: 16px;
           padding: 2.5rem 1.5rem;
           text-align: center;
-          transition: all 0.4s ease;
-          backdrop-filter: blur(12px);
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
           display: flex;
           flex-direction: column;
           align-items: center;
+          min-height: 280px;
           justify-content: space-between;
           color: white;
-          text-decoration: none;
-          min-height: 320px;
-          height: 100%;
         }
 
-        .glow-active {
+        /* Effet GLOW Doré pour l'outil actuel */
+        .current-tool-glow {
           border: 2px solid #D4AF37 !important;
-          box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), inset 0 0 15px rgba(212, 175, 55, 0.2) !important;
-          background: rgba(212, 175, 55, 0.08) !important;
+          box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.1) !important;
+          background: rgba(212, 175, 55, 0.05) !important;
         }
 
         .preview-card.card-active:hover {
           border-color: #D4AF37 !important;
-          transform: translateY(-8px);
-          box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
+          transform: translateY(-5px);
+          box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
         }
 
-        .preview-icon { 
-          font-size: 4rem; 
-          margin-bottom: 1.5rem;
-          line-height: 1;
-        }
+        .preview-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .preview-title { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: #fff; margin: 0; }
+        .preview-desc { font-size: 0.85rem; color: #888; line-height: 1.4; margin: 0.5rem 0; }
         
-        .preview-title { 
-          font-family: 'Orbitron', sans-serif; 
-          font-size: 1.4rem; 
-          color: #fff; 
-          margin: 0.5rem 0;
-          line-height: 1.3;
-        }
+        .status-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; align-items: center; }
+        .status-badge { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; border: 1px solid; }
         
-        .preview-desc { 
-          font-size: 0.9rem; 
-          color: rgba(255,255,255,0.6); 
-          line-height: 1.5; 
-          padding: 0 10px;
-          margin: 0.5rem 0 1rem 0;
-          flex-grow: 1;
-        }
-        
-        .status-container { 
-          display: flex; 
-          flex-direction: column; 
-          gap: 0.8rem; 
-          width: 100%; 
-          align-items: center;
-          margin-top: auto;
-        }
-        
-        .status-badge { 
-          padding: 0.5rem 1.2rem; 
-          border-radius: 20px; 
-          font-size: 0.7rem; 
-          font-weight: 700; 
-          text-transform: uppercase; 
-          border: 1px solid;
-          white-space: nowrap;
-        }
-        
-        .badge-active { 
-          background: rgba(46, 204, 113, 0.2); 
-          color: #2ecc71; 
-          border-color: #2ecc71; 
-        }
-        
-        .badge-upcoming { 
-          background: rgba(241, 196, 15, 0.1); 
-          color: #f1c40f; 
-          border-color: rgba(241, 196, 15, 0.3); 
-        }
-        
-        .current-tool-label { 
-          font-family: 'Inter', sans-serif; 
-          font-size: 0.7rem; 
-          font-weight: 800; 
-          color: #D4AF37; 
-          border: 1px solid #D4AF37; 
-          padding: 0.4rem 0.8rem; 
-          border-radius: 4px; 
-          background: rgba(212, 175, 55, 0.1);
-          white-space: nowrap;
-        }
+        .badge-active { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border-color: #2ecc71; }
+        .badge-upcoming { background: rgba(241, 196, 15, 0.1); color: #f1c40f; border-color: rgba(241, 196, 15, 0.3); }
 
-        @media (max-width: 1100px) { 
-          .preview-tools-grid { 
-            grid-template-columns: repeat(2, 1fr); 
-          } 
-        }
-        
-        @media (max-width: 600px) { 
-          .preview-tools-grid { 
-            grid-template-columns: 1fr; 
-          }
-          
-          .preview-icon {
-            font-size: 3.5rem;
-          }
-        }
+        .current-tool-label { font-size: 0.7rem; font-weight: 800; color: #D4AF37; border: 1px solid #D4AF37; padding: 0.3rem 0.8rem; border-radius: 4px; background: rgba(212, 175, 55, 0.1); }
+
+        @media (max-width: 1024px) { .preview-tools-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .preview-tools-grid { grid-template-columns: 1fr; } }
       `}</style>
     </section>
   );
