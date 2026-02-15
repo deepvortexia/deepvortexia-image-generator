@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const initialized = useRef(false)
   const authListenerSet = useRef(false)
+  const profileLoading = useRef(false)
   const supabase = createClient()
 
   // If Supabase is not configured, just render children without auth
@@ -204,23 +205,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           
           // Ensure profile is fetched to update state properly
           // Handle errors gracefully to avoid blocking auth flow
-          try {
-            const profileData = await ensureProfile(currentSession.user)
-            setProfile(profileData)
-            if (process.env.NODE_ENV === 'development') {
-              console.log('✅ Auth state updated:', { 
-                user: currentSession.user.email, 
-                profile: profileData ? { credits: profileData.credits } : null,
-                loading: false
-              })
+          // Use profileLoading ref to prevent race conditions
+          if (!profileLoading.current) {
+            profileLoading.current = true;
+            try {
+              const profileData = await ensureProfile(currentSession.user)
+              setProfile(profileData)
+              if (process.env.NODE_ENV === 'development') {
+                console.log('✅ Auth state updated:', { 
+                  user: currentSession.user.email, 
+                  profile: profileData ? { credits: profileData.credits } : null,
+                  loading: false
+                })
+              }
+            } catch (error) {
+              if (process.env.NODE_ENV === 'development') {
+                console.error('❌ Error ensuring profile:', error)
+              }
+              // Still set profile to null and continue - user is authenticated
+              setProfile(null)
+            } finally {
+              profileLoading.current = false;
+              setLoading(false)
             }
-          } catch (error) {
-            if (process.env.NODE_ENV === 'development') {
-              console.error('❌ Error ensuring profile:', error)
-            }
-            // Still set profile to null and continue - user is authenticated
-            setProfile(null)
-          } finally {
+          } else {
             setLoading(false)
           }
         } else {
@@ -270,13 +278,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (process.env.NODE_ENV === 'development') {
           console.log('✅ Found existing session for:', initialSession.user.email)
         }
+        // Only set user/session here - onAuthStateChange will handle ensureProfile
         setSession(initialSession)
         setUser(initialSession.user)
-        const profileData = await ensureProfile(initialSession.user)
-        setProfile(profileData)
-        if (process.env.NODE_ENV === 'development') {
-          console.log('📝 Profile data loaded:', profileData ? { email: profileData.email, credits: profileData.credits } : 'null')
-        }
       }
       setLoading(false)
       if (process.env.NODE_ENV === 'development') {
