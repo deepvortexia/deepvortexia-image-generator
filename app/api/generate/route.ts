@@ -69,6 +69,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Hoist remaining credits variable to be accessible throughout the function
+    let remainingCredits: number | undefined;
+
     // User is authenticated, verify and deduct credits
     try {
       // Get user's profile with credits
@@ -123,6 +126,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      remainingCredits = updatedProfile.credits;
       console.log('✅ Credit deducted. Remaining:', updatedProfile.credits);
     } catch (error: unknown) {
       console.error('Error deducting credit:', error);
@@ -148,8 +152,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Call Replicate API with Imagen-4
-    let generationFailed = false;
-    let userId: string | undefined = user?.id;
+    const userId: string | undefined = user?.id;
 
     try {
       console.log('🚀 Calling Replicate with Imagen-4-Fast...');
@@ -288,10 +291,10 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ 
         imageUrl,
-        success: true 
+        success: true,
+        remainingCredits 
       });
     } catch (generationError: unknown) {
-      generationFailed = true;
       
       // If generation failed and user was logged in, restore the credit
       if (userId) {

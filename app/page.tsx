@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import EcosystemCards from '../components/EcosystemCards';
 import Header from '../components/Header';
 import CompactSuggestions from '../components/CompactSuggestions';
@@ -9,9 +10,10 @@ import ImageDisplay from '../components/ImageDisplay';
 import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 
-export default function Home() {
+function HomeContent() {
   const { refreshProfile } = useAuth();
   const supabase = createClient();
+  const searchParams = useSearchParams();
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [userPrompt, setUserPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -20,6 +22,18 @@ export default function Home() {
 
   const handleStyleSelect = (style: string) => setUserPrompt((prev) => `${prev} ${style}`.trim());
   const handleIdeaSelect = (idea: string) => setUserPrompt(idea);
+
+  // Handle success redirect from Stripe checkout
+  useEffect(() => {
+    if (!searchParams) return;
+    const success = searchParams.get('success');
+    if (success === 'true') {
+      // Refresh profile to pick up newly purchased credits
+      refreshProfile();
+      // Clean up URL
+      window.history.replaceState({}, '', '/');
+    }
+  }, [searchParams, refreshProfile]);
 
   const handleGenerate = async () => {
     if (!userPrompt.trim()) return;
@@ -57,8 +71,8 @@ export default function Home() {
       }
 
       setImageUrl(data.imageUrl);
-      // Refresh profile to update credit count in header
-      refreshProfile();
+      // Immediately refresh profile to update credit count in header
+      await refreshProfile();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -99,5 +113,17 @@ export default function Home() {
         <EcosystemCards />
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black text-white font-sans pb-10" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, rgba(10, 10, 10, 1) 70%)' }}>
+        <Header />
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
