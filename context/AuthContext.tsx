@@ -244,7 +244,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     )
 
     // Then check for existing session
-    supabase.auth.getUser().then(async ({ data: { user: initialUser }, error }: any) => {
+    supabase.auth.getUser().then(async (response: { data: { user: User | null }, error: AuthError | null }) => {
+      const { data: { user: initialUser }, error } = response
       if (error) {
         // Handle refresh token not found - clear invalid session immediately
         // Check for both possible refresh token error codes or message containing 'refresh_token'
@@ -278,8 +279,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (process.env.NODE_ENV === 'development') {
           console.log('✅ Found existing user:', initialUser.email)
         }
-        // Set user - onAuthStateChange will handle ensureProfile
+        // Set user - onAuthStateChange will handle session and ensureProfile
         setUser(initialUser)
+        // Also get the session for completeness
+        const { data: { session: currentSession } } = await supabase.auth.getSession()
+        if (currentSession) {
+          setSession(currentSession)
+        }
       }
       setLoading(false)
       if (process.env.NODE_ENV === 'development') {
