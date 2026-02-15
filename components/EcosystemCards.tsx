@@ -72,10 +72,16 @@ export default function EcosystemCards() {
       <style jsx>{`
         .preview-tools-section { padding: 4rem 1rem; max-width: 1200px; margin: 0 auto; }
         .section-heading { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; text-align: center; margin-bottom: 3rem; color: #D4AF37; text-transform: uppercase; letter-spacing: 2px; }
-        .preview-tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; align-items: stretch; }
+        
+        .preview-tools-grid { 
+          display: grid; 
+          grid-template-columns: repeat(4, 1fr); 
+          gap: 1.5rem; 
+          align-items: stretch;
+        }
 
         .preview-card {
-          background: rgba(26, 26, 26, 0.9) !important;
+          background: rgba(26, 26, 26, 0.95) !important;
           border: 1px solid rgba(212, 175, 55, 0.3) !important;
           border-radius: 16px;
           padding: 2.5rem 1rem;
@@ -87,9 +93,10 @@ export default function EcosystemCards() {
           align-items: center;
           min-height: 320px;
           justify-content: space-between;
-          color: white;
+          color: white !important;
         }
 
+        /* Effet Glow pour l'outil actuel */
         .glow-active {
           border: 2px solid #D4AF37 !important;
           box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), inset 0 0 15px rgba(212, 175, 55, 0.2) !important;
@@ -103,8 +110,9 @@ export default function EcosystemCards() {
         }
 
         .preview-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-        .preview-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: #fff; margin: 0.5rem 0; }
-        .preview-desc { font-size: 0.85rem; color: rgba(255,255,255,0.6); line-height: 1.5; padding: 0 10px; }
+        .preview-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: #fff !important; margin: 0.5rem 0; }
+        .preview-desc { font-size: 0.85rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
         .status-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; align-items: center; }
         .status-badge { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; border: 1px solid; }
         .badge-active { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border-color: #2ecc71; }
