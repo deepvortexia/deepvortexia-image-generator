@@ -1,24 +1,64 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-// Delay to ensure Supabase processes the URL hash before redirecting
-const AUTH_PROCESSING_DELAY_MS = 1000
+import { createClient } from '@/lib/supabase/client'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
-  
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
-    // With detectSessionInUrl: true, Supabase handles the token exchange
-    // automatically when the page loads. Just redirect to home.
-    const timer = setTimeout(() => {
+    const supabase = createClient()
+    if (!supabase) {
+      setError('Authentication service not configured')
+      return
+    }
+
+    // With implicit flow + detectSessionInUrl: true,
+    // Supabase auto-parses the hash fragment on page load.
+    // We listen for the auth state change to confirm it worked.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any, session: any) => {
+      if (event === 'SIGNED_IN' && session) {
+        // Session established, redirect home
+        router.push('/')
+      }
+    })
+
+    // Safety timeout: if no auth event fires within 5 seconds, redirect anyway
+    // (session may have already been established before this component mounted)
+    const timeout = setTimeout(() => {
       router.push('/')
-    }, AUTH_PROCESSING_DELAY_MS)
-    
-    return () => clearTimeout(timer)
+    }, 5000)
+
+    // Also check if session already exists (in case onAuthStateChange already fired)
+    supabase.auth.getSession().then(({ data: { session } }: any) => {
+      if (session) {
+        router.push('/')
+      }
+    })
+
+    return () => {
+      clearTimeout(timeout)
+      subscription.unsubscribe()
+    }
   }, [router])
-  
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="max-w-md w-full p-8 bg-gray-900 rounded-lg border border-red-500/20 text-center">
+          <div className="mb-4 text-red-500 text-5xl">⚠️</div>
+          <h1 className="text-2xl font-bold text-white mb-4">Sign In Failed</h1>
+          <p className="text-gray-300 mb-6">{error}</p>
+          <a href="/" className="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+            Return to Home
+          </a>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="text-center">

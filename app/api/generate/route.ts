@@ -28,11 +28,14 @@ export async function POST(req: NextRequest) {
       ? aspectRatio 
       : '1:1';
 
-    // Create Supabase client
+    // Create two Supabase clients:
+    // 1. Auth client with anon key for JWT verification (getUser)
+    // 2. Admin client with service role key for database queries (bypass RLS)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
     
-    if (!supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl || !supabaseAnonKey) {
       return NextResponse.json(
         { 
           error: 'Server configuration error: Supabase credentials not configured',
@@ -42,7 +45,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = createSupabaseClient(supabaseUrl, supabaseKey)
+    // Use anon key for auth verification
+    const supabaseAuth = createSupabaseClient(supabaseUrl, supabaseAnonKey)
+    // Use service role key for database operations (bypasses RLS)
+    const supabase = createSupabaseClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey)
 
     // Get token from Authorization header
     const authHeader = req.headers.get('authorization')
@@ -54,7 +60,7 @@ export async function POST(req: NextRequest) {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
 
     if (authError || !user) {
       return NextResponse.json(
