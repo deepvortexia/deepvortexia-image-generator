@@ -316,7 +316,7 @@ export async function POST(req: NextRequest) {
         const currentCount = freeGenCookie ? parseInt(freeGenCookie.value, 10) : 0;
         cookieStore.set('free_generations', String(currentCount + 1), {
           httpOnly: true,
-          secure: true,
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           maxAge: 60 * 60 * 24 * 365, // 1 year
           path: '/',
