@@ -31,12 +31,23 @@ const LocalSignBanner = () => (
 );
 
 export default function Home() {
-  // 1. On crée une "mémoire" (state) pour le Ratio d'image
+  // 1. État pour le Ratio
   const [aspectRatio, setAspectRatio] = useState("1:1");
+  // 2. État pour le Prompt (Texte) - AJOUTÉ pour corriger l'erreur
+  const [userPrompt, setUserPrompt] = useState("");
+  // 3. État pour le chargement (anticipation pour le bouton)
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  // Fonctions pour calmer CompactSuggestions
-  const handleStyleSelect = (style: string) => console.log("Style:", style);
-  const handleIdeaSelect = (idea: string) => console.log("Idea:", idea);
+  // Fonctions pour les suggestions
+  const handleStyleSelect = (style: string) => setUserPrompt((prev) => `${prev} ${style}`.trim());
+  const handleIdeaSelect = (idea: string) => setUserPrompt(idea);
+
+  // Fonction factice de génération
+  const handleGenerate = () => {
+    console.log("Generating:", userPrompt, aspectRatio);
+    setIsGenerating(true);
+    setTimeout(() => setIsGenerating(false), 2000);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-sans pb-10" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, rgba(10, 10, 10, 1) 70%)' }}>
@@ -51,14 +62,23 @@ export default function Home() {
             onIdeaSelect={handleIdeaSelect} 
           />
 
-          {/* CORRECTION ICI : On passe value et onChange pour corriger l'erreur rouge */}
           <AspectRatioSelector 
             value={aspectRatio} 
             onChange={setAspectRatio} 
           />
 
-          <PromptSection />
-          <GenerateButton />
+          {/* CORRECTION ICI : On passe prompt, onPromptChange et aspectRatio */}
+          <PromptSection 
+            prompt={userPrompt}
+            onPromptChange={setUserPrompt}
+            aspectRatio={aspectRatio}
+          />
+
+          {/* J'ai ajouté les props probables pour le bouton pour éviter la prochaine erreur */}
+          <GenerateButton 
+            onClick={handleGenerate}
+            isGenerating={isGenerating}
+          />
         </div>
 
         {/* 2. IMAGE GÉNÉRÉE */}
