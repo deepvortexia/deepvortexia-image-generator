@@ -1,3 +1,4 @@
+import React from 'react';
 import EcosystemCards from '../components/EcosystemCards';
 import Header from '../components/Header';
 import CompactSuggestions from '../components/CompactSuggestions';
@@ -5,7 +6,29 @@ import PromptSection from '../components/PromptSection';
 import GenerateButton from '../components/GenerateButton';
 import AspectRatioSelector from '../components/AspectRatioSelector';
 import ImageDisplay from '../components/ImageDisplay';
-// J'ai enlevé l'import de SignBanner pour l'instant pour corriger l'erreur
+
+// --- BANNIÈRE INTÉGRÉE (Pour éviter les bugs de fichier manquant) ---
+const LocalSignBanner = () => (
+  <div style={{
+    marginTop: '40px',
+    marginBottom: '20px',
+    padding: '20px',
+    textAlign: 'center',
+    border: '1px solid rgba(212, 175, 55, 0.3)',
+    borderRadius: '12px',
+    background: 'rgba(212, 175, 55, 0.05)',
+    color: '#D4AF37',
+    fontFamily: 'sans-serif',
+    fontWeight: 'bold',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    maxWidth: '600px',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  }}>
+    ✨ Sign up and get 2 credits free ✨
+  </div>
+);
 
 export default function Home() {
   return (
@@ -21,12 +44,13 @@ export default function Home() {
           <GenerateButton />
         </div>
 
-        {/* 2. IMAGE */}
+        {/* 2. IMAGE GÉNÉRÉE */}
         <ImageDisplay />
         
-        {/* Pas de bannière pour l'instant (pour éviter le bug) */}
+        {/* 3. BANNIÈRE */}
+        <LocalSignBanner />
 
-        {/* 3. ÉCOSYSTÈME EN BAS */}
+        {/* 4. ÉCOSYSTÈME EN BAS */}
         <div className="ecosystem-section-wrapper">
           <EcosystemCards />
         </div>
@@ -76,4 +100,3 @@ export default function Home() {
     </div>
   );
 }
-
