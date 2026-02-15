@@ -167,7 +167,12 @@ export default function Header() {
           )}
           <span>
             {(loading && !loadingTimeout) ? 'Loading...' : user ? (
-              profile?.email?.split('@')[0] || profile?.full_name || 'Profile'
+              <>
+                {profile?.email?.split('@')[0] || profile?.full_name || 'Profile'}
+                {profile && typeof profile.credits === 'number' && (
+                  <span className="credit-badge"> 💎 {profile.credits}</span>
+                )}
+              </>
             ) : 'Sign In'}
           </span>
         </button>
@@ -480,6 +485,20 @@ export default function Header() {
           font-weight: 700;
           font-size: 0.9rem;
           border: 2px solid var(--gold-primary);
+        }
+
+        .credit-badge {
+          display: inline-flex;
+          align-items: center;
+          margin-left: 0.5rem;
+          padding: 0.15rem 0.5rem;
+          background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(232, 200, 124, 0.1));
+          border: 1px solid rgba(212, 175, 55, 0.4);
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: #E8C87C;
+          letter-spacing: 0.02em;
         }
 
         @media (max-width: 480px) {

@@ -32,7 +32,7 @@ export default function PromptSection({
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}
           placeholder="Describe your image in detail (e.g., futuristic city at sunset with neon lights and flying cars) • Press Ctrl+Enter to generate"
-          onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && !isLoading && onGenerate()}
+          onKeyDown={(e) => e.key === 'Enter' && e.ctrlKey && !isLoading && onGenerate()}
           disabled={isLoading}
           rows={5}
         />
