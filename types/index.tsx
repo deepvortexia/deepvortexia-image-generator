@@ -5,7 +5,7 @@ import PromptSection from '../components/PromptSection';
 import GenerateButton from '../components/GenerateButton';
 import AspectRatioSelector from '../components/AspectRatioSelector';
 import ImageDisplay from '../components/ImageDisplay';
-import SignBanner from '../components/SignBanner'; 
+// J'ai enlevé l'import de SignBanner pour l'instant pour corriger l'erreur
 
 export default function Home() {
   return (
@@ -13,22 +13,20 @@ export default function Home() {
       <Header />
       
       <main className="main-content">
-        {/* ZONE GÉNÉRATEUR (En haut pour PC et Mobile) */}
+        {/* 1. GÉNÉRATEUR EN HAUT */}
         <div className="generator-wrapper">
           <CompactSuggestions />
           <AspectRatioSelector />
-          {/* Le prompt est maintenant agrandi via le composant PromptSection ci-dessous */}
           <PromptSection />
           <GenerateButton />
         </div>
 
-        {/* AFFICHAGE DE L'IMAGE */}
+        {/* 2. IMAGE */}
         <ImageDisplay />
         
-        {/* BANNIÈRE TEXTE (Sans bouton Sign In, juste le texte) */}
-        <SignBanner />
+        {/* Pas de bannière pour l'instant (pour éviter le bug) */}
 
-        {/* ÉCOSYSTÈME (Déplacé tout en bas de la page) */}
+        {/* 3. ÉCOSYSTÈME EN BAS */}
         <div className="ecosystem-section-wrapper">
           <EcosystemCards />
         </div>
@@ -53,7 +51,7 @@ export default function Home() {
           padding: 20px;
           display: flex;
           flex-direction: column;
-          gap: 40px;
+          gap: 30px;
         }
 
         .generator-wrapper {
@@ -61,11 +59,10 @@ export default function Home() {
           flex-direction: column;
           gap: 20px;
           width: 100%;
-          max-width: 800px; /* Centre le générateur */
+          max-width: 800px;
           margin: 0 auto;
         }
 
-        /* Espace avant l'écosystème en bas */
         .ecosystem-section-wrapper {
           margin-top: 60px;
           border-top: 1px solid rgba(212, 175, 55, 0.1);
@@ -73,7 +70,7 @@ export default function Home() {
         }
 
         @media (max-width: 768px) {
-          .main-content { padding: 15px; gap: 30px; }
+          .main-content { padding: 15px; gap: 20px; }
         }
       `}</style>
     </div>
