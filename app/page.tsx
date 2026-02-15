@@ -7,9 +7,11 @@ import CompactSuggestions from '../components/CompactSuggestions';
 import PromptSection from '../components/PromptSection';
 import ImageDisplay from '../components/ImageDisplay';
 import { useAuth } from '@/context/AuthContext';
+import { createClient } from '@/lib/supabase/client';
 
 export default function Home() {
   const { refreshProfile } = useAuth();
+  const supabase = createClient();
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [userPrompt, setUserPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -27,9 +29,21 @@ export default function Home() {
     setImageUrl(null);
 
     try {
+      // Get current session for auth token
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
+      if (!currentSession?.access_token) {
+        setError('Please sign in to generate images.');
+        setIsGenerating(false);
+        return;
+      }
+
       const response = await fetch('/api/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentSession.access_token}`,
+        },
         body: JSON.stringify({ 
           prompt: userPrompt, 
           aspectRatio: aspectRatio 
