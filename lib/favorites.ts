@@ -1,57 +1,55 @@
 export interface FavoriteImage {
   id: string;
-  imageUrl: string;
+  user_id: string;
   prompt: string;
-  createdAt: string;
+  image_url: string;
+  aspect_ratio: string | null;
+  is_favorite: boolean;
+  created_at: string;
 }
 
-const FAVORITES_KEY = 'deepvortex_favorites';
+export const fetchFavorites = async (token: string): Promise<FavoriteImage[]> => {
+  try {
+    const response = await fetch('/api/favorites', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
-export const favoritesStorage = {
-  getAll: (): FavoriteImage[] => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const stored = localStorage.getItem(FAVORITES_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-      console.error('Error reading favorites:', error);
+    if (!response.ok) {
+      console.error('Failed to fetch favorites:', response.statusText);
       return [];
     }
-  },
 
-  add: (imageUrl: string, prompt: string): FavoriteImage => {
-    const favorite: FavoriteImage = {
-      id: `fav_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-      imageUrl,
-      prompt,
-      createdAt: new Date().toISOString(),
-    };
+    const data = await response.json();
+    return data.favorites || [];
+  } catch (error) {
+    console.error('Error fetching favorites:', error);
+    return [];
+  }
+};
 
-    const favorites = favoritesStorage.getAll();
-    favorites.unshift(favorite); // Add to beginning
-    
-    try {
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-    } catch (error) {
-      console.error('Error saving favorite:', error);
+export const toggleFavorite = async (token: string, imageId: string): Promise<boolean> => {
+  try {
+    const response = await fetch('/api/favorites', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ imageId }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to toggle favorite:', response.statusText);
+      return false;
     }
 
-    return favorite;
-  },
-
-  remove: (id: string): void => {
-    const favorites = favoritesStorage.getAll();
-    const filtered = favorites.filter(fav => fav.id !== id);
-    
-    try {
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(filtered));
-    } catch (error) {
-      console.error('Error removing favorite:', error);
-    }
-  },
-
-  exists: (imageUrl: string): boolean => {
-    const favorites = favoritesStorage.getAll();
-    return favorites.some(fav => fav.imageUrl === imageUrl);
-  },
+    const data = await response.json();
+    return data.isFavorite || false;
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+    return false;
+  }
 };

@@ -18,6 +18,7 @@ function HomeContent() {
   const [userPrompt, setUserPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageId, setImageId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleStyleSelect = (style: string) => setUserPrompt((prev) => `${prev} ${style}`.trim());
@@ -41,6 +42,7 @@ function HomeContent() {
     setIsGenerating(true);
     setError(null);
     setImageUrl(null);
+    setImageId(null);
 
     try {
       // Get current session for auth token
@@ -71,6 +73,7 @@ function HomeContent() {
       }
 
       setImageUrl(data.imageUrl);
+      setImageId(data.imageId || null);
       // Immediately refresh profile to update credit count in header
       await refreshProfile();
     } catch (err: any) {
@@ -107,6 +110,7 @@ function HomeContent() {
           isLoading={isGenerating} 
           error={error}
           prompt={userPrompt}
+          imageId={imageId}
           onRegenerate={handleGenerate}
         />
         

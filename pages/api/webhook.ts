@@ -119,8 +119,29 @@ export default async function handler(
         credits_purchased: creditsToAdd,
         status: 'completed',
       });
+      console.log('✅ Transaction recorded');
     } catch (txErr) {
-      console.warn('⚠️ Transaction record failed (non-critical)');
+      console.warn('⚠️ Transaction record failed (non-critical):', txErr);
+    }
+
+    // Add billing log to emails table (non-critical)
+    try {
+      await supabase.from('emails').insert({
+        user_id: userId,
+        type: 'purchase_confirmation',
+        subject: `Credits purchased: ${packName} Pack (${creditsToAdd} credits)`,
+        body: JSON.stringify({
+          packName: packName || 'MISSING_PACK_NAME',
+          credits: creditsToAdd,
+          amountCents: session.amount_total || 0,
+          stripeSessionId: session.id,
+          timestamp: new Date().toISOString(),
+        }),
+        status: 'logged',
+      });
+      console.log('📧 Billing log saved to emails table');
+    } catch (emailError) {
+      console.warn('⚠️ Failed to save billing log (non-critical):', emailError);
     }
 
     return res.status(200).json({ received: true, creditsAdded: creditsToAdd });
