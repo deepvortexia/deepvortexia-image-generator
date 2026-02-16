@@ -55,7 +55,6 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate,
     try {
       const newFavoriteStatus = await toggleFavorite(session.access_token, imageId);
       setIsFavorited(newFavoriteStatus);
-      setTimeout(() => setIsFavorited(false), 2000); 
     } catch (err) {
       console.error('Error adding to favorites:', err);
       alert('Failed to add to favorites');

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js'
 
 interface AuthResult {
   success: boolean;
   user?: { id: string };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase?: any;
+  supabase?: SupabaseClient;
   error?: NextResponse;
 }
 
@@ -27,10 +26,20 @@ async function authenticateRequest(req: NextRequest): Promise<AuthResult> {
     };
   }
 
+  if (!supabaseServiceKey) {
+    return {
+      success: false,
+      error: NextResponse.json(
+        { error: 'Server configuration error: Service role key not configured', success: false },
+        { status: 500 }
+      )
+    };
+  }
+
   // Use anon key for auth verification
   const supabaseAuth = createSupabaseClient(supabaseUrl, supabaseAnonKey)
   // Use service role key for database operations (bypasses RLS)
-  const supabase = createSupabaseClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey)
+  const supabase = createSupabaseClient(supabaseUrl, supabaseServiceKey)
 
   // Get token from Authorization header
   const authHeader = req.headers.get('authorization')
