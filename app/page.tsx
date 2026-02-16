@@ -109,7 +109,6 @@ function HomeContent() {
           imageUrl={imageUrl} 
           isLoading={isGenerating} 
           error={error}
-          prompt={userPrompt}
           imageId={imageId}
           onRegenerate={handleGenerate}
         />

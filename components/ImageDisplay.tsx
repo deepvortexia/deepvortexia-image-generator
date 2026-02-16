@@ -9,7 +9,6 @@ interface ImageDisplayProps {
   isLoading: boolean;
   error: string | null;
   onRegenerate?: () => void;
-  prompt?: string;
   imageId?: string | null;
 }
 
