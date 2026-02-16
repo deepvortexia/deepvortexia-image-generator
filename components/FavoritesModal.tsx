@@ -51,7 +51,7 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
     }
   };
 
-  const handleDownload = async (imageUrl: string, prompt: string) => {
+  const handleDownload = async (imageUrl: string) => {
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
@@ -115,7 +115,7 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
                   <div className="favorite-actions">
                     <button
                       className="favorite-btn download-btn"
-                      onClick={() => handleDownload(favorite.image_url, favorite.prompt)}
+                      onClick={() => handleDownload(favorite.image_url)}
                       title="Download image"
                     >
                       📥 Download

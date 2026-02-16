@@ -13,7 +13,7 @@ interface ImageDisplayProps {
   imageId?: string | null;
 }
 
-export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate, prompt = '', imageId = null }: ImageDisplayProps) {
+export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate, imageId = null }: ImageDisplayProps) {
   const [isFavorited, setIsFavorited] = useState(false);
   const { session } = useAuth();
 
