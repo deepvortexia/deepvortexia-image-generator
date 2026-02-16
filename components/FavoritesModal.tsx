@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { favoritesStorage, FavoriteImage } from '@/lib/favorites';
+import { fetchFavorites, toggleFavorite, FavoriteImage } from '@/lib/favorites';
+import { useAuth } from '@/context/AuthContext';
 
 interface FavoritesModalProps {
   isOpen: boolean;
@@ -10,21 +11,47 @@ interface FavoritesModalProps {
 
 export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
   const [favorites, setFavorites] = useState<FavoriteImage[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { session } = useAuth();
 
   useEffect(() => {
-    if (isOpen) {
-      setFavorites(favoritesStorage.getAll());
-    }
-  }, [isOpen]);
+    const loadFavorites = async () => {
+      if (isOpen && session?.access_token) {
+        setLoading(true);
+        try {
+          const data = await fetchFavorites(session.access_token);
+          setFavorites(data);
+        } catch (err) {
+          console.error('Error loading favorites:', err);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-  const handleRemove = (id: string) => {
+    loadFavorites();
+  }, [isOpen, session]);
+
+  const handleRemove = async (id: string) => {
+    if (!session?.access_token) {
+      alert('Please sign in to manage favorites');
+      return;
+    }
+
     if (confirm('Remove this image from favorites?')) {
-      favoritesStorage.remove(id);
-      setFavorites(favoritesStorage.getAll());
+      try {
+        await toggleFavorite(session.access_token, id);
+        // Reload favorites after removal
+        const data = await fetchFavorites(session.access_token);
+        setFavorites(data);
+      } catch (err) {
+        console.error('Error removing favorite:', err);
+        alert('Failed to remove favorite');
+      }
     }
   };
 
-  const handleDownload = async (imageUrl: string, prompt: string) => {
+  const handleDownload = async (imageUrl: string) => {
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
@@ -55,7 +82,12 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
         </div>
 
         <div className="favorites-modal-content">
-          {favorites.length === 0 ? (
+          {loading ? (
+            <div className="favorites-loading">
+              <div className="loading-spinner"></div>
+              <p>Loading favorites...</p>
+            </div>
+          ) : favorites.length === 0 ? (
             <div className="favorites-empty">
               <div className="empty-icon">📭</div>
               <p>No favorites yet</p>
@@ -68,7 +100,7 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
                   <div className="favorite-image-container">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={favorite.imageUrl}
+                      src={favorite.image_url}
                       alt={favorite.prompt}
                       className="favorite-image"
                       loading="lazy"
@@ -77,13 +109,13 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
                   <div className="favorite-details">
                     <p className="favorite-prompt">{favorite.prompt}</p>
                     <p className="favorite-date">
-                      {new Date(favorite.createdAt).toLocaleDateString()}
+                      {new Date(favorite.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="favorite-actions">
                     <button
                       className="favorite-btn download-btn"
-                      onClick={() => handleDownload(favorite.imageUrl, favorite.prompt)}
+                      onClick={() => handleDownload(favorite.image_url)}
                       title="Download image"
                     >
                       📥 Download
@@ -191,6 +223,29 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
 
         .favorites-modal-content {
           min-height: 200px;
+        }
+
+        .favorites-loading {
+          text-align: center;
+          padding: 3rem 1rem;
+        }
+
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          margin: 0 auto 1rem;
+          border: 3px solid rgba(212, 175, 55, 0.2);
+          border-top-color: #D4AF37;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .favorites-loading p {
+          color: #999;
         }
 
         .favorites-empty {

@@ -114,13 +114,38 @@ export default async function handler(
         user_id: userId,
         stripe_session_id: session.id,
         stripe_payment_intent: session.payment_intent as string,
-        pack_name: packName || 'MISSING_PACK_NAME',
+        pack_name: packName || 'Unknown Package',
         amount_cents: session.amount_total || 0,
         credits_purchased: creditsToAdd,
         status: 'completed',
       });
+      console.log('✅ Transaction recorded');
+      
+      if (!packName) {
+        console.warn('⚠️ Package name missing from session metadata');
+      }
     } catch (txErr) {
-      console.warn('⚠️ Transaction record failed (non-critical)');
+      console.warn('⚠️ Transaction record failed (non-critical):', txErr);
+    }
+
+    // Add billing log to emails table (non-critical)
+    try {
+      await supabase.from('emails').insert({
+        user_id: userId,
+        type: 'purchase_confirmation',
+        subject: `Credits purchased: ${packName || 'Unknown Package'} Pack (${creditsToAdd} credits)`,
+        body: JSON.stringify({
+          packName: packName || 'Unknown Package',
+          credits: creditsToAdd,
+          amountCents: session.amount_total || 0,
+          stripeSessionId: session.id,
+          timestamp: new Date().toISOString(),
+        }),
+        status: 'logged',
+      });
+      console.log('📧 Billing log saved to emails table');
+    } catch (emailError) {
+      console.warn('⚠️ Failed to save billing log (non-critical):', emailError);
     }
 
     return res.status(200).json({ received: true, creditsAdded: creditsToAdd });

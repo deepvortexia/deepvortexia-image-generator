@@ -19,3 +19,13 @@ export interface Transaction {
   status: string
   created_at: string
 }
+
+export interface ImageRecord {
+  id: string
+  user_id: string
+  prompt: string
+  image_url: string
+  aspect_ratio: string | null
+  is_favorite: boolean
+  created_at: string
+}

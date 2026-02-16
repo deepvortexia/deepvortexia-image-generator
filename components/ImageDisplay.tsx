@@ -1,19 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { favoritesStorage } from '@/lib/favorites';
+import { toggleFavorite } from '@/lib/favorites';
+import { useAuth } from '@/context/AuthContext';
 
-// MODIFICATION : On accepte string | null pour imageUrl et error
 interface ImageDisplayProps {
   imageUrl: string | null; 
   isLoading: boolean;
   error: string | null;
   onRegenerate?: () => void;
-  prompt?: string;
+  imageId?: string | null;
 }
 
-export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate, prompt = '' }: ImageDisplayProps) {
+export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate, imageId = null }: ImageDisplayProps) {
   const [isFavorited, setIsFavorited] = useState(false);
+  const { session } = useAuth();
 
   const downloadImage = async () => {
     if (!imageUrl) return;
@@ -35,21 +36,25 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate,
     }
   };
 
-  const handleAddToFavorites = () => {
+  const handleAddToFavorites = async () => {
     if (!imageUrl) {
       alert('No image to save');
       return;
     }
     
-    if (!prompt || prompt.trim().length === 0) {
-      alert('Cannot save to favorites: No prompt associated with this image');
+    if (!imageId) {
+      alert('Cannot save to favorites: Image not yet saved to database');
+      return;
+    }
+
+    if (!session?.access_token) {
+      alert('Please sign in to add favorites');
       return;
     }
     
     try {
-      favoritesStorage.add(imageUrl, prompt);
-      setIsFavorited(true);
-      setTimeout(() => setIsFavorited(false), 2000); 
+      const newFavoriteStatus = await toggleFavorite(session.access_token, imageId);
+      setIsFavorited(newFavoriteStatus);
     } catch (err) {
       console.error('Error adding to favorites:', err);
       alert('Failed to add to favorites');

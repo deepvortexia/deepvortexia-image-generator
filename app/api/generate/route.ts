@@ -289,8 +289,35 @@ export async function POST(req: NextRequest) {
 
       console.log('✅ Image generated successfully:', imageUrl);
 
+      // Save image to database (non-critical)
+      let imageId: string | null = null;
+      try {
+        const { data: insertedImage, error: saveError } = await supabase
+          .from('images')
+          .insert({
+            user_id: user.id,
+            prompt: prompt.trim(),
+            image_url: imageUrl,
+            aspect_ratio: selectedRatio,
+            is_favorite: false,
+          })
+          .select()
+          .single();
+
+        if (saveError) {
+          console.error('⚠️ Failed to save image to database:', saveError);
+        } else {
+          imageId = insertedImage?.id || null;
+          console.log('✅ Image saved to database:', imageId);
+        }
+      } catch (saveError) {
+        // Non-critical - don't fail the request if save fails
+        console.error('⚠️ Failed to save image to database:', saveError);
+      }
+
       return NextResponse.json({ 
         imageUrl,
+        imageId,
         success: true,
         remainingCredits 
       });
