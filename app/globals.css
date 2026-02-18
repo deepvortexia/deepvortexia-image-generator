@@ -22,6 +22,7 @@ html {
   --gold-primary: #D4AF37;
   --gold-light: #E8C87C;
   --gold-dark: #B8860B;
+  --gold-accent: #FFD700; /* Bright gold for hub-style accents */
   
   /* Dark Theme Backgrounds */
   --bg-primary: #0a0a0a;

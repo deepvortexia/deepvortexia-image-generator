@@ -88,6 +88,15 @@ export default function Header() {
     return profile?.full_name || profile?.email?.split('@')[0] || 'User';
   };
 
+  // Get user initials safely
+  const getUserInitials = () => {
+    const displayName = getUserDisplayName();
+    if (displayName.length >= 2) {
+      return displayName.substring(0, 2).toUpperCase();
+    }
+    return displayName.toUpperCase() || 'U';
+  };
+
   return (
     <>
       {/* Hub Style Pill Buttons Header */}
@@ -131,11 +140,11 @@ export default function Header() {
               {getAvatarUrl() ? (
                 <div className="profile-avatar">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={getAvatarUrl()!} alt="User avatar" />
+                  <img src={getAvatarUrl()!} alt={`${getUserDisplayName()}'s avatar`} />
                 </div>
               ) : (
                 <div className="profile-avatar-fallback">
-                  {getUserDisplayName().substring(0, 2).toUpperCase()}
+                  {getUserInitials()}
                 </div>
               )}
               <span className="profile-name">{getUserDisplayName()}</span>
@@ -232,14 +241,14 @@ export default function Header() {
 
         /* Element A - Credits Pill */
         .credits-pill {
-          border: 2px solid #FFD700;
-          color: #FFD700;
+          border: 2px solid var(--gold-accent);
+          color: var(--gold-accent);
         }
 
         /* Element B - Buy Credits Pill (Primary Action) */
         .buy-credits-pill {
-          border: 2px solid #FFD700;
-          color: #FFD700;
+          border: 2px solid var(--gold-accent);
+          color: var(--gold-accent);
           cursor: pointer;
           box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
         }
@@ -276,7 +285,7 @@ export default function Header() {
           height: 32px;
           border-radius: 50%;
           overflow: hidden;
-          border: 2px solid #FFD700;
+          border: 2px solid var(--gold-accent);
           flex-shrink: 0;
         }
 
@@ -297,7 +306,7 @@ export default function Header() {
           justify-content: center;
           font-weight: 700;
           font-size: 0.85rem;
-          border: 2px solid #FFD700;
+          border: 2px solid var(--gold-accent);
           flex-shrink: 0;
         }
 
@@ -331,7 +340,7 @@ export default function Header() {
         }
 
         .signin-pill:hover:not(:disabled) {
-          border-color: #FFD700;
+          border-color: var(--gold-accent);
           background: rgba(255, 215, 0, 0.05);
           transform: translateY(-2px);
         }
@@ -349,7 +358,7 @@ export default function Header() {
         }
 
         .retry-pill:hover {
-          border-color: #FFD700;
+          border-color: var(--gold-accent);
           background: rgba(255, 215, 0, 0.05);
         }
 
