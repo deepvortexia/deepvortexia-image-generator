@@ -21,9 +21,10 @@ const PRICING_PACKS: PricingPack[] = [
 interface PricingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultPack?: string | null;
 }
 
-export function PricingModal({ isOpen, onClose }: PricingModalProps) {
+export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const { refreshSession } = useAuth();
 
@@ -108,9 +109,10 @@ export function PricingModal({ isOpen, onClose }: PricingModalProps) {
             {PRICING_PACKS.map((pack) => (
               <div 
                 key={pack.name} 
-                className={`pricing-card ${pack.popular ? 'pricing-card-popular' : ''}`}
+                className={`pricing-card ${pack.popular ? 'pricing-card-popular' : ''} ${defaultPack === pack.name ? 'pricing-card-selected' : ''}`}
               >
                 {pack.popular && <div className="popular-badge">⭐ Popular</div>}
+                {defaultPack === pack.name && !pack.popular && <div className="selected-badge">✓ Selected</div>}
                 
                 <div className="pack-name">{pack.name}</div>
                 <div className="pack-credits">{pack.credits} Credits</div>
@@ -295,6 +297,27 @@ export function PricingModal({ isOpen, onClose }: PricingModalProps) {
           padding: 0.3rem 0.8rem;
           border-radius: 12px;
           white-space: nowrap;
+        }
+
+        .selected-badge {
+          position: absolute;
+          top: -12px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: linear-gradient(135deg, #10b981, #34d399);
+          color: #ffffff;
+          font-family: 'Orbitron', sans-serif;
+          font-size: 0.75rem;
+          font-weight: 700;
+          padding: 0.3rem 0.8rem;
+          border-radius: 12px;
+          white-space: nowrap;
+        }
+
+        .pricing-card-selected {
+          border-color: #10b981;
+          background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), var(--bg-tertiary));
+          box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
         }
 
         .pack-name {

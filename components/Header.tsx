@@ -8,13 +8,19 @@ import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
 import { PricingModal } from "@/components/PricingModal";
 
-export default function Header() {
+interface HeaderProps {
+  buyPack?: string | null;
+  onBuyPackHandled?: () => void;
+}
+
+export default function Header({ buyPack, onBuyPackHandled }: HeaderProps = {}) {
   const { user, profile, signOut, loading, refreshProfile } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [showRetry, setShowRetry] = useState(false);
+  const [defaultPack, setDefaultPack] = useState<string | null>(null);
   
   // Debug logging for Header
   useEffect(() => {
@@ -28,6 +34,27 @@ export default function Header() {
       })
     }
   }, [user, profile, loading])
+
+  // Handle auto-open pricing modal when buyPack is provided
+  useEffect(() => {
+    if (buyPack) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('💳 Auto-opening pricing modal for pack:', buyPack);
+      }
+      setDefaultPack(buyPack);
+      if (user) {
+        // If user is logged in, open pricing modal directly
+        setShowPricingModal(true);
+      } else {
+        // If not logged in, open auth modal first
+        setShowAuthModal(true);
+      }
+      // Notify parent that we've handled the buyPack
+      if (onBuyPackHandled) {
+        onBuyPackHandled();
+      }
+    }
+  }, [buyPack, user, onBuyPackHandled])
 
   // Add safety timeout for loading state
   useEffect(() => {
@@ -215,7 +242,14 @@ export default function Header() {
 
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
       <FavoritesModal isOpen={showFavoritesModal} onClose={() => setShowFavoritesModal(false)} />
-      <PricingModal isOpen={showPricingModal} onClose={() => setShowPricingModal(false)} />
+      <PricingModal 
+        isOpen={showPricingModal} 
+        onClose={() => {
+          setShowPricingModal(false);
+          setDefaultPack(null);
+        }}
+        defaultPack={defaultPack}
+      />
 
       <style jsx>{`
         /* Hub Style Header */
