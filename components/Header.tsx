@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
@@ -99,8 +101,35 @@ export default function Header() {
 
   return (
     <>
-      {/* Hub Style Pill Buttons Header */}
+      {/* Hub Style Header with Branding */}
       <header className="hub-header" role="banner">
+        {/* Back to Hub Link */}
+        <Link href="https://deepvortexai.art" className="back-to-hub-link">
+          ← Back to Hub
+        </Link>
+
+        {/* Logo Display Zone with Rotating Orbits */}
+        <div className="logo-display-zone">
+          <div className="orbit-ring-one" />
+          <div className="orbit-ring-two" />
+          <div className="orbit-ring-three" />
+          <Image 
+            src="/deepgoldremoveetiny.png" 
+            alt="Deep Vortex" 
+            width={120} 
+            height={120}
+            className="brand-logo-image"
+            priority
+          />
+        </div>
+
+        {/* Brand Title */}
+        <h1 className="brand-title-text">DΞΞP VORTΞX AI</h1>
+        
+        {/* Tagline */}
+        <p className="primary-tagline">Your AI Tools Ecosystem</p>
+
+        {/* Pill Buttons Container */}
         <div className="hub-pills-container">
           {/* Element A - Credits Pill */}
           <div className="hub-pill credits-pill">
@@ -192,12 +221,126 @@ export default function Header() {
         /* Hub Style Header */
         .hub-header {
           display: flex;
-          justify-content: center;
+          flex-direction: column;
           align-items: center;
-          padding: 1rem;
+          padding: 2rem 1rem 1rem;
           background: transparent;
           position: relative;
           z-index: 100;
+        }
+
+        /* Back to Hub Link */
+        .back-to-hub-link {
+          position: absolute;
+          top: 1rem;
+          left: 1rem;
+          background: rgba(212, 175, 55, 0.1);
+          border: 1px solid rgba(212, 175, 55, 0.5);
+          color: #D4AF37;
+          border-radius: 8px;
+          padding: 0.4rem 1rem;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.9rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          z-index: 10;
+        }
+
+        .back-to-hub-link:hover {
+          background: rgba(212, 175, 55, 0.2);
+          border-color: #D4AF37;
+          transform: translateX(-2px);
+        }
+
+        /* Logo Display Zone */
+        .logo-display-zone {
+          position: relative;
+          width: 160px;
+          height: 160px;
+          margin: 0 auto 1rem;
+        }
+
+        .brand-logo-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          position: relative;
+          z-index: 3;
+          animation: logoGlowPulse 3s ease-in-out infinite;
+          filter: drop-shadow(0 0 20px var(--gold-primary));
+        }
+
+        @keyframes logoGlowPulse {
+          0%, 100% {
+            filter: drop-shadow(0 0 20px var(--gold-primary)) brightness(1);
+          }
+          50% {
+            filter: drop-shadow(0 0 35px var(--gold-light)) brightness(1.2);
+          }
+        }
+
+        .orbit-ring-one, .orbit-ring-two, .orbit-ring-three {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          border: 2px solid var(--gold-primary);
+          border-radius: 50%;
+          opacity: 0.3;
+        }
+
+        .orbit-ring-one {
+          width: 180px;
+          height: 180px;
+          animation: orbitSpin 12s linear infinite;
+          border-top-color: transparent;
+          border-left-color: transparent;
+        }
+
+        .orbit-ring-two {
+          width: 210px;
+          height: 210px;
+          animation: orbitSpin 18s linear infinite reverse;
+          border-right-color: transparent;
+          border-bottom-color: transparent;
+        }
+
+        .orbit-ring-three {
+          width: 240px;
+          height: 240px;
+          animation: orbitSpin 24s linear infinite;
+          border-top-color: transparent;
+          border-bottom-color: transparent;
+        }
+
+        @keyframes orbitSpin {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Brand Title */
+        .brand-title-text {
+          font-family: 'Orbitron', sans-serif;
+          font-size: 3rem;
+          font-weight: 900;
+          margin: 1rem 0;
+          background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-primary) 50%, var(--gold-dark) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: 3px;
+          text-align: center;
+        }
+
+        /* Primary Tagline */
+        .primary-tagline {
+          font-family: 'Orbitron', sans-serif;
+          font-size: 1.3rem;
+          color: var(--gold-light);
+          margin: 0.5rem 0 2rem;
+          font-weight: 500;
+          text-align: center;
         }
 
         .hub-pills-container {
@@ -364,6 +507,39 @@ export default function Header() {
 
         /* Responsive Design */
         @media (max-width: 768px) {
+          .hub-header {
+            padding: 1.5rem 1rem 1rem;
+          }
+
+          .logo-display-zone {
+            width: 120px;
+            height: 120px;
+          }
+
+          .orbit-ring-one {
+            width: 140px;
+            height: 140px;
+          }
+
+          .orbit-ring-two {
+            width: 160px;
+            height: 160px;
+          }
+
+          .orbit-ring-three {
+            width: 180px;
+            height: 180px;
+          }
+
+          .brand-title-text {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+          }
+
+          .primary-tagline {
+            font-size: 1rem;
+          }
+
           .hub-pills-container {
             gap: 0.75rem;
           }
@@ -387,6 +563,39 @@ export default function Header() {
         }
 
         @media (max-width: 480px) {
+          .hub-header {
+            padding: 1rem 0.5rem 1rem;
+          }
+
+          .logo-display-zone {
+            width: 100px;
+            height: 100px;
+          }
+
+          .orbit-ring-one {
+            width: 120px;
+            height: 120px;
+          }
+
+          .orbit-ring-two {
+            width: 140px;
+            height: 140px;
+          }
+
+          .orbit-ring-three {
+            width: 160px;
+            height: 160px;
+          }
+
+          .brand-title-text {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+          }
+
+          .primary-tagline {
+            display: none;
+          }
+
           .hub-pills-container {
             flex-direction: column;
             width: 100%;
@@ -406,6 +615,23 @@ export default function Header() {
 
           .profile-pill {
             padding: 0.6rem 1rem;
+          }
+        }
+
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+          .brand-logo-image,
+          .orbit-ring-one,
+          .orbit-ring-two,
+          .orbit-ring-three {
+            animation: none;
+          }
+
+          .back-to-hub-link:hover,
+          .buy-credits-pill:hover,
+          .favorites-pill:hover,
+          .signin-pill:hover {
+            transform: none;
           }
         }
       `}</style>

@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
-const VALID_PACKS = {
-  'Starter': { credits: 10, price: 349 },
-  'Basic': { credits: 30, price: 799 },
-  'Popular': { credits: 75, price: 1699 },
-  'Pro': { credits: 200, price: 3999 },
-  'Ultimate': { credits: 500, price: 8499 },
+const STRIPE_PRICE_IDS = {
+  'Starter': { priceId: 'price_1T2JElPRCOojlkAvUxkIsMaT', credits: 10 },
+  'Basic': { priceId: 'price_1T2JGJPRCOojlkAvSIuNcbrz', credits: 30 },
+  'Popular': { priceId: 'price_1T2JHDPRCOojlkAvePY8B1Oa', credits: 75 },
+  'Pro': { priceId: 'price_1T2JIvPRCOojlkAvGTd0AEWj', credits: 200 },
+  'Ultimate': { priceId: 'price_1T2JKiPRCOojlkAvIOnW4Qkl', credits: 500 },
 } as const;
 
 export async function POST(req: NextRequest) {
@@ -21,11 +21,13 @@ export async function POST(req: NextRequest) {
       apiVersion: '2023-10-16',
     });
 
-    const { packName, credits, price } = await req.json();
+    const { packName } = await req.json();
 
-    if (!packName || !(packName in VALID_PACKS)) {
+    if (!packName || !(packName in STRIPE_PRICE_IDS)) {
       return NextResponse.json({ error: 'Invalid pack name' }, { status: 400 });
     }
+
+    const pack = STRIPE_PRICE_IDS[packName as keyof typeof STRIPE_PRICE_IDS];
 
     // Auth: verify JWT from Authorization header
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
@@ -49,19 +51,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'You must be logged in to purchase credits.' }, { status: 401 });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_HUB_URL || 'https://images.deepvortexai.art';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://images.deepvortexai.art';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: `${packName} Pack - ${credits} Credits`,
-            description: `Purchase ${credits} credits for generating AI images`,
-          },
-          unit_amount: price,
-        },
+        price: pack.priceId,
         quantity: 1,
       }],
       mode: 'payment',
@@ -69,7 +64,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${appUrl}?canceled=true`,
       metadata: {
         packName,
-        credits: credits.toString(),
+        credits: pack.credits.toString(),
         userId: user.id,
       },
     });
