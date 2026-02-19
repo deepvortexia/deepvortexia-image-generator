@@ -20,19 +20,34 @@ function HomeContent() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageId, setImageId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [buyPack, setBuyPack] = useState<string | null>(null);
 
   const handleStyleSelect = (style: string) => setUserPrompt((prev) => `${prev} ${style}`.trim());
   const handleIdeaSelect = (idea: string) => setUserPrompt(idea);
 
-  // Handle success redirect from Stripe checkout
+  // Handle URL parameters (success from Stripe checkout and buy parameter from Hub)
   useEffect(() => {
     if (!searchParams) return;
+    
     const success = searchParams.get('success');
+    const buy = searchParams.get('buy');
+    
+    // Handle successful payment
     if (success === 'true') {
       // Refresh profile to pick up newly purchased credits
       refreshProfile();
       // Clean up URL
       window.history.replaceState({}, '', '/');
+    }
+    
+    // Handle buy parameter from Hub redirect
+    if (buy) {
+      const validPacks = ['Starter', 'Basic', 'Popular', 'Pro', 'Ultimate'];
+      if (validPacks.includes(buy)) {
+        setBuyPack(buy);
+        // Clean up URL after setting the pack
+        window.history.replaceState({}, '', '/');
+      }
     }
   }, [searchParams, refreshProfile]);
 
@@ -85,7 +100,7 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans pb-10" style={{ background: 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, rgba(10, 10, 10, 1) 70%)' }}>
-      <Header />
+      <Header buyPack={buyPack} onBuyPackHandled={() => setBuyPack(null)} />
       
       <main className="max-w-[1200px] mx-auto px-3 sm:px-5 flex flex-col gap-4 sm:gap-8">
         <div className="flex flex-col gap-3 sm:gap-5 w-full max-w-[800px] mx-auto mt-3 sm:mt-5">
