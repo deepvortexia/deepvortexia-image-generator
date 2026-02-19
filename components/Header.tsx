@@ -13,7 +13,7 @@ interface HeaderProps {
   onBuyPackHandled?: () => void;
 }
 
-export default function Header({ buyPack, onBuyPackHandled }: HeaderProps = {}) {
+export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
   const { user, profile, signOut, loading, refreshProfile } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
@@ -54,7 +54,8 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps = {}) 
         onBuyPackHandled();
       }
     }
-  }, [buyPack, user, onBuyPackHandled])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buyPack, user])
 
   // Add safety timeout for loading state
   useEffect(() => {

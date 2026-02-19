@@ -111,8 +111,12 @@ export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps
                 key={pack.name} 
                 className={`pricing-card ${pack.popular ? 'pricing-card-popular' : ''} ${defaultPack === pack.name ? 'pricing-card-selected' : ''}`}
               >
-                {pack.popular && <div className="popular-badge">⭐ Popular</div>}
-                {defaultPack === pack.name && !pack.popular && <div className="selected-badge">✓ Selected</div>}
+                {pack.popular && !defaultPack && <div className="popular-badge">⭐ Popular</div>}
+                {defaultPack === pack.name && (
+                  <div className="selected-badge">
+                    {pack.popular ? '⭐✓ Popular & Selected' : '✓ Selected'}
+                  </div>
+                )}
                 
                 <div className="pack-name">{pack.name}</div>
                 <div className="pack-credits">{pack.credits} Credits</div>
