@@ -172,7 +172,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       clearTimeout(loadingTimeout)
       subscription?.unsubscribe()
     }
-  }, [ensureProfile, supabase])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
