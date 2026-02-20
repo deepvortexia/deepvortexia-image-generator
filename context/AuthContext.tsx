@@ -37,7 +37,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // KEY FIX: track if init already loaded profile to skip onAuthStateChange duplicate fetch
   const initProfileLoaded = useRef(false)
   
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
+  const supabase = supabaseRef.current
 
   if (!supabase) {
     if (loading) setTimeout(() => setLoading(false), 0)
