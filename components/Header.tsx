@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
@@ -15,41 +16,23 @@ interface HeaderProps {
 
 export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
   const { user, profile, signOut, loading, refreshProfile } = useAuth();
+  const router = useRouter();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [showRetry, setShowRetry] = useState(false);
   const [defaultPack, setDefaultPack] = useState<string | null>(null);
-  
-  // Debug logging for Header
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🎯 Header: Auth state changed', { 
-        hasUser: !!user,
-        email: user?.email || 'null',
-        hasProfile: !!profile,
-        credits: profile?.credits || 0,
-        loading 
-      })
-    }
-  }, [user, profile, loading])
 
   // Handle auto-open pricing modal when buyPack is provided
   useEffect(() => {
     if (buyPack) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('💳 Auto-opening pricing modal for pack:', buyPack);
-      }
       setDefaultPack(buyPack);
       if (user) {
-        // If user is logged in, open pricing modal directly
         setShowPricingModal(true);
       } else {
-        // If not logged in, open auth modal first
         setShowAuthModal(true);
       }
-      // Notify parent that we've handled the buyPack
       if (onBuyPackHandled) {
         onBuyPackHandled();
       }
@@ -61,9 +44,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
   useEffect(() => {
     if (loading) {
       const timer = setTimeout(() => {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('⏰ Header: Loading timeout reached after 5 seconds');
-        }
         setLoadingTimeout(true);
         setShowRetry(true);
       }, 5000);
@@ -74,23 +54,16 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
       setShowRetry(false);
     }
   }, [loading])
-  
-  const handleSignOut = () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🚪 Signing out user:', user?.email)
-    }
-    if (confirm('Are you sure you want to sign out?')) {
-      signOut();
-    }
+
+  // FIX: No more confirm() dialog - just sign out directly
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
   };
 
   const handleRetry = () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔄 Retrying authentication check...');
-    }
     setShowRetry(false);
     setLoadingTimeout(false);
-    // Instead of reloading the entire page, try to refresh the profile
     if (user) {
       refreshProfile();
     }
@@ -108,17 +81,14 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
     }
   };
 
-  // Get user avatar URL from Google OAuth or profile
   const getAvatarUrl = () => {
     return user?.user_metadata?.avatar_url || profile?.avatar_url || null;
   };
 
-  // Get user display name
   const getUserDisplayName = () => {
     return profile?.full_name || profile?.email?.split('@')[0] || 'User';
   };
 
-  // Get user initials safely
   const getUserInitials = () => {
     const displayName = getUserDisplayName();
     if (displayName.length >= 2) {
@@ -129,7 +99,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
 
   return (
     <>
-      {/* Hub Style Header with Branding */}
       <header className="hub-header" role="banner">
         {/* Back to Hub Link */}
         <Link href="https://deepvortexai.art" className="back-to-hub-link">
@@ -159,19 +128,15 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
 
         {/* Pill Buttons Container */}
         <div className="hub-pills-container">
-          {/* Element A - Credits Pill */}
+          {/* Credits Pill */}
           <div className="hub-pill credits-pill">
             <span className="pill-icon">🏆</span>
             <span className="pill-text">
-              {user ? (
-                `${profile?.credits ?? 0} credits`
-              ) : (
-                'Sign in for credits'
-              )}
+              {user ? `${profile?.credits ?? 0} credits` : 'Sign in for credits'}
             </span>
           </div>
 
-          {/* Element B - Buy Credits Pill (Primary Action) */}
+          {/* Buy Credits Pill */}
           <button 
             className="hub-pill buy-credits-pill"
             onClick={handleBuyCreditsClick}
@@ -181,7 +146,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
             <span className="pill-text">Buy Credits</span>
           </button>
 
-          {/* Element C - Favorites Pill */}
+          {/* Favorites Pill */}
           <button 
             className="hub-pill favorites-pill"
             onClick={handleFavoritesClick}
@@ -191,7 +156,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
             <span className="pill-text">Favorites</span>
           </button>
 
-          {/* Element D - Profile Pill */}
+          {/* Profile / Sign In Pill */}
           {user ? (
             <div className="hub-pill profile-pill">
               {getAvatarUrl() ? (
@@ -227,7 +192,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
             </button>
           )}
 
-          {/* Retry Button (only shown on timeout) */}
+          {/* Retry Button */}
           {showRetry && (
             <button 
               className="hub-pill retry-pill"
@@ -253,7 +218,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
       />
 
       <style jsx>{`
-        /* Hub Style Header */
         .hub-header {
           display: flex;
           flex-direction: column;
@@ -264,7 +228,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           z-index: 100;
         }
 
-        /* Back to Hub Link */
         .back-to-hub-link {
           position: absolute;
           top: 1rem;
@@ -288,7 +251,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           transform: translateX(-2px);
         }
 
-        /* Logo Display Zone */
         .logo-display-zone {
           position: relative;
           width: 160px;
@@ -307,12 +269,8 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
         }
 
         @keyframes logoGlowPulse {
-          0%, 100% {
-            filter: drop-shadow(0 0 20px var(--gold-primary)) brightness(1);
-          }
-          50% {
-            filter: drop-shadow(0 0 35px var(--gold-light)) brightness(1.2);
-          }
+          0%, 100% { filter: drop-shadow(0 0 20px var(--gold-primary)) brightness(1); }
+          50% { filter: drop-shadow(0 0 35px var(--gold-light)) brightness(1.2); }
         }
 
         .orbit-ring-one, .orbit-ring-two, .orbit-ring-three {
@@ -354,7 +312,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* Brand Title */
         .brand-title-text {
           font-family: 'Orbitron', sans-serif;
           font-size: 3rem;
@@ -368,7 +325,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           text-align: center;
         }
 
-        /* Primary Tagline */
         .primary-tagline {
           font-family: 'Orbitron', sans-serif;
           font-size: 1.3rem;
@@ -387,7 +343,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           flex-wrap: wrap;
         }
 
-        /* Base Pill Style */
         .hub-pill {
           display: flex;
           align-items: center;
@@ -404,273 +359,106 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           cursor: default;
         }
 
-        .hub-pill button {
-          all: unset;
-        }
+        .pill-icon { font-size: 1.1rem; line-height: 1; }
+        .pill-text { line-height: 1; }
 
-        .pill-icon {
-          font-size: 1.1rem;
-          line-height: 1;
-        }
+        .credits-pill { border: 2px solid var(--gold-accent); color: var(--gold-accent); }
 
-        .pill-text {
-          line-height: 1;
-        }
-
-        /* Element A - Credits Pill */
-        .credits-pill {
-          border: 2px solid var(--gold-accent);
-          color: var(--gold-accent);
-        }
-
-        /* Element B - Buy Credits Pill (Primary Action) */
         .buy-credits-pill {
           border: 2px solid var(--gold-accent);
           color: var(--gold-accent);
           cursor: pointer;
           box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
         }
-
         .buy-credits-pill:hover {
           background: rgba(255, 215, 0, 0.1);
           transform: translateY(-2px);
           box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
         }
 
-        /* Element C - Favorites Pill */
-        .favorites-pill {
-          border: 1px solid rgba(212, 175, 55, 0.3);
-          color: #D4AF37;
-          cursor: pointer;
-        }
-
+        .favorites-pill { border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; cursor: pointer; }
         .favorites-pill:hover {
           border-color: rgba(212, 175, 55, 0.6);
           background: rgba(212, 175, 55, 0.05);
           transform: translateY(-2px);
         }
 
-        /* Element D - Profile Pill (larger, contains multiple elements) */
-        .profile-pill {
-          padding: 0.5rem 1rem;
-          gap: 0.75rem;
-          border: 1px solid rgba(212, 175, 55, 0.3);
-          color: #D4AF37;
-        }
+        .profile-pill { padding: 0.5rem 1rem; gap: 0.75rem; border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; }
 
         .profile-avatar {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          overflow: hidden;
-          border: 2px solid var(--gold-accent);
-          flex-shrink: 0;
+          width: 32px; height: 32px;
+          border-radius: 50%; overflow: hidden;
+          border: 2px solid var(--gold-accent); flex-shrink: 0;
         }
-
-        .profile-avatar img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .profile-avatar-fallback {
-          width: 32px;
-          height: 32px;
+          width: 32px; height: 32px;
           border-radius: 50%;
           background: linear-gradient(135deg, #D4AF37, #E8C87C);
           color: #0a0a0a;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 0.85rem;
-          border: 2px solid var(--gold-accent);
-          flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          font-weight: 700; font-size: 0.85rem;
+          border: 2px solid var(--gold-accent); flex-shrink: 0;
         }
 
-        .profile-name {
-          color: #E8C87C;
-          font-size: 0.9rem;
-        }
+        .profile-name { color: #E8C87C; font-size: 0.9rem; }
 
         .signout-btn {
           padding: 0.3rem 0.8rem;
           background: rgba(212, 175, 55, 0.1);
           border: 1px solid rgba(212, 175, 55, 0.3);
           border-radius: 20px;
-          color: #D4AF37;
-          font-size: 0.8rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
+          color: #D4AF37; font-size: 0.8rem; font-weight: 600;
+          cursor: pointer; transition: all 0.2s ease;
         }
+        .signout-btn:hover { background: rgba(212, 175, 55, 0.2); border-color: #D4AF37; }
 
-        .signout-btn:hover {
-          background: rgba(212, 175, 55, 0.2);
-          border-color: #D4AF37;
-        }
-
-        /* Sign In Pill (when not logged in) */
-        .signin-pill {
-          border: 1px solid rgba(212, 175, 55, 0.3);
-          color: #D4AF37;
-          cursor: pointer;
-        }
-
+        .signin-pill { border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; cursor: pointer; }
         .signin-pill:hover:not(:disabled) {
           border-color: var(--gold-accent);
           background: rgba(255, 215, 0, 0.05);
           transform: translateY(-2px);
         }
+        .signin-pill:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .signin-pill:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
+        .retry-pill { border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; cursor: pointer; }
+        .retry-pill:hover { border-color: var(--gold-accent); background: rgba(255, 215, 0, 0.05); }
 
-        /* Retry Pill */
-        .retry-pill {
-          border: 1px solid rgba(212, 175, 55, 0.3);
-          color: #D4AF37;
-          cursor: pointer;
-        }
-
-        .retry-pill:hover {
-          border-color: var(--gold-accent);
-          background: rgba(255, 215, 0, 0.05);
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
-          .hub-header {
-            padding: 1.5rem 1rem 1rem;
-          }
-
-          .logo-display-zone {
-            width: 120px;
-            height: 120px;
-          }
-
-          .orbit-ring-one {
-            width: 140px;
-            height: 140px;
-          }
-
-          .orbit-ring-two {
-            width: 160px;
-            height: 160px;
-          }
-
-          .orbit-ring-three {
-            width: 180px;
-            height: 180px;
-          }
-
-          .brand-title-text {
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-          }
-
-          .primary-tagline {
-            font-size: 1rem;
-          }
-
-          .hub-pills-container {
-            gap: 0.75rem;
-          }
-
-          .hub-pill {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-          }
-
-          .pill-icon {
-            font-size: 1rem;
-          }
-
-          .profile-name {
-            display: none;
-          }
-
-          .profile-pill {
-            padding: 0.5rem 0.75rem;
-          }
+          .hub-header { padding: 1.5rem 1rem 1rem; }
+          .logo-display-zone { width: 120px; height: 120px; }
+          .orbit-ring-one { width: 140px; height: 140px; }
+          .orbit-ring-two { width: 160px; height: 160px; }
+          .orbit-ring-three { width: 180px; height: 180px; }
+          .brand-title-text { font-size: 1.5rem; letter-spacing: 2px; }
+          .primary-tagline { font-size: 1rem; }
+          .hub-pills-container { gap: 0.75rem; }
+          .hub-pill { padding: 0.5rem 1rem; font-size: 0.9rem; }
+          .pill-icon { font-size: 1rem; }
+          .profile-name { display: none; }
+          .profile-pill { padding: 0.5rem 0.75rem; }
         }
 
         @media (max-width: 480px) {
-          .hub-header {
-            padding: 1rem 0.5rem 1rem;
-          }
-
-          .logo-display-zone {
-            width: 100px;
-            height: 100px;
-          }
-
-          .orbit-ring-one {
-            width: 120px;
-            height: 120px;
-          }
-
-          .orbit-ring-two {
-            width: 140px;
-            height: 140px;
-          }
-
-          .orbit-ring-three {
-            width: 160px;
-            height: 160px;
-          }
-
-          .brand-title-text {
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-          }
-
-          .primary-tagline {
-            display: none;
-          }
-
-          .hub-pills-container {
-            flex-direction: column;
-            width: 100%;
-            max-width: 300px;
-            gap: 0.75rem;
-          }
-
-          .hub-pill {
-            width: 100%;
-            justify-content: center;
-            padding: 0.7rem 1rem;
-          }
-
-          .profile-name {
-            display: inline;
-          }
-
-          .profile-pill {
-            padding: 0.6rem 1rem;
-          }
+          .hub-header { padding: 1rem 0.5rem 1rem; }
+          .logo-display-zone { width: 100px; height: 100px; }
+          .orbit-ring-one { width: 120px; height: 120px; }
+          .orbit-ring-two { width: 140px; height: 140px; }
+          .orbit-ring-three { width: 160px; height: 160px; }
+          .brand-title-text { font-size: 1.2rem; letter-spacing: 1px; }
+          .primary-tagline { display: none; }
+          .hub-pills-container { flex-direction: column; width: 100%; max-width: 300px; gap: 0.75rem; }
+          .hub-pill { width: 100%; justify-content: center; padding: 0.7rem 1rem; }
+          .profile-name { display: inline; }
+          .profile-pill { padding: 0.6rem 1rem; }
         }
 
-        /* Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
-          .brand-logo-image,
-          .orbit-ring-one,
-          .orbit-ring-two,
-          .orbit-ring-three {
-            animation: none;
-          }
-
-          .back-to-hub-link:hover,
-          .buy-credits-pill:hover,
-          .favorites-pill:hover,
-          .signin-pill:hover {
-            transform: none;
-          }
+          .brand-logo-image, .orbit-ring-one, .orbit-ring-two, .orbit-ring-three { animation: none; }
+          .back-to-hub-link:hover, .buy-credits-pill:hover, .favorites-pill:hover, .signin-pill:hover { transform: none; }
         }
       `}</style>
     </>
   );
 }
-
