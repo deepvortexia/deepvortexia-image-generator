@@ -219,8 +219,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Use server callback for PKCE flow (better iOS Safari support)
-        redirectTo: `${window.location.origin}/auth/callback-server`,
+        redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: { prompt: 'select_account' },
       },
     })
@@ -231,7 +230,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithEmail = async (email: string) => {
     return await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback-server` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     })
   }
 
