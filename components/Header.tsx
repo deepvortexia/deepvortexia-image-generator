@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
@@ -17,6 +17,7 @@ interface HeaderProps {
 export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
   const { user, profile, signOut, loading, refreshProfile } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
@@ -54,6 +55,19 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
       setShowRetry(false);
     }
   }, [loading])
+
+  // NOUVEAU : Détecte le retour de Stripe et rafraîchit les crédits
+  useEffect(() => {
+    const isSuccess = searchParams?.get('success');
+    
+    if (isSuccess === 'true' && user) {
+      console.log('Paiement réussi détecté ! Mise à jour des crédits...');
+      refreshProfile();
+      
+      // Nettoie l'URL pour éviter de rafraîchir à nouveau si l'utilisateur recharge la page
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, [searchParams, user, refreshProfile]);
 
   // FIX: No more confirm() dialog - just sign out directly
   const handleSignOut = async () => {
