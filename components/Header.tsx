@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react"; // <-- Ajout de Suspense ici
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,6 +8,25 @@ import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
 import { PricingModal } from "@/components/PricingModal";
+
+// --- NOUVEAU COMPOSANT INVISIBLE ---
+// On isole useSearchParams ici pour que Next.js puisse compiler le reste de la page
+function StripeSuccessHandler({ user, refreshProfile }: { user: any, refreshProfile: () => void }) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const isSuccess = searchParams?.get('success');
+    
+    if (isSuccess === 'true' && user) {
+      console.log('Paiement réussi détecté ! Mise à jour des crédits...');
+      refreshProfile();
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, [searchParams, user, refreshProfile]);
+
+  return null; // N'affiche rien visuellement
+}
+// ------------------------------------
 
 interface HeaderProps {
   buyPack?: string | null;
@@ -17,7 +36,9 @@ interface HeaderProps {
 export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
   const { user, profile, signOut, loading, refreshProfile } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  
+  // Retire useSearchParams d'ici
+  
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
@@ -55,19 +76,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
       setShowRetry(false);
     }
   }, [loading])
-
-  // NOUVEAU : Détecte le retour de Stripe et rafraîchit les crédits
-  useEffect(() => {
-    const isSuccess = searchParams?.get('success');
-    
-    if (isSuccess === 'true' && user) {
-      console.log('Paiement réussi détecté ! Mise à jour des crédits...');
-      refreshProfile();
-      
-      // Nettoie l'URL pour éviter de rafraîchir à nouveau si l'utilisateur recharge la page
-      window.history.replaceState(null, '', window.location.pathname);
-    }
-  }, [searchParams, user, refreshProfile]);
 
   // FIX: No more confirm() dialog - just sign out directly
   const handleSignOut = async () => {
@@ -113,6 +121,11 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
 
   return (
     <>
+      {/* NOUVEAU : On enveloppe notre composant invisible dans un Suspense */}
+      <Suspense fallback={null}>
+        <StripeSuccessHandler user={user} refreshProfile={refreshProfile} />
+      </Suspense>
+
       <header className="hub-header" role="banner">
         {/* Back to Hub Link */}
         <Link href="https://deepvortexai.art" className="back-to-hub-link">
