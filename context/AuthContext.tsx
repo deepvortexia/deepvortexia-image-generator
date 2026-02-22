@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
-import { User, Session, AuthError } from '@supabase/supabase-js'
+import { User, Session, AuthError, AuthChangeEvent } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types/supabase'
 
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .single()
       
       if (error) {
-        if (error.code === 'PGRST116') return null
+        if (error.code === 'PGRST116') return null // Not found
         console.error('Error fetching profile:', error)
         return null
       }
@@ -86,11 +86,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       const { error } = await supabase.from('profiles').insert(newProfile)
       
-      if (error && error.code !== '23505') {
+      if (error && error.code !== '23505') { // Ignore duplicate key
         console.error('Error creating profile:', error)
         return null
       }
       
+      // Fetch the created profile
       return await fetchProfile(currentUser.id)
     } catch (err) {
       console.error('Exception creating profile:', err)
@@ -110,9 +111,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Load user session and profile
   const loadUserAndProfile = async () => {
     try {
+      // Get current user
       const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
       
       if (userError) {
+        // Handle expired/invalid tokens
         if (userError.code === 'refresh_token_not_found' || 
             userError.code === 'invalid_refresh_token' ||
             userError.message?.toLowerCase().includes('refresh_token')) {
@@ -128,9 +131,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (currentUser) {
         setUser(currentUser)
         
+        // Get session
         const { data: { session: currentSession } } = await supabase.auth.getSession()
         setSession(currentSession)
         
+        // Fetch or create profile
         const profileData = await ensureProfile(currentUser)
         setProfile(profileData)
       } else {
@@ -150,15 +155,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize auth on mount
   useEffect(() => {
+    // Load initial session
     loadUserAndProfile()
 
+    // Listen for auth changes (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
+      async (event: AuthChangeEvent, currentSession: Session | null) => {
         console.log('Auth event:', event)
         
         if (event === 'SIGNED_IN' && currentSession?.user) {
           setUser(currentSession.user)
           setSession(currentSession)
+          
+          // Fetch profile for the signed-in user
           const profileData = await ensureProfile(currentSession.user)
           setProfile(profileData)
           setLoading(false)
@@ -171,6 +180,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           
         } else if (event === 'TOKEN_REFRESHED' && currentSession?.user) {
           setSession(currentSession)
+          // User stays the same, no need to refetch profile
         }
       }
     )
@@ -180,6 +190,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [])
 
+  // Refresh profile from database
   const refreshProfile = useCallback(async () => {
     if (user) {
       const profileData = await fetchProfile(user.id)
@@ -187,6 +198,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user])
 
+  // Refresh session
   const refreshSession = useCallback(async () => {
     try {
       const { data, error } = await supabase.auth.refreshSession()
@@ -202,6 +214,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [])
 
+  // Sign in with Google
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -213,6 +226,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error) throw error
   }
 
+  // Sign in with Email (Magic Link)
   const signInWithEmail = async (email: string) => {
     return await supabase.auth.signInWithOtp({
       email,
@@ -220,6 +234,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  // Sign out
   const signOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
