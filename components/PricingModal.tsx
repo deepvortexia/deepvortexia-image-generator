@@ -26,22 +26,15 @@ interface PricingModalProps {
 
 export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps) {
   const [loading, setLoading] = useState<string | null>(null);
-  const { refreshSession } = useAuth();
+  const { } = useAuth(); // kept for potential future use
 
   if (!isOpen) return null;
 
   const handlePurchase = async (pack: PricingPack) => {
     try {
       setLoading(pack.name);
-      if (process.env.NODE_ENV === 'development') {
-        console.log('💳 Creating checkout session for:', pack.name);
-      }
 
-      const handlePurchase = async (pack: PricingPack) => {
-    try {
-      setLoading(pack.name);
-
-      // Get the session token directly — no need to refresh
+      // Get the session token directly
       const { createClient } = await import('@/lib/supabase/client');
       const supabase = createClient();
       const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -70,46 +63,6 @@ export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps
       window.location.href = url;
     } catch (error) {
       console.error('Purchase error:', error);
-      alert(error instanceof Error ? error.message : 'Failed to start checkout');
-      setLoading(null);
-    }
-  };
-
-      // Get the session token
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-
-      if (!currentSession?.access_token) {
-        alert('Please sign in before purchasing credits.');
-        setLoading(null);
-        return;
-      }
-
-      const response = await fetch('/api/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentSession.access_token}`,
-        },
-        body: JSON.stringify({
-          packName: pack.name,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create checkout session');
-      }
-
-      const { url } = await response.json();
-      
-      // Redirect to Stripe Checkout
-      window.location.href = url;
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('❌ Purchase error:', error);
-      }
       alert(error instanceof Error ? error.message : 'Failed to start checkout');
       setLoading(null);
     }
@@ -200,12 +153,8 @@ export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps
         }
 
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         .modal-content {
@@ -222,14 +171,8 @@ export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps
         }
 
         @keyframes slideUp {
-          from {
-            transform: translateY(30px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
@@ -414,12 +357,8 @@ export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps
         }
 
         @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         .modal-footer {
@@ -436,72 +375,24 @@ export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps
           color: var(--text-secondary);
         }
 
-        /* Mobile Responsive */
         @media (max-width: 768px) {
-          .modal-content {
-            border-radius: 16px;
-            max-height: 95vh;
-          }
-
-          .modal-header {
-            padding: 1.5rem 1rem 1rem;
-          }
-
-          .modal-logo {
-            height: 50px;
-          }
-
-          .modal-title {
-            font-size: 1.5rem;
-          }
-
-          .modal-subtitle {
-            font-size: 0.9rem;
-          }
-
-          .modal-close {
-            top: 1rem;
-            right: 1rem;
-            width: 36px;
-            height: 36px;
-            font-size: 1.25rem;
-          }
-
-          .pricing-grid {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            padding: 1.5rem 1rem;
-          }
-
-          .pricing-card {
-            padding: 1.25rem 1rem;
-          }
-
-          .pack-name {
-            font-size: 1.1rem;
-          }
-
-          .pack-credits {
-            font-size: 1.25rem;
-          }
-
-          .pack-price {
-            font-size: 1.75rem;
-          }
-
-          .modal-footer {
-            padding: 1rem;
-          }
-
-          .secure-badge {
-            font-size: 0.85rem;
-          }
+          .modal-content { border-radius: 16px; max-height: 95vh; }
+          .modal-header { padding: 1.5rem 1rem 1rem; }
+          .modal-logo { height: 50px; }
+          .modal-title { font-size: 1.5rem; }
+          .modal-subtitle { font-size: 0.9rem; }
+          .modal-close { top: 1rem; right: 1rem; width: 36px; height: 36px; font-size: 1.25rem; }
+          .pricing-grid { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem 1rem; }
+          .pricing-card { padding: 1.25rem 1rem; }
+          .pack-name { font-size: 1.1rem; }
+          .pack-credits { font-size: 1.25rem; }
+          .pack-price { font-size: 1.75rem; }
+          .modal-footer { padding: 1rem; }
+          .secure-badge { font-size: 0.85rem; }
         }
 
         @media (min-width: 769px) and (max-width: 1024px) {
-          .pricing-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
+          .pricing-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
     </>
