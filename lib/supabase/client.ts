@@ -1,9 +1,52 @@
-// lib/supabase/client.ts
-// Version partagée — session valide sur tous les sous-domaines *.deepvortexai.art
+// lib/supabase/client.ts  (App Image Generator — Next.js)
+// Session partagée via cookies sur .deepvortexai.art
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 let clientInstance: ReturnType<typeof createSupabaseClient> | null = null
+
+const DOMAIN = '.deepvortexai.art'
+
+const createCookieStorage = () => {
+  return {
+    getItem: (key: string): string | null => {
+      if (typeof document === 'undefined') return null
+      const cookies = document.cookie.split(';')
+      for (const cookie of cookies) {
+        const [name, ...rest] = cookie.trim().split('=')
+        if (name.trim() === key) {
+          try {
+            return decodeURIComponent(rest.join('='))
+          } catch {
+            return null
+          }
+        }
+      }
+      try {
+        return localStorage.getItem(key)
+      } catch {
+        return null
+      }
+    },
+
+    setItem: (key: string, value: string): void => {
+      if (typeof document === 'undefined') return
+      const encodedValue = encodeURIComponent(value)
+      document.cookie = `${key}=${encodedValue}; path=/; domain=${DOMAIN}; max-age=604800; SameSite=Lax; Secure`
+      try {
+        localStorage.setItem(key, value)
+      } catch { /* ignore */ }
+    },
+
+    removeItem: (key: string): void => {
+      if (typeof document === 'undefined') return
+      document.cookie = `${key}=; path=/; domain=${DOMAIN}; max-age=0; SameSite=Lax; Secure`
+      try {
+        localStorage.removeItem(key)
+      } catch { /* ignore */ }
+    },
+  }
+}
 
 export const createClient = () => {
   if (clientInstance) return clientInstance
@@ -23,44 +66,10 @@ export const createClient = () => {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-
-      // ✅ Utiliser les cookies avec le domaine parent
-      // pour partager la session entre tous les sous-domaines
+      storageKey: 'deepvortex-auth',  // ✅ Même clé que Emoticons
       storage: createCookieStorage(),
-      storageKey: 'deepvortex-auth', // même clé partout
     },
   })
 
   return clientInstance
-}
-
-// Storage personnalisé basé sur les cookies (partagé entre sous-domaines)
-function createCookieStorage() {
-  return {
-    getItem: (key: string): string | null => {
-      if (typeof document === 'undefined') return null
-      const match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'))
-      if (match) {
-        try {
-          return decodeURIComponent(match[2])
-        } catch {
-          return null
-        }
-      }
-      return null
-    },
-
-    setItem: (key: string, value: string): void => {
-      if (typeof document === 'undefined') return
-      const maxAge = 60 * 60 * 24 * 7 // 7 jours
-      // domain=.deepvortexai.art → partagé entre tous les sous-domaines
-      document.cookie = `${key}=${encodeURIComponent(value)}; max-age=${maxAge}; path=/; domain=.deepvortexai.art; SameSite=Lax; Secure`
-    },
-
-    removeItem: (key: string): void => {
-      if (typeof document === 'undefined') return
-      // Supprimer sur le domaine parent pour effacer partout
-      document.cookie = `${key}=; max-age=0; path=/; domain=.deepvortexai.art; SameSite=Lax; Secure`
-    },
-  }
 }
