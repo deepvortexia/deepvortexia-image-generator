@@ -15,7 +15,6 @@ export const createClient = () => {
     return null as any
   }
 
-  // Use @supabase/ssr with shared cookie domain for ecosystem
   clientInstance = createBrowserClient(url, key, {
     auth: {
       flowType: 'pkce',
@@ -36,13 +35,12 @@ export const createClient = () => {
         }
         return cookies
       },
-      setAll(cookiesToSet) {
-        for (const { name, value, options } of cookiesToSet) {
-          // CRITICAL: Set cookie on parent domain for cross-subdomain sharing
+      setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+        for (const { name, value } of cookiesToSet) {
           let cookie = `${name}=${value}`
           cookie += '; path=/'
-          cookie += '; domain=.deepvortexai.art'  // Note the leading dot!
-          cookie += '; max-age=31536000'  // 1 year
+          cookie += '; domain=.deepvortexai.art'
+          cookie += '; max-age=31536000'
           cookie += '; samesite=lax'
           cookie += '; secure'
           document.cookie = cookie
