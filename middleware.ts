@@ -24,7 +24,16 @@ export async function middleware(request: NextRequest) {
           request,
         })
         cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
+          supabaseResponse.cookies.set(name, value, {
+            ...options,
+            // CRITICAL: Share cookies across all subdomains
+            domain: '.deepvortexai.art',
+            path: '/',
+            sameSite: 'lax',
+            secure: true,
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 365, // 1 year
+          })
         )
       },
     },
