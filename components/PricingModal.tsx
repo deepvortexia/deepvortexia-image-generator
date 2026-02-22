@@ -37,14 +37,43 @@ export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps
         console.log('💳 Creating checkout session for:', pack.name);
       }
 
-      // Refresh session before checkout to prevent expired token errors
-      try {
-        await refreshSession();
-      } catch (refreshError) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('⚠️ Session refresh failed, continuing with checkout:', refreshError);
-        }
+      const handlePurchase = async (pack: PricingPack) => {
+    try {
+      setLoading(pack.name);
+
+      // Get the session token directly — no need to refresh
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+
+      if (!currentSession?.access_token) {
+        alert('Please sign in before purchasing credits.');
+        setLoading(null);
+        return;
       }
+
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentSession.access_token}`,
+        },
+        body: JSON.stringify({ packName: pack.name }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Purchase error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to start checkout');
+      setLoading(null);
+    }
+  };
 
       // Get the session token
       const { createClient } = await import('@/lib/supabase/client');
