@@ -35,7 +35,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const initialLoadDone = useRef(false)
-  const fetchingProfile = useRef(false)
+  // FIX: use a Promise ref instead of a boolean to properly queue concurrent calls
+  const profileFetchPromise = useRef<Promise<Profile | null> | null>(null)
 
   if (!supabase) {
     return (
@@ -80,6 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         avatar_url: currentUser.user_metadata?.avatar_url,
         credits: DEFAULT_SIGNUP_CREDITS,
       })
+      // 23505 = unique violation (profile already exists), safe to ignore
       if (error && error.code !== '23505') {
         console.error('createProfile error:', error)
         return null
@@ -91,16 +93,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  // FIX: deduplicate concurrent calls using a shared Promise ref
   const ensureProfile = async (currentUser: User): Promise<Profile | null> => {
-    if (fetchingProfile.current) return null
-    fetchingProfile.current = true
-    try {
-      const existing = await fetchProfile(currentUser.id)
-      if (existing) return existing
-      return await createProfile(currentUser)
-    } finally {
-      fetchingProfile.current = false
+    if (profileFetchPromise.current) {
+      // Another call is already in flight — reuse it
+      return profileFetchPromise.current
     }
+
+    profileFetchPromise.current = (async () => {
+      try {
+        const existing = await fetchProfile(currentUser.id)
+        if (existing) return existing
+        return await createProfile(currentUser)
+      } finally {
+        profileFetchPromise.current = null
+      }
+    })()
+
+    return profileFetchPromise.current
   }
 
   useEffect(() => {
@@ -123,10 +133,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           initialLoadDone.current = true
 
         } else if (event === 'SIGNED_IN' && currentSession?.user) {
-          setUser(currentSession.user)
-          setSession(currentSession)
-          const profileData = await ensureProfile(currentSession.user)
-          setProfile(profileData)
+          // FIX: avoid duplicate profile fetch if INITIAL_SESSION already handled it
+          if (initialLoadDone.current) {
+            setUser(currentSession.user)
+            setSession(currentSession)
+            const profileData = await ensureProfile(currentSession.user)
+            setProfile(profileData)
+          }
           setLoading(false)
 
         } else if (event === 'SIGNED_OUT') {
@@ -136,17 +149,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setLoading(false)
 
         } else if (event === 'TOKEN_REFRESHED' && currentSession) {
-          // Juste mettre à jour la session — pas besoin de refetch le profil
+          // Only update session — no need to refetch profile
           setSession(currentSession)
         }
       }
     )
 
-    // Safety timeout si INITIAL_SESSION ne fire jamais
+    // Safety timeout if INITIAL_SESSION never fires
     const timeout = setTimeout(() => {
       if (!initialLoadDone.current) {
         console.warn('Auth timeout — forcing loading=false')
         setLoading(false)
+        initialLoadDone.current = true
       }
     }, 5000)
 
