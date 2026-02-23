@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -19,44 +19,51 @@ export default function AuthCallbackPage() {
       const url = new URL(window.location.href);
       const code = url.searchParams.get('code');
       const errorParam = url.searchParams.get('error');
-      const errorDescription = url.searchParams.get('error_description');
 
+      // Handle error from OAuth provider
       if (errorParam) {
-        setError(errorDescription || errorParam);
-        setTimeout(() => router.push('/'), 3000);
+        setError(errorParam);
         return;
       }
 
+      // Handle PKCE flow (code in URL params)
       if (code) {
-        try {
-          await supabase.auth.exchangeCodeForSession(window.location.href);
-        } catch (err) {
-          console.error('Exchange error:', err);
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeError) {
+          setError(exchangeError.message);
+          return;
         }
-      }
-
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
         router.push('/');
         return;
       }
 
+      // Handle implicit flow (tokens in hash fragment)
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        const { data, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) {
+          setError(sessionError.message);
+          return;
+        }
+        if (data?.session) {
+          router.push('/');
+          return;
+        }
+      }
+
+      // Listen for auth state change as fallback
       const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        if (event === 'SIGNED_IN' && session) {
           subscription.unsubscribe();
           router.push('/');
         }
       });
 
-      const timeout = setTimeout(() => {
+      // Timeout fallback if nothing happens
+      setTimeout(() => {
         subscription.unsubscribe();
         router.push('/');
       }, 5000);
-
-      return () => {
-        clearTimeout(timeout);
-        subscription.unsubscribe();
-      };
     };
 
     handleCallback();
@@ -83,7 +90,7 @@ export default function AuthCallbackPage() {
         <div className="mb-4">
           <div className="inline-block w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-        <p className="text-gray-300 text-lg">Completing sign in...</p>
+        <p className="text-gray-400">Completing sign in...</p>
       </div>
     </div>
   );
