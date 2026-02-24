@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const supabase = createClient();
+
     if (!supabase) {
       setError('Authentication service not configured');
       return;
@@ -20,13 +22,11 @@ export default function AuthCallbackPage() {
       const code = url.searchParams.get('code');
       const errorParam = url.searchParams.get('error');
 
-      // Handle error from OAuth provider
       if (errorParam) {
         setError(errorParam);
         return;
       }
 
-      // Handle PKCE flow (code in URL params)
       if (code) {
         const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeError) {
@@ -37,7 +37,6 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      // Handle implicit flow (tokens in hash fragment)
       const hash = window.location.hash;
       if (hash && hash.includes('access_token')) {
         const { data, error: sessionError } = await supabase.auth.getSession();
@@ -51,15 +50,15 @@ export default function AuthCallbackPage() {
         }
       }
 
-      // Listen for auth state change as fallback
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          subscription.unsubscribe();
-          router.push('/');
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (event: AuthChangeEvent, session: Session | null) => {
+          if (event === 'SIGNED_IN' && session) {
+            subscription.unsubscribe();
+            router.push('/');
+          }
         }
-      });
+      );
 
-      // Timeout fallback if nothing happens
       setTimeout(() => {
         subscription.unsubscribe();
         router.push('/');
@@ -73,10 +72,13 @@ export default function AuthCallbackPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="max-w-md w-full p-8 bg-gray-900 rounded-lg border border-red-500/20 text-center">
-          <div className="mb-4 text-red-500 text-5xl">error</div>
+          <div className="mb-4 text-red-500 text-5xl">\u26A0</div>
           <h1 className="text-2xl font-bold text-white mb-4">Sign In Failed</h1>
           <p className="text-gray-300 mb-6">{error}</p>
-          <a href="/" className="inline-block px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+          <a
+            href="/"
+            className="inline-block px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+          >
             Return to Home
           </a>
         </div>
