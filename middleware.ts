@@ -31,7 +31,10 @@ export async function middleware(request: NextRequest) {
             path: '/',
             sameSite: 'lax',
             secure: true,
-            httpOnly: true,
+            // FIXED: httpOnly must be FALSE so the client-side JS can read the cookies
+            // This is required for PKCE flow where the browser client needs to read
+            // the code_verifier that was stored before the OAuth redirect
+            httpOnly: false,
             maxAge: 60 * 60 * 24 * 365, // 1 year
           })
         )
