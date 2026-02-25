@@ -82,16 +82,21 @@ export function createClient() {
         // Map Supabase's default cookie name to our shared key
         if (name.startsWith('sb-') && name.endsWith('-auth-token')) {
           const value = getChunkedCookie(STORAGE_KEY)
-          if (value) {
-            console.log(`[Image Auth] Mapped ${name} -> ${STORAGE_KEY}`)
-            return value
-          }
+          if (value) return value
         }
-        // Also check for code-verifier with our key
+        // Map code-verifier to consistent shared name
+        // Supabase looks for: sb-{projectId}-auth-token-code-verifier
+        // We store it as: deepvortex-auth-code-verifier (consistent with Vite apps)
         if (name.includes('code-verifier')) {
-          const mappedName = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
-          const value = getChunkedCookie(mappedName) || getChunkedCookie(name)
-          return value
+          const sharedName = `${STORAGE_KEY}-code-verifier`
+          const value = getChunkedCookie(sharedName)
+          if (value) return value
+          // Fallback: check the old mapped name too
+          const oldMapped = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
+          const oldValue = getChunkedCookie(oldMapped)
+          if (oldValue) return oldValue
+          // Last resort: check original name
+          return getChunkedCookie(name)
         }
         return getChunkedCookie(name)
       },
@@ -101,15 +106,13 @@ export function createClient() {
         
         // Map Supabase's default cookie name to our shared key
         if (name.startsWith('sb-') && name.endsWith('-auth-token')) {
-          console.log(`[Image Auth] Setting ${STORAGE_KEY} (mapped from ${name})`)
           setChunkedCookie(STORAGE_KEY, value, maxAge)
           return
         }
-        // Map code-verifier to our key
+        // Map code-verifier to consistent shared name
         if (name.includes('code-verifier')) {
-          const mappedName = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
-          console.log(`[Image Auth] Setting ${mappedName}`)
-          setChunkedCookie(mappedName, value, maxAge)
+          const sharedName = `${STORAGE_KEY}-code-verifier`
+          setChunkedCookie(sharedName, value, maxAge)
           return
         }
         setChunkedCookie(name, value, maxAge)
@@ -122,8 +125,13 @@ export function createClient() {
           return
         }
         if (name.includes('code-verifier')) {
-          const mappedName = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
-          removeChunkedCookie(mappedName)
+          // Clean up ALL possible code-verifier names
+          removeChunkedCookie(`${STORAGE_KEY}-code-verifier`)
+          // Also clean up old mapped name in case it exists
+          const oldMapped = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
+          if (oldMapped !== `${STORAGE_KEY}-code-verifier`) {
+            removeChunkedCookie(oldMapped)
+          }
           return
         }
         removeChunkedCookie(name)

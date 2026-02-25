@@ -52,17 +52,14 @@ export default async function handler(
   if (event.type === 'checkout.session.completed') {
         const session = event.data.object as Stripe.Checkout.Session;
 
-      console.log('Processing payment:', {
+      const app = session.metadata?.app;
+      console.log(`💳 Processing payment from app: '${app || 'unknown'}'`, {
               sessionId: session.id,
               metadata: session.metadata,
       });
 
-      // Filter: only process payments from image-generator
-      const app = session.metadata?.app;
-        if (app && app !== 'image-generator') {
-                console.log(`Webhook ignored: payment from '${app}', not image-generator.`);
-                return res.status(200).json({ received: true, ignored: true });
-        }
+      // Accept purchases from ALL apps (hub, emoticon-generator, image-generator)
+      // No more filtering — this webhook is the universal handler
 
       const userId = session.metadata?.userId;
         const credits = session.metadata?.credits;
@@ -107,7 +104,7 @@ export default async function handler(
               return res.status(500).json({ error: 'Failed to update credits' });
       }
 
-      console.log('Credits updated successfully!', { userId, newCredits });
+      console.log(`✅ Credits updated successfully! (from ${app || 'unknown'})`, { userId, newCredits });
 
       // Record transaction (non-critical)
       try {
@@ -140,6 +137,7 @@ export default async function handler(
                                     credits: creditsToAdd,
                                     amountCents: session.amount_total || 0,
                                     stripeSessionId: session.id,
+                                    app: app || 'unknown',
                                     timestamp: new Date().toISOString(),
                         }),
                         status: 'logged',

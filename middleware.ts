@@ -28,6 +28,8 @@ export async function middleware(request: NextRequest) {
     return result || undefined
   }
 
+  const projectId = supabaseUrl.match(/sb-([^.]+)/)?.[1] || ''
+
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
@@ -55,11 +57,19 @@ export async function middleware(request: NextRequest) {
         // Map our shared key to what Supabase expects
         const sharedAuth = getChunkedCookie(STORAGE_KEY)
         if (sharedAuth) {
-          // Extract project ID from URL
-          const projectId = supabaseUrl.match(/sb-([^.]+)/)?.[1] || 'txznlbzrvbxjxujrmhee'
           const supabaseKey = `sb-${projectId}-auth-token`
           if (!result.find(c => c.name === supabaseKey)) {
             result.push({ name: supabaseKey, value: sharedAuth })
+          }
+        }
+
+        // Map code-verifier: check all possible naming conventions
+        const supabaseVerifierKey = `sb-${projectId}-auth-token-code-verifier`
+        if (!result.find(c => c.name === supabaseVerifierKey)) {
+          // Convention used by Vite apps (Hub, Emoticon):
+          const sharedVerifier = getChunkedCookie(`${STORAGE_KEY}-code-verifier`)
+          if (sharedVerifier) {
+            result.push({ name: supabaseVerifierKey, value: sharedVerifier })
           }
         }
 
@@ -86,7 +96,8 @@ export async function middleware(request: NextRequest) {
           if (name.startsWith('sb-') && name.endsWith('-auth-token')) {
             targetName = STORAGE_KEY
           } else if (name.includes('code-verifier')) {
-            targetName = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
+            // Always use a consistent name for code-verifier across all apps
+            targetName = `${STORAGE_KEY}-code-verifier`
           }
 
           // Remove existing chunks
