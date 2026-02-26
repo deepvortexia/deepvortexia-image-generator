@@ -84,18 +84,16 @@ export function createClient() {
           const value = getChunkedCookie(STORAGE_KEY)
           if (value) return value
         }
-        // Map code-verifier to consistent shared name
-        // Supabase looks for: sb-{projectId}-auth-token-code-verifier
-        // We store it as: deepvortex-auth-code-verifier (consistent with Vite apps)
+        // Code verifier: try sessionStorage first (most reliable for same-tab auth),
+        // then fall back to cookies. Use the shared name across all apps.
         if (name.includes('code-verifier')) {
           const sharedName = `${STORAGE_KEY}-code-verifier`
+          try {
+            const ss = sessionStorage.getItem(sharedName)
+            if (ss) return ss
+          } catch {}
           const value = getChunkedCookie(sharedName)
           if (value) return value
-          // Fallback: check the old mapped name too
-          const oldMapped = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
-          const oldValue = getChunkedCookie(oldMapped)
-          if (oldValue) return oldValue
-          // Last resort: check original name
           return getChunkedCookie(name)
         }
         return getChunkedCookie(name)
@@ -103,15 +101,15 @@ export function createClient() {
 
       set(name: string, value: string, options?: { maxAge?: number }) {
         const maxAge = options?.maxAge || 31536000
-        
-        // Map Supabase's default cookie name to our shared key
+
         if (name.startsWith('sb-') && name.endsWith('-auth-token')) {
           setChunkedCookie(STORAGE_KEY, value, maxAge)
           return
         }
-        // Map code-verifier to consistent shared name
+        // Code verifier: store in both sessionStorage (reliable) and cookies (cross-domain)
         if (name.includes('code-verifier')) {
           const sharedName = `${STORAGE_KEY}-code-verifier`
+          try { sessionStorage.setItem(sharedName, value) } catch {}
           setChunkedCookie(sharedName, value, maxAge)
           return
         }
@@ -119,19 +117,14 @@ export function createClient() {
       },
 
       remove(name: string) {
-        // Map Supabase's default cookie name to our shared key
         if (name.startsWith('sb-') && name.endsWith('-auth-token')) {
           removeChunkedCookie(STORAGE_KEY)
           return
         }
         if (name.includes('code-verifier')) {
-          // Clean up ALL possible code-verifier names
-          removeChunkedCookie(`${STORAGE_KEY}-code-verifier`)
-          // Also clean up old mapped name in case it exists
-          const oldMapped = name.replace(/sb-[^-]+-auth/, STORAGE_KEY)
-          if (oldMapped !== `${STORAGE_KEY}-code-verifier`) {
-            removeChunkedCookie(oldMapped)
-          }
+          const sharedName = `${STORAGE_KEY}-code-verifier`
+          try { sessionStorage.removeItem(sharedName) } catch {}
+          removeChunkedCookie(sharedName)
           return
         }
         removeChunkedCookie(name)
