@@ -55,6 +55,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchProfile = async (userId: string): Promise<Profile | null> => {
     try {
+      // Ensure the client's auth state is synced before querying
+      await supabase.auth.getSession()
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -113,6 +116,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return profileFetchPromise.current
   }
 
+  // Load profile outside onAuthStateChange to avoid Supabase client deadlock.
+  // Calling Supabase query functions inside the auth callback can deadlock
+  // because the query needs the auth session lock which the callback already holds.
+  const loadProfile = async (currentUser: User) => {
+    const profileData = await ensureProfile(currentUser)
+    setProfile(profileData)
+  }
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, currentSession: Session | null) => {
@@ -122,8 +133,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           if (currentSession?.user) {
             setUser(currentSession.user)
             setSession(currentSession)
-            const profileData = await ensureProfile(currentSession.user)
-            setProfile(profileData)
+            // Defer profile fetch to avoid deadlock inside auth callback
+            setTimeout(() => loadProfile(currentSession.user), 0)
           } else {
             setUser(null)
             setSession(null)
@@ -133,12 +144,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           initialLoadDone.current = true
 
         } else if (event === 'SIGNED_IN' && currentSession?.user) {
-          // FIX: avoid duplicate profile fetch if INITIAL_SESSION already handled it
           if (initialLoadDone.current) {
             setUser(currentSession.user)
             setSession(currentSession)
-            const profileData = await ensureProfile(currentSession.user)
-            setProfile(profileData)
+            setTimeout(() => loadProfile(currentSession.user), 0)
           }
           setLoading(false)
 
@@ -149,7 +158,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setLoading(false)
 
         } else if (event === 'TOKEN_REFRESHED' && currentSession) {
-          // Only update session — no need to refetch profile
           setSession(currentSession)
         }
       }
