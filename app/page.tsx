@@ -6,6 +6,7 @@ import Header from'../components/Header';
 import CompactSuggestions from'../components/CompactSuggestions';
 import PromptSection from'../components/PromptSection';
 import ImageDisplay from'../components/ImageDisplay';
+import{Notification}from'../components/Notification';
 import{useAuth}from'@/context/AuthContext';
 import{createClient}from'@/lib/supabase/client';
 function HomeContent(){
@@ -18,6 +19,7 @@ function HomeContent(){
   const[imageUrl,setImageUrl]=useState<string|null>(null);
   const[imageId,setImageId]=useState<string|null>(null);
   const[error,setError]=useState<string|null>(null);
+  const[toast,setToast]=useState<{title:string;message:string;type:'success'|'error'|'warning'}|null>(null);
   const[buyPack,setBuyPack]=useState<string|null>(null);
   const handleStyleSelect=(s:string)=>setUserPrompt(p=>(p+" "+s).trim());
   const handleIdeaSelect=(idea:string)=>setUserPrompt(idea);
@@ -38,17 +40,41 @@ function HomeContent(){
   },[searchParams,refreshWithRetry]);
   const handleGenerate=async()=>{
     if(!userPrompt.trim())return;
-    setIsGenerating(true);setError(null);setImageUrl(null);setImageId(null);
+    setIsGenerating(true);setError(null);setToast(null);setImageUrl(null);setImageId(null);
     try{
       const{data:{session:s}}=await supabase.auth.getSession();
       if(!s?.access_token){setError('Please sign in.');setIsGenerating(false);return;}
-      const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.access_token},body:JSON.stringify({prompt:userPrompt,aspectRatio})});
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),60000);
+      let res:Response;
+      try{
+        res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.access_token},body:JSON.stringify({prompt:userPrompt,aspectRatio}),signal:controller.signal});
+      }catch(fetchErr:any){
+        clearTimeout(timeout);
+        if(fetchErr.name==='AbortError'){
+          setToast({title:'Request Timed Out',message:'The generation took too long. Please try again. No credits were deducted.',type:'warning'});
+        }else{
+          setToast({title:'Network Error',message:'Could not connect to the server. Please check your connection and try again. No credits were deducted.',type:'error'});
+        }
+        return;
+      }
+      clearTimeout(timeout);
+      if(!res.ok){
+        const data=await res.json().catch(()=>({}));
+        switch(res.status){
+          case 401:setToast({title:'Session Expired',message:'Your session has expired. Please refresh the page and sign in again. No credits were deducted.',type:'error'});break;
+          case 402:setToast({title:'Insufficient Credits',message:'You don\'t have enough credits. Purchase more to continue generating.',type:'warning'});setBuyPack('Starter');break;
+          case 429:setToast({title:'Too Many Requests',message:'Please wait a moment before generating again. No credits were deducted.',type:'warning'});break;
+          case 503:setToast({title:'Service Unavailable',message:'The image generation service is temporarily unavailable. Please try again in a few minutes. No credits were deducted.',type:'error'});break;
+          default:setToast({title:'Generation Failed',message:(data.error||'An unexpected error occurred')+'. No credits were deducted.',type:'error'});break;
+        }
+        return;
+      }
       const data=await res.json();
-      if(!res.ok)throw new Error(data.error||'Failed');
       setImageUrl(data.imageUrl);setImageId(data.imageId||null);
       await refreshProfile();
     }catch(err:unknown){
-      setError(err instanceof Error?err.message:'An error occurred');
+      setToast({title:'Generation Failed',message:(err instanceof Error?err.message:'An unexpected error occurred')+'. No credits were deducted.',type:'error'});
     }finally{setIsGenerating(false);}
   };
   return(
@@ -62,6 +88,7 @@ function HomeContent(){
         <ImageDisplay imageUrl={imageUrl} isLoading={isGenerating} error={error} imageId={imageId} onRegenerate={handleGenerate}/>
         <EcosystemCards/>
       </main>
+      <Notification show={!!toast} onClose={()=>setToast(null)} title={toast?.title} message={toast?.message} type={toast?.type}/>
     </div>
   );
 }
