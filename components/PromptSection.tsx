@@ -6,6 +6,7 @@ interface PromptSectionProps {
   onGenerate: () => void;
   isLoading: boolean;
   disabled?: boolean;
+  textareaRef?: React.RefObject<HTMLTextAreaElement>;
 }
 
 const ratios = ["1:1", "4:3", "16:9", "9:16"];
@@ -17,7 +18,8 @@ export default function PromptSection({
   onAspectRatioChange,
   onGenerate,
   isLoading,
-  disabled
+  disabled,
+  textareaRef
 }: PromptSectionProps) {
   return (
     <div className="prompt-section-wrapper">
@@ -28,6 +30,7 @@ export default function PromptSection({
       
       <div className="prompt-input-container">
         <textarea
+          ref={textareaRef}
           className="prompt-input-enhanced"
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}

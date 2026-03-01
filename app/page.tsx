@@ -1,5 +1,5 @@
 "use client";
-import React,{useState,useEffect,Suspense,useCallback}from'react';
+import React,{useState,useEffect,Suspense,useCallback,useRef}from'react';
 import{useSearchParams}from'next/navigation';
 import EcosystemCards from'../components/EcosystemCards';
 import Header from'../components/Header';
@@ -21,8 +21,10 @@ function HomeContent(){
   const[error,setError]=useState<string|null>(null);
   const[toast,setToast]=useState<{title:string;message:string;type:'success'|'error'|'warning'}|null>(null);
   const[buyPack,setBuyPack]=useState<string|null>(null);
-  const handleStyleSelect=(s:string)=>setUserPrompt(p=>(p+" "+s).trim());
-  const handleIdeaSelect=(idea:string)=>setUserPrompt(idea);
+  const textareaRef=useRef<HTMLTextAreaElement>(null);
+  const focusTextarea=()=>setTimeout(()=>textareaRef.current?.focus(),0);
+  const handleStyleSelect=(s:string)=>{setUserPrompt(s);focusTextarea();};
+  const handleIdeaSelect=(idea:string)=>{setUserPrompt(idea);focusTextarea();};
   const refreshWithRetry=useCallback(async()=>{
     await refreshProfile();
     setTimeout(async()=>{await refreshProfile();},2000);
@@ -84,7 +86,7 @@ function HomeContent(){
       <main className="max-w-[1200px] mx-auto px-3 sm:px-5 flex flex-col gap-4 sm:gap-8">
         <div className="flex flex-col gap-3 sm:gap-5 w-full max-w-[800px] mx-auto mt-3 sm:mt-5">
           <CompactSuggestions onStyleSelect={handleStyleSelect} onIdeaSelect={handleIdeaSelect}/>
-          <PromptSection prompt={userPrompt} onPromptChange={setUserPrompt} aspectRatio={aspectRatio} onAspectRatioChange={setAspectRatio} onGenerate={handleGenerate} isLoading={isGenerating}/>
+          <PromptSection prompt={userPrompt} onPromptChange={setUserPrompt} aspectRatio={aspectRatio} onAspectRatioChange={setAspectRatio} onGenerate={handleGenerate} isLoading={isGenerating} textareaRef={textareaRef}/>
         </div>
         <ImageDisplay imageUrl={imageUrl} isLoading={isGenerating} error={error} imageId={imageId} onRegenerate={handleGenerate}/>
         <EcosystemCards/>

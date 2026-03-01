@@ -4,36 +4,36 @@ interface CompactSuggestionsProps {
 }
 
 const popularStyles = [
-  { emoji: '📸', text: 'Photorealistic', value: 'photorealistic' },
-  { emoji: '🎨', text: 'Digital Art', value: 'digital art' },
-  { emoji: '🖼️', text: 'Oil Painting', value: 'oil painting' },
-  { emoji: '✏️', text: 'Sketch', value: 'pencil sketch' },
-  { emoji: '🌈', text: 'Watercolor', value: 'watercolor' },
-  { emoji: '🎭', text: 'Surreal', value: 'surrealist' },
-  { emoji: '💎', text: '3D Render', value: '3D render' },
-  { emoji: '🔮', text: 'Fantasy', value: 'fantasy art' }
+  { emoji: '📸', text: 'Photorealistic', value: 'Hyperrealistic portrait golden hour dramatic lighting' },
+  { emoji: '🎨', text: 'Digital Art', value: 'Futuristic neon cityscape glowing cyberpunk atmosphere' },
+  { emoji: '🖼️', text: 'Oil Painting', value: 'Majestic mountain landscape rich textured brushstrokes' },
+  { emoji: '✏️', text: 'Sketch', value: 'Intricate detailed pencil drawing mysterious cloaked figure' },
+  { emoji: '🌈', text: 'Watercolor', value: 'Dreamy ethereal forest soft pastel flowing colors' },
+  { emoji: '🎭', text: 'Surreal', value: 'Cosmic dreamscape melting reality infinite surreal dimensions' },
+  { emoji: '💎', text: '3D Render', value: 'Sleek metallic sculpture floating against dark void' },
+  { emoji: '🔮', text: 'Fantasy', value: 'Ancient dragon soaring above mystical glowing castle' }
 ];
 
 const quickIdeas = [
-  { emoji: '🏔️', text: 'Landscape', prompt: 'Mountain sunset golden light' },
-  { emoji: '👤', text: 'Portrait', prompt: 'Cinematic portrait dramatic lighting' },
-  { emoji: '🎭', text: 'Abstract', prompt: 'Colorful abstract fluid art' },
-  { emoji: '🏙️', text: 'Cyberpunk', prompt: 'Neon cyberpunk city night' },
-  { emoji: '🌌', text: 'Space', prompt: 'Nebula stars deep space' },
-  { emoji: '🐾', text: 'Animals', prompt: 'Majestic lion wild savanna' },
-  { emoji: '🍕', text: 'Food', prompt: 'Gourmet dish food photography' },
-  { emoji: '🏠', text: 'Interior', prompt: 'Modern luxury interior design' }
+  { emoji: '🏔️', text: 'Landscape', prompt: 'Epic volcanic sunset dramatic stormy sky mountain peaks' },
+  { emoji: '👤', text: 'Portrait', prompt: 'Mysterious hooded figure glowing eyes dark enchanted forest' },
+  { emoji: '🎭', text: 'Abstract', prompt: 'Swirling cosmic energy vibrant explosive kaleidoscope colors' },
+  { emoji: '🏙️', text: 'Cyberpunk', prompt: 'Neon rain-soaked city chrome robot crowded dark alley' },
+  { emoji: '🌌', text: 'Space', prompt: 'Ancient alien planet surface glowing nebula star formation' },
+  { emoji: '🐾', text: 'Animals', prompt: 'Majestic wolf howling moonlit misty mountain peak' },
+  { emoji: '🍕', text: 'Food', prompt: 'Gourmet truffle pasta golden candlelight luxury restaurant' },
+  { emoji: '🏠', text: 'Interior', prompt: 'Luxury penthouse golden hour minimalist modern architectural design' }
 ];
 
 const mobileSuggestions = [
-  { emoji: '✨', text: 'sparkle', value: 'sparkling' },
-  { emoji: '🎨', text: 'neon', value: 'neon' },
-  { emoji: '🔮', text: 'mystical', value: 'mystical' },
-  { emoji: '⚡', text: 'electric', value: 'electric' },
-  { emoji: '🏔️', text: 'landscape', value: 'landscape' },
-  { emoji: '🏙️', text: 'urban', value: 'urban' },
-  { emoji: '🌌', text: 'space', value: 'space' },
-  { emoji: '🐾', text: 'animals', value: 'animals' }
+  { emoji: '✨', text: 'sparkle', value: 'Glittering magical sparkles ethereal light particles floating air' },
+  { emoji: '🎨', text: 'neon', value: 'Vibrant neon signs rain reflection dark urban street' },
+  { emoji: '🔮', text: 'mystical', value: 'Ancient mystical ruins glowing runes misty dark atmosphere' },
+  { emoji: '⚡', text: 'electric', value: 'Massive electric storm lightning strikes dramatic dark stormy sky' },
+  { emoji: '🏔️', text: 'landscape', value: 'Epic panoramic mountain vista golden sunset dramatic clouds' },
+  { emoji: '🏙️', text: 'urban', value: 'Busy metropolitan skyline golden hour stunning architectural beauty' },
+  { emoji: '🌌', text: 'space', value: 'Deep space colorful nebula ancient star formation galaxy' },
+  { emoji: '🐾', text: 'animals', value: 'Majestic tiger prowling through lush jungle misty morning' }
 ];
 
 export default function CompactSuggestions({ onStyleSelect, onIdeaSelect }: CompactSuggestionsProps) {
