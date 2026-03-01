@@ -289,6 +289,31 @@ export async function POST(req: NextRequest) {
 
       console.log('✅ Image generated successfully:', imageUrl);
 
+      // Upload to Supabase Storage for a permanent URL (Replicate URLs expire)
+      try {
+        const imgRes = await fetch(imageUrl);
+        if (imgRes.ok) {
+          const imgBuffer = await imgRes.arrayBuffer();
+          const fileName = `${user.id}/${Date.now()}.jpg`;
+          const { error: uploadError } = await supabase.storage
+            .from('generated-images')
+            .upload(fileName, imgBuffer, { contentType: 'image/jpeg', upsert: false });
+          if (!uploadError) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('generated-images')
+              .getPublicUrl(fileName);
+            if (publicUrl) {
+              imageUrl = publicUrl;
+              console.log('✅ Uploaded to Supabase Storage:', imageUrl);
+            }
+          } else {
+            console.error('⚠️ Storage upload failed, using Replicate URL:', uploadError);
+          }
+        }
+      } catch (storageErr) {
+        console.error('⚠️ Storage error, using Replicate URL:', storageErr);
+      }
+
       // Save image to database (non-critical)
       let imageId: string | null = null;
       try {
