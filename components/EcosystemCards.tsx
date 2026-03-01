@@ -4,7 +4,7 @@ export default function EcosystemCards() {
   const tools = [
     {
       name: "Emoticons",
-      icon: "😃",
+      icon: "😀",
       desc: "Custom emoji creation",
       status: "Available Now",
       isActive: true,
@@ -13,7 +13,7 @@ export default function EcosystemCards() {
     },
     {
       name: "Image Gen",
-      icon: "🖼️",
+      icon: "🎨",
       desc: "AI artwork",
       status: "Available Now",
       isActive: true,
