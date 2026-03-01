@@ -23,6 +23,9 @@
   text-decoration: none;
   transition: all 0.3s ease;
   z-index: 10;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .back-to-hub-link:hover {

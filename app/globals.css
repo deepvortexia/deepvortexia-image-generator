@@ -60,6 +60,7 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  overflow-x: hidden;
 }
 
 * {
@@ -225,10 +226,18 @@ body {
     max-width: 100%;
     padding: 0 20px;
   }
-  
+
+  input, textarea, select {
+    font-size: 16px; /* Prevent iOS auto-zoom on focus */
+  }
+
   .prompt-input,
   .prompt-textarea {
-    font-size: 14px;
+    font-size: 16px;
+  }
+
+  button {
+    min-height: 44px;
   }
 }
 
