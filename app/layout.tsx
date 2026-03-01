@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     images: ["/deepgoldremoveetiny.png"],
   },
   icons: {
-    icon: "/deepgoldremoveetiny.png",
-    apple: "/deepgoldremoveetiny.png",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
   other: {
     "theme-color": "#D4AF37",
@@ -47,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" type="image/png" href="/favicon.png?v=2" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
