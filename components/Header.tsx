@@ -128,7 +128,12 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
 
       <header className="hub-header" role="banner">
         {/* Back to Hub Link */}
-        <Link href="https://deepvortexai.art" className="back-to-hub-link">
+        <Link href="https://deepvortexai.art" className="back-to-hub-link" onClick={(e) => {
+          if (window.parent !== window) {
+            e.preventDefault();
+            window.parent.postMessage({ type: 'deepvortex-navigate', url: 'https://deepvortexai.art' }, 'https://deepvortexai.art');
+          }
+        }}>
           ← Back to Hub
         </Link>
 

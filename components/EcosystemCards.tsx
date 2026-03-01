@@ -38,7 +38,12 @@ export default function EcosystemCards() {
 
   const handleCardClick = (tool: any) => {
     if (tool.isActive && tool.href) {
-      window.location.assign(tool.href);
+      // If embedded in Hub iframe, navigate the parent window
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'deepvortex-navigate', url: tool.href }, 'https://deepvortexai.art');
+      } else {
+        window.location.assign(tool.href);
+      }
     }
   };
 

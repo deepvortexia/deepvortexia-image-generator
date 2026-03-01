@@ -73,6 +73,7 @@ function HomeContent(){
       const data=await res.json();
       setImageUrl(data.imageUrl);setImageId(data.imageId||null);
       await refreshProfile();
+      if(window.parent!==window){window.parent.postMessage({type:'deepvortex-credits-updated'},'https://deepvortexai.art');}
     }catch(err:unknown){
       setToast({title:'Generation Failed',message:(err instanceof Error?err.message:'An unexpected error occurred')+'. No credits were deducted.',type:'error'});
     }finally{setIsGenerating(false);}
