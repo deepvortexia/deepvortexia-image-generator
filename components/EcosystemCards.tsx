@@ -18,7 +18,7 @@ export default function EcosystemCards() {
       status: "Available Now",
       isActive: true,
       href: "https://images.deepvortexai.art/",
-      isCurrent: true // C'est ici qu'on active le GLOW
+      isCurrent: true
     },
     {
       name: "Remove Background",
