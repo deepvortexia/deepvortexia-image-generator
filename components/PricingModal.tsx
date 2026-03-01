@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
 
 interface PricingPack {
   name: string;
@@ -26,7 +25,6 @@ interface PricingModalProps {
 
 export function PricingModal({ isOpen, onClose, defaultPack }: PricingModalProps) {
   const [loading, setLoading] = useState<string | null>(null);
-  const { } = useAuth(); // kept for potential future use
 
   if (!isOpen) return null;
 

@@ -36,7 +36,7 @@ export default function EcosystemCards() {
     }
   ];
 
-  const handleCardClick = (tool: any) => {
+  const handleCardClick = (tool: { isActive: boolean; href?: string }) => {
     if (tool.isActive && tool.href) {
       // If embedded in Hub iframe, navigate the parent window
       if (window.parent !== window) {

@@ -100,20 +100,10 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate,
   }
 
   if (error) {
-    const showSignInButton = error.includes('Sign in') || error.includes('free generations');
-    
     return (
       <div className="error-message">
         <span className="error-icon">⚠️</span>
         <p>{error}</p>
-        {showSignInButton && (
-          <button 
-            onClick={() => window.location.href = '/login'}
-            className="error-action-btn"
-          >
-            Sign In Now
-          </button>
-        )}
         <style jsx>{`
           .error-message {
             max-width: 600px;
@@ -126,11 +116,7 @@ export default function ImageDisplay({ imageUrl, isLoading, error, onRegenerate,
             align-items: center;
             gap: 12px;
           }
-          .error-message p { color: #FCA5A5; margin: 0; flex: 1; }
-          .error-action-btn { 
-            background: #D4AF37; color: black; border: none; 
-            padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; 
-          }
+          .error-message p { color: #FCA5A5; margin: 0; }
         `}</style>
       </div>
     );

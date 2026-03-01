@@ -4,15 +4,14 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from 'next/navigation';
+import type { User } from '@supabase/supabase-js';
 import './Header.css';
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { FavoritesModal } from "@/components/FavoritesModal";
 import { PricingModal } from "@/components/PricingModal";
 
-// --- NOUVEAU COMPOSANT INVISIBLE ---
-// On isole useSearchParams ici pour que Next.js puisse compiler le reste de la page
-function StripeSuccessHandler({ user, refreshProfile }: { user: any, refreshProfile: () => void }) {
+function StripeSuccessHandler({ user, refreshProfile }: { user: User | null, refreshProfile: () => void }) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
