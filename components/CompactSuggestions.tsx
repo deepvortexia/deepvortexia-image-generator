@@ -15,14 +15,14 @@ const popularStyles = [
 ];
 
 const quickIdeas = [
-  { emoji: '🏔️', text: 'Landscape', prompt: 'Epic volcanic sunset dramatic stormy sky mountain peaks' },
-  { emoji: '👤', text: 'Portrait', prompt: 'Mysterious hooded figure glowing eyes dark enchanted forest' },
-  { emoji: '🎭', text: 'Abstract', prompt: 'Swirling cosmic energy vibrant explosive kaleidoscope colors' },
-  { emoji: '🏙️', text: 'Cyberpunk', prompt: 'Neon rain-soaked city chrome robot crowded dark alley' },
-  { emoji: '🌌', text: 'Space', prompt: 'Ancient alien planet surface glowing nebula star formation' },
-  { emoji: '🐾', text: 'Animals', prompt: 'Majestic wolf howling moonlit misty mountain peak' },
-  { emoji: '🍕', text: 'Food', prompt: 'Gourmet truffle pasta golden candlelight luxury restaurant' },
-  { emoji: '🏠', text: 'Interior', prompt: 'Luxury penthouse golden hour minimalist modern architectural design' }
+  { emoji: '🏔️', text: 'Landscape', prompt: 'Epic volcanic sunset dramatic stormy sky mountains' },
+  { emoji: '👤', text: 'Portrait', prompt: 'Mysterious hooded figure glowing eyes dark forest' },
+  { emoji: '🎭', text: 'Abstract', prompt: 'Swirling cosmic energy vibrant explosive colors' },
+  { emoji: '🏙️', text: 'Cyberpunk', prompt: 'Neon rain soaked streets future Tokyo night' },
+  { emoji: '🌌', text: 'Space', prompt: 'Nebula explosion massive supernova colorful universe' },
+  { emoji: '🐾', text: 'Animals', prompt: 'Majestic white wolf glowing eyes misty forest' },
+  { emoji: '🍕', text: 'Food', prompt: 'Luxurious chocolate lava cake golden caramel drizzle' },
+  { emoji: '🏠', text: 'Interior', prompt: 'Minimalist luxury penthouse golden sunset panoramic view' }
 ];
 
 const mobileSuggestions = [
