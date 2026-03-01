@@ -91,6 +91,18 @@ function HomeContent(){
         <ImageDisplay imageUrl={imageUrl} isLoading={isGenerating} error={error} imageId={imageId} onRegenerate={handleGenerate}/>
         <EcosystemCards/>
       </main>
+      <footer className="text-center py-10 mt-8 border-t border-[rgba(212,175,55,0.2)]">
+        <a href="https://deepvortexai.art" className="block text-gray-400 hover:text-[#D4AF37] no-underline text-sm mb-4 transition-colors">Deep Vortex AI - Building the complete AI creative ecosystem</a>
+        <div className="flex items-center justify-center gap-6 flex-wrap">
+          <a href="https://www.tiktok.com/@deepvortexai" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#D4AF37] no-underline text-sm hover:opacity-75 transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.2 8.2 0 004.79 1.53V6.77a4.85 4.85 0 01-1.02-.08z"/>
+            </svg>
+            TikTok
+          </a>
+          <a href="mailto:admin@deepvortexai.art" className="text-[#D4AF37] no-underline text-sm hover:opacity-75 transition-opacity">admin@deepvortexai.art</a>
+        </div>
+      </footer>
       <Notification show={!!toast} onClose={()=>setToast(null)} title={toast?.title} message={toast?.message} type={toast?.type}/>
     </div>
   );
