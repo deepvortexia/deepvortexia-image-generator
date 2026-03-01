@@ -158,7 +158,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
         <h1 className="brand-title-text">DΞΞP VORTΞX AI</h1>
         
         {/* Tagline */}
-        <p className="primary-tagline">Your AI Tools Ecosystem</p>
+        <p className="primary-tagline">✨ Turn words into images instantly</p>
 
         {/* Pill Buttons Container */}
         <div className="hub-pills-container">
