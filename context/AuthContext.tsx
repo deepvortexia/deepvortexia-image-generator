@@ -5,7 +5,7 @@ import { User, Session, AuthError, AuthChangeEvent } from '@supabase/supabase-js
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types/supabase'
 
-const DEFAULT_SIGNUP_CREDITS = 2;
+const DEFAULT_SIGNUP_CREDITS = 0;
 
 interface AuthContextType {
   user: User | null
