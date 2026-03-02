@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   creator: "Deep Vortex AI",
   publisher: "Deep Vortex AI",
   robots: "index, follow",
+  verification: {
+    google: "76BAsq1e-Ol7tA8HmVLi9LgMDXpjyBIQvdAx6bZXF7Q",
+  },
   metadataBase: new URL("https://images.deepvortexai.art"),
   alternates: {
     canonical: "https://images.deepvortexai.art",
