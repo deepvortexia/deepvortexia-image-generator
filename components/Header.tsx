@@ -163,12 +163,17 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
         {/* Pill Buttons Container */}
         <div className="hub-pills-container">
           {/* Credits Pill */}
-          <div className="hub-pill credits-pill">
-            <span className="pill-icon">🏆</span>
-            <span className="pill-text">
-              {user ? `${profile?.credits ?? 0} credits` : 'Sign in for credits'}
-            </span>
-          </div>
+          {user ? (
+            <div className="hub-pill credits-pill">
+              <span className="pill-icon">🏆</span>
+              <span className="pill-text">{profile?.credits ?? 0} credits</span>
+            </div>
+          ) : (
+            <button className="hub-pill credits-pill" style={{ cursor: 'pointer' }} onClick={() => setShowAuthModal(true)} title="Sign in to get free credits">
+              <span className="pill-icon">🏆</span>
+              <span className="pill-text">Sign in - Get 2 Free Credits</span>
+            </button>
+          )}
 
           {/* Buy Credits Pill */}
           <button 
