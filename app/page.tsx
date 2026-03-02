@@ -91,16 +91,28 @@ function HomeContent(){
         <ImageDisplay imageUrl={imageUrl} isLoading={isGenerating} error={error} imageId={imageId} onRegenerate={handleGenerate}/>
         <EcosystemCards/>
       </main>
-      <footer className="text-center py-10 mt-8 border-t border-[rgba(212,175,55,0.2)]">
-        <a href="https://deepvortexai.art" className="block text-gray-400 hover:text-[#D4AF37] no-underline text-sm mb-4 transition-colors">Deep Vortex AI - Building the complete AI creative ecosystem</a>
-        <div className="flex items-center justify-center gap-6 flex-wrap">
-          <a href="https://www.tiktok.com/@deepvortexai" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#D4AF37] no-underline text-sm hover:opacity-75 transition-opacity">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+      <footer className="text-center py-14 mt-8 border-t border-[rgba(212,175,55,0.2)]">
+        <a href="https://deepvortexai.art" className="block text-gray-400 hover:text-[#D4AF37] no-underline text-lg mb-6 transition-colors">Deep Vortex AI - Building the complete AI creative ecosystem</a>
+        <div className="flex items-center justify-center gap-8 flex-wrap">
+          <a href="https://www.tiktok.com/@deepvortexai" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#D4AF37] no-underline text-base hover:opacity-75 transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
               <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.2 8.2 0 004.79 1.53V6.77a4.85 4.85 0 01-1.02-.08z"/>
             </svg>
             TikTok
           </a>
-          <a href="mailto:admin@deepvortexai.xyz" className="inline-block px-5 py-2 border border-[rgba(212,175,55,0.6)] rounded-lg bg-transparent text-[#D4AF37] no-underline text-sm hover:bg-[rgba(212,175,55,0.1)] hover:border-[#D4AF37] transition-all">Contact Us</a>
+          <a href="https://x.com/deepvortexart" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#D4AF37] no-underline text-base hover:opacity-75 transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            X
+          </a>
+          <a href="https://deepvortexai.quora.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#D4AF37] no-underline text-base hover:opacity-75 transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12.071 0C5.4 0 0 5.4 0 12.071c0 6.67 5.4 12.071 12.071 12.071 6.67 0 12.071-5.4 12.071-12.071C24.142 5.4 18.742 0 12.07 0zm2.028 18.383c-.5-.998-.954-1.88-1.907-1.88h-.213l1.193-2.647h-.002c-.362.12-.743.18-1.128.18-2.287 0-3.996-1.837-3.996-4.177s1.709-4.177 3.997-4.177 3.996 1.837 3.996 4.177c0 1.29-.496 2.432-1.32 3.29.277.397.533.812.793 1.227l.15.238c.278.442.55.886.832 1.33l-2.395 2.44zm-2.057-4.997c1.18 0 1.94-1.083 1.94-2.51 0-1.428-.76-2.511-1.94-2.511s-1.94 1.083-1.94 2.51c0 1.428.76 2.511 1.94 2.511z"/>
+            </svg>
+            Quora
+          </a>
+          <a href="mailto:admin@deepvortexai.xyz" className="inline-block px-6 py-2.5 border border-[rgba(212,175,55,0.6)] rounded-lg bg-transparent text-[#D4AF37] no-underline text-base hover:bg-[rgba(212,175,55,0.1)] hover:border-[#D4AF37] transition-all">Contact Us</a>
         </div>
       </footer>
       <Notification show={!!toast} onClose={()=>setToast(null)} title={toast?.title} message={toast?.message} type={toast?.type}/>
