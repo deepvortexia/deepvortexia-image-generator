@@ -20,13 +20,16 @@ export const metadata: Metadata = {
     title: "AI Image Generator - Deep Vortex AI",
     description: "Create stunning AI-generated images from text. Professional quality, multiple aspect ratios, instant results.",
     siteName: "Deep Vortex AI",
-    images: [{ url: "/deepgoldremoveetiny.png", width: 512, height: 512, alt: "Deep Vortex AI Logo" }],
+    locale: "en_US",
+    images: [{ url: "https://images.deepvortexai.art/deepgoldremoveetiny.png", width: 512, height: 512, alt: "Deep Vortex AI Image Generator" }],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@deepvortexart",
+    creator: "@deepvortexart",
     title: "AI Image Generator - Deep Vortex AI",
     description: "Create stunning AI-generated images from text. Professional quality, instant results.",
-    images: ["/deepgoldremoveetiny.png"],
+    images: ["https://images.deepvortexai.art/deepgoldremoveetiny.png"],
   },
   icons: {
     icon: "/favicon.png",
@@ -73,7 +76,12 @@ export default function RootLayout({
               "creator": {
                 "@type": "Organization",
                 "name": "Deep Vortex AI",
-                "url": "https://deepvortexai.art"
+                "url": "https://deepvortexai.art",
+                "sameAs": [
+                  "https://www.tiktok.com/@deepvortexai",
+                  "https://x.com/deepvortexart",
+                  "https://deepvortexai.quora.com/"
+                ]
               },
               "featureList": [
                 "Text to Image Generation",
