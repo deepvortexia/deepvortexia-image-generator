@@ -76,6 +76,18 @@ export default async function handler(
               auth: { autoRefreshToken: false, persistSession: false },
       });
 
+      // Idempotency check — ignore duplicate webhook deliveries
+      const { data: existing } = await supabase
+          .from('transactions')
+          .select('id')
+          .eq('stripe_session_id', session.id)
+          .single()
+
+      if (existing) {
+          console.log('Duplicate webhook event, already processed:', session.id)
+          return res.status(200).json({ received: true })
+      }
+
       // Get current credits
       const { data: profile, error: fetchError } = await supabase
           .from('profiles')
