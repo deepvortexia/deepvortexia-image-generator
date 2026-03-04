@@ -30,6 +30,15 @@ export default function EcosystemCards() {
       isCurrent: false
     },
     {
+      name: "Upscaler",
+      icon: "🔍",
+      desc: "Upscale images up to 4x",
+      status: "Available Now",
+      isActive: true,
+      href: "https://upscaler.deepvortexai.art",
+      isCurrent: false
+    },
+    {
       name: "More Tools",
       icon: "✨",
       desc: "Expanding soon",
