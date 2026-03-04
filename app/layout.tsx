@@ -44,6 +44,8 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-title": "Deep Vortex AI",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
     "application-name": "Deep Vortex AI Image Generator",
+    "ai-content-declaration": "AI-powered creative tools",
+    "perplexity-verification": "deepvortexai",
   },
 };
 
@@ -54,6 +56,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" type="image/png" href="/favicon.png?v=2" />
+        <link rel="llms" href="/llms.txt" type="text/plain" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />

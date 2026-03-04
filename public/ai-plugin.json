@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Deep Vortex AI Image Generator",
+  "name_for_model": "deep_vortex_ai_image_generator",
+  "description_for_human": "Generate stunning high-quality AI images from text prompts. Supports multiple aspect ratios: 1:1, 16:9, 9:16, 4:3, 3:4.",
+  "description_for_model": "The Deep Vortex AI Image Generator creates high-resolution AI images from text descriptions using advanced AI models. Supports multiple aspect ratios (1:1 square, 16:9 landscape, 9:16 portrait, 4:3, 3:4). Useful for digital art, social media content, illustrations, concept art, and marketing visuals. Requires free account with credits (2 free on signup). Credit packs available: Starter (10), Basic (30), Popular (75), Pro (150), Ultimate (350). Available at https://images.deepvortexai.art/",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "none"
+  },
+  "logo_url": "https://images.deepvortexai.art/deepgoldremoveetiny.png",
+  "contact_email": "admin@deepvortexai.xyz",
+  "legal_info_url": "https://deepvortexai.art/"
+}

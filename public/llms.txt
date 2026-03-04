@@ -1,0 +1,79 @@
+# Deep Vortex AI Image Generator
+
+> Generate stunning high-quality AI images from text prompts. Supports multiple aspect ratios for any use case. Professional results in seconds.
+
+## URL
+
+https://images.deepvortexai.art/
+
+## About
+
+The Deep Vortex AI Image Generator uses cutting-edge AI models to create high-resolution images from text descriptions. Enter a prompt, select your aspect ratio, and receive a professional-quality AI image instantly.
+
+Part of the Deep Vortex AI ecosystem: https://deepvortexai.art
+
+## Features
+
+- Text-to-image generation using advanced AI models
+- Multiple aspect ratios: 1:1 (square), 16:9 (landscape), 9:16 (portrait/mobile), 4:3, 3:4
+- High-resolution output
+- Instant download
+- Favorites gallery (cloud-saved)
+- Aspect ratio selector for any platform
+- Quick idea prompts for inspiration
+
+## Use Cases
+
+- Digital art and illustrations
+- Social media content (Instagram, Twitter, TikTok)
+- YouTube thumbnails (16:9)
+- Mobile wallpapers (9:16)
+- Blog and article headers
+- Concept art and mood boards
+- Marketing visuals
+- Background images
+
+## How to Use
+
+1. Go to https://images.deepvortexai.art/
+2. Sign in or create a free account (2 free credits included)
+3. Enter a detailed text description of your desired image
+4. Select your preferred aspect ratio
+5. Click Generate
+6. Download or save to Favorites
+
+## Example Prompts (effective for this tool)
+
+- "Cosmic nebula explosion vibrant colors deep space photorealistic"
+- "Ancient dragon soaring above mystical glowing mountain castle"
+- "Ethereal goddess with silver hair enchanted forest golden light"
+- "Futuristic cyberpunk robot neon city rain night cinematic"
+- "Massive ocean wave crashing dramatic stormy sky epic"
+- "Majestic lion portrait golden savanna sunset dramatic lighting"
+- "Snow capped mountain reflection crystal lake misty morning"
+- "Mystical wizard casting spell ancient ruins swirling energy"
+
+## Pricing
+
+- 2 free credits on account creation
+- 1 credit per image generated
+- Credit packs: Starter (10), Basic (30), Popular (75), Pro (150), Ultimate (350)
+- Payments via Stripe
+
+## API
+
+- Generation endpoint: POST /api/generate (authenticated, requires JWT + prompt + aspectRatio)
+- Favorites endpoint: GET/POST /api/favorites (authenticated)
+- Authentication: Supabase JWT
+
+## Related Tools
+
+- AI Emoticon Generator: https://emoticons.deepvortexai.art/
+- Deep Vortex AI Hub: https://deepvortexai.art
+
+## Contact
+
+- Email: admin@deepvortexai.xyz
+- TikTok: https://www.tiktok.com/@deepvortexai
+- X (Twitter): https://x.com/deepvortexart
+- Quora: https://deepvortexai.quora.com/

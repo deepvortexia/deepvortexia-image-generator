@@ -4,7 +4,7 @@ export default function EcosystemCards() {
   const tools = [
     {
       name: "Emoticons",
-      icon: "😀",
+      icon: "😃",
       desc: "Custom emoji creation",
       status: "Available Now",
       isActive: true,
@@ -17,15 +17,17 @@ export default function EcosystemCards() {
       desc: "AI artwork",
       status: "Available Now",
       isActive: true,
-      href: "https://images.deepvortexai.art/",
+      href: "https://images.deepvortexai.art",
       isCurrent: true
     },
     {
-      name: "Remove Background",
-      icon: "🎨",
+      name: "Remove BG",
+      icon: "✂️",
       desc: "Remove backgrounds instantly",
-      status: "Coming Soon",
-      isActive: false
+      status: "Available Now",
+      isActive: true,
+      href: "https://bgremover.deepvortexai.art",
+      isCurrent: false
     },
     {
       name: "More Tools",
