@@ -138,11 +138,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
             ← Back to Hub
           </Link>
         )}
-        {!isEmbedded && (
-          <Link href="https://3d.deepvortexai.art" className="back-to-hub-link">
-            🧊 3D Generator
-          </Link>
-        )}
 
         {/* Logo Display Zone with Rotating Orbits */}
         <div className="logo-display-zone">

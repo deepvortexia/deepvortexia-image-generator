@@ -39,6 +39,15 @@ export default function EcosystemCards() {
       isCurrent: false
     },
     {
+      name: "3D Generator",
+      icon: "🧊",
+      desc: "Image to 3D model",
+      status: "Available Now",
+      isActive: true,
+      href: "https://3d.deepvortexai.art",
+      isCurrent: false
+    },
+    {
       name: "More Tools",
       icon: "✨",
       desc: "Expanding soon",
