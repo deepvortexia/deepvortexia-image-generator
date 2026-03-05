@@ -159,11 +159,17 @@
   box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
 }
 
-.favorites-pill { border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; cursor: pointer; }
+.favorites-pill {
+  border: 1.5px solid #F5A623;
+  color: #F5A623;
+  cursor: pointer;
+  background: linear-gradient(135deg, #1a1208, #1e1810);
+  box-shadow: 0 0 14px rgba(245, 166, 35, 0.25);
+}
 .favorites-pill:hover {
-  border-color: rgba(212, 175, 55, 0.6);
-  background: rgba(212, 175, 55, 0.05);
-  transform: translateY(-2px);
+  box-shadow: 0 0 22px rgba(245, 166, 35, 0.5);
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #221a0c, #2a2010);
 }
 
 .profile-pill { padding: 0.5rem 1rem; gap: 0.75rem; border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; }
