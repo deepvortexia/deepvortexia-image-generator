@@ -82,12 +82,13 @@ export async function GET(req: NextRequest) {
 
     const { user, supabase } = authResult;
 
-    // Fetch favorites for the authenticated user
+    // Fetch favorites for the authenticated user (image-generator tool only)
     const { data, error } = await supabase!
       .from('images')
       .select('*')
       .eq('user_id', user!.id)
       .eq('is_favorite', true)
+      .eq('tool_name', 'image-generator')
       .order('created_at', { ascending: false });
 
     if (error) {
