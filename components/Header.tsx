@@ -155,7 +155,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
         </div>
 
         {/* Brand Title */}
-        <h1 className="brand-title-text">DΞΞP VORTΞX AI</h1>
+        <h1 className="brand-title-text">AI Image Generator</h1>
         
         {/* Tagline */}
         <p className="primary-tagline">✨ Turn words into images instantly</p>
