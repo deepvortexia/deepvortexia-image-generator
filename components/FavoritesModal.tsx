@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchFavorites, toggleFavorite, FavoriteImage } from '@/lib/favorites';
+import { fetchFavorites, removeFavorite, FavoriteImage } from '@/lib/favorites';
 import { useAuth } from '@/context/AuthContext';
 
 interface FavoritesModalProps {
@@ -40,8 +40,7 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
 
     if (confirm('Remove this image from favorites?')) {
       try {
-        await toggleFavorite(session.access_token, id);
-        // Reload favorites after removal
+        await removeFavorite(session.access_token, id);
         const data = await fetchFavorites(session.access_token);
         setFavorites(data);
       } catch (err) {
@@ -112,8 +111,8 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
                   <div className="favorite-image-container">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={favorite.image_url}
-                      alt={favorite.prompt}
+                      src={favorite.result_url}
+                      alt={favorite.prompt || ''}
                       className="favorite-image"
                       loading="lazy"
                     />
@@ -127,7 +126,7 @@ export const FavoritesModal = ({ isOpen, onClose }: FavoritesModalProps) => {
                   <div className="favorite-actions">
                     <button
                       className="favorite-btn download-btn"
-                      onClick={() => handleDownload(favorite.image_url)}
+                      onClick={() => handleDownload(favorite.result_url)}
                       title="Download image"
                     >
                       📥 Download

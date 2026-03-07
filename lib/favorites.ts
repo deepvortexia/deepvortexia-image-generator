@@ -1,10 +1,10 @@
 export interface FavoriteImage {
   id: string;
   user_id: string;
-  prompt: string;
-  image_url: string;
-  aspect_ratio: string | null;
-  is_favorite: boolean;
+  tool_type: string;
+  result_url: string;
+  prompt: string | null;
+  metadata: Record<string, unknown>;
   created_at: string;
 }
 
@@ -30,7 +30,7 @@ export const fetchFavorites = async (token: string): Promise<FavoriteImage[]> =>
   }
 };
 
-export const toggleFavorite = async (token: string, imageId: string): Promise<boolean> => {
+export const saveFavorite = async (token: string, imageUrl: string, prompt: string): Promise<string | null> => {
   try {
     const response = await fetch('/api/favorites', {
       method: 'POST',
@@ -38,18 +38,39 @@ export const toggleFavorite = async (token: string, imageId: string): Promise<bo
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ imageId }),
+      body: JSON.stringify({ imageUrl, prompt }),
     });
 
     if (!response.ok) {
-      console.error('Failed to toggle favorite:', response.statusText);
-      return false;
+      console.error('Failed to save favorite:', response.statusText);
+      return null;
     }
 
     const data = await response.json();
-    return data.isFavorite || false;
+    return data.id || null;
   } catch (error) {
-    console.error('Error toggling favorite:', error);
+    console.error('Error saving favorite:', error);
+    return null;
+  }
+};
+
+export const removeFavorite = async (token: string, id: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`/api/favorites?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Failed to remove favorite:', response.statusText);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error removing favorite:', error);
     return false;
   }
 };

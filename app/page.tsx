@@ -17,7 +17,6 @@ function HomeContent(){
   const[userPrompt,setUserPrompt]=useState("");
   const[isGenerating,setIsGenerating]=useState(false);
   const[imageUrl,setImageUrl]=useState<string|null>(null);
-  const[imageId,setImageId]=useState<string|null>(null);
   const[error,setError]=useState<string|null>(null);
   const[toast,setToast]=useState<{title:string;message:string;type:'success'|'error'|'warning'}|null>(null);
   const[buyPack,setBuyPack]=useState<string|null>(null);
@@ -42,7 +41,7 @@ function HomeContent(){
   },[searchParams,refreshWithRetry]);
   const handleGenerate=async()=>{
     if(!userPrompt.trim())return;
-    setIsGenerating(true);setError(null);setToast(null);setImageUrl(null);setImageId(null);
+    setIsGenerating(true);setError(null);setToast(null);setImageUrl(null);
     try{
       const{data:{session:s}}=await supabase.auth.getSession();
       if(!s?.access_token){setError('Please sign in.');setIsGenerating(false);return;}
@@ -73,7 +72,7 @@ function HomeContent(){
         return;
       }
       const data=await res.json();
-      setImageUrl(data.imageUrl);setImageId(data.imageId||null);
+      setImageUrl(data.imageUrl);
       await refreshProfile();
       if(window.parent!==window){window.parent.postMessage({type:'deepvortex-credits-updated'},'https://deepvortexai.art');}
     }catch(err:unknown){
@@ -88,7 +87,7 @@ function HomeContent(){
           <CompactSuggestions onStyleSelect={handleStyleSelect} onIdeaSelect={handleIdeaSelect}/>
           <PromptSection prompt={userPrompt} onPromptChange={setUserPrompt} aspectRatio={aspectRatio} onAspectRatioChange={setAspectRatio} onGenerate={handleGenerate} isLoading={isGenerating} textareaRef={textareaRef}/>
         </div>
-        <ImageDisplay imageUrl={imageUrl} isLoading={isGenerating} error={error} imageId={imageId} onRegenerate={handleGenerate}/>
+        <ImageDisplay imageUrl={imageUrl} isLoading={isGenerating} error={error} prompt={userPrompt} onRegenerate={handleGenerate}/>
         <EcosystemCards/>
       </main>
       <footer className="text-center py-14 mt-8 border-t border-[rgba(212,175,55,0.2)]">
