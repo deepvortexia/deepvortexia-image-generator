@@ -290,29 +290,20 @@ export async function POST(req: NextRequest) {
       console.log('✅ Image generated successfully:', imageUrl);
 
       // Upload to Supabase Storage for a permanent URL (Replicate URLs expire)
-      try {
-        const imgRes = await fetch(imageUrl);
-        if (imgRes.ok) {
-          const imgBuffer = await imgRes.arrayBuffer();
-          const fileName = `${user.id}/${Date.now()}.jpg`;
-          const { error: uploadError } = await supabase.storage
-            .from('generated-images')
-            .upload(fileName, imgBuffer, { contentType: 'image/jpeg', upsert: false });
-          if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage
-              .from('generated-images')
-              .getPublicUrl(fileName);
-            if (publicUrl) {
-              imageUrl = publicUrl;
-              console.log('✅ Uploaded to Supabase Storage:', imageUrl);
-            }
-          } else {
-            console.error('⚠️ Storage upload failed, using Replicate URL:', uploadError);
-          }
-        }
-      } catch (storageErr) {
-        console.error('⚠️ Storage error, using Replicate URL:', storageErr);
-      }
+      const imgRes = await fetch(imageUrl);
+      if (!imgRes.ok) throw new Error(`Failed to fetch Replicate output: ${imgRes.status}`);
+      const imgBuffer = await imgRes.arrayBuffer();
+      const fileName = `${user.id}/${Date.now()}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from('generated-images')
+        .upload(fileName, imgBuffer, { contentType: 'image/jpeg', upsert: false });
+      if (uploadError) throw new Error(`Storage upload failed: ${uploadError.message}`);
+      const { data: { publicUrl } } = supabase.storage
+        .from('generated-images')
+        .getPublicUrl(fileName);
+      if (!publicUrl) throw new Error('Failed to get public URL after upload');
+      imageUrl = publicUrl;
+      console.log('✅ Uploaded to Supabase Storage:', imageUrl);
 
       // Save image to database (non-critical)
       let imageId: string | null = null;
