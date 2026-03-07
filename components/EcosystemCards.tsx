@@ -48,11 +48,13 @@ export default function EcosystemCards() {
       isCurrent: false
     },
     {
-      name: "More Tools",
-      icon: "✨",
-      desc: "Expanding soon",
-      status: "In Development",
-      isActive: false
+      name: "Voice Gen",
+      icon: "🎙️",
+      desc: "AI Voice Generator",
+      status: "Available Now",
+      isActive: true,
+      href: "https://voice.deepvortexai.art",
+      isCurrent: false
     }
   ];
 
