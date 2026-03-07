@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js'
 
+const TOOL_TYPE = 'image'
+
 interface AuthResult {
   success: boolean;
   user?: { id: string };
@@ -9,13 +11,10 @@ interface AuthResult {
 }
 
 async function authenticateRequest(req: NextRequest): Promise<AuthResult> {
-  // Create two Supabase clients:
-  // 1. Auth client with anon key for JWT verification (getUser)
-  // 2. Admin client with service role key for database queries (bypass RLS)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-  
+
   if (!supabaseUrl || !supabaseAnonKey) {
     return {
       success: false,
@@ -36,12 +35,9 @@ async function authenticateRequest(req: NextRequest): Promise<AuthResult> {
     };
   }
 
-  // Use anon key for auth verification
   const supabaseAuth = createSupabaseClient(supabaseUrl, supabaseAnonKey)
-  // Use service role key for database operations (bypasses RLS)
   const supabase = createSupabaseClient(supabaseUrl, supabaseServiceKey)
 
-  // Get token from Authorization header
   const authHeader = req.headers.get('authorization')
   if (!authHeader) {
     return {
@@ -66,114 +62,99 @@ async function authenticateRequest(req: NextRequest): Promise<AuthResult> {
     };
   }
 
-  return {
-    success: true,
-    user,
-    supabase
-  };
+  return { success: true, user, supabase };
 }
 
 export async function GET(req: NextRequest) {
   try {
     const authResult = await authenticateRequest(req);
-    if (!authResult.success) {
-      return authResult.error!;
-    }
+    if (!authResult.success) return authResult.error!;
 
     const { user, supabase } = authResult;
 
-    // Fetch favorites for the authenticated user (image-generator tool only)
     const { data, error } = await supabase!
-      .from('images')
-      .select('*')
+      .from('favorites')
+      .select('id, result_url, prompt, metadata, created_at')
       .eq('user_id', user!.id)
-      .eq('is_favorite', true)
-      .eq('tool_name', 'image-generator')
+      .eq('tool_type', TOOL_TYPE)
       .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching favorites:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch favorites', success: false },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch favorites', success: false }, { status: 500 });
     }
 
-    return NextResponse.json({ 
-      favorites: data || [],
-      success: true 
-    });
+    return NextResponse.json({ favorites: data || [], success: true });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error in GET /api/favorites:', errorMessage);
-    return NextResponse.json(
-      { error: 'Internal server error', success: false },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error', success: false }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { imageId } = body;
+    const { imageUrl, prompt } = body;
 
-    if (!imageId) {
-      return NextResponse.json(
-        { error: 'imageId is required', success: false },
-        { status: 400 }
-      );
+    if (!imageUrl || !prompt) {
+      return NextResponse.json({ error: 'imageUrl and prompt are required', success: false }, { status: 400 });
     }
 
     const authResult = await authenticateRequest(req);
-    if (!authResult.success) {
-      return authResult.error!;
-    }
+    if (!authResult.success) return authResult.error!;
 
     const { user, supabase } = authResult;
 
-    // Get current state of the image
-    const { data: image, error: fetchError } = await supabase!
-      .from('images')
-      .select('is_favorite')
-      .eq('id', imageId)
-      .eq('user_id', user!.id)
+    const { data, error } = await supabase!
+      .from('favorites')
+      .insert({ user_id: user!.id, tool_type: TOOL_TYPE, result_url: imageUrl, prompt })
+      .select('id')
       .single();
 
-    if (fetchError || !image) {
-      console.error('Error fetching image:', fetchError);
-      return NextResponse.json(
-        { error: 'Image not found or access denied', success: false },
-        { status: 404 }
-      );
+    if (error) {
+      console.error('Error saving favorite:', error);
+      return NextResponse.json({ error: 'Failed to save favorite', success: false }, { status: 500 });
     }
 
-    // Toggle the favorite status
-    const newFavoriteStatus = !image.is_favorite;
-    const { error: updateError } = await supabase!
-      .from('images')
-      .update({ is_favorite: newFavoriteStatus })
-      .eq('id', imageId)
-      .eq('user_id', user!.id);
-
-    if (updateError) {
-      console.error('Error updating favorite status:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update favorite status', success: false },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ 
-      isFavorite: newFavoriteStatus,
-      success: true 
-    });
+    return NextResponse.json({ success: true, id: data.id });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error in POST /api/favorites:', errorMessage);
-    return NextResponse.json(
-      { error: 'Internal server error', success: false },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error', success: false }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'id is required', success: false }, { status: 400 });
+    }
+
+    const authResult = await authenticateRequest(req);
+    if (!authResult.success) return authResult.error!;
+
+    const { user, supabase } = authResult;
+
+    const { error } = await supabase!
+      .from('favorites')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user!.id)
+      .eq('tool_type', TOOL_TYPE);
+
+    if (error) {
+      console.error('Error deleting favorite:', error);
+      return NextResponse.json({ error: 'Failed to delete favorite', success: false }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error in DELETE /api/favorites:', errorMessage);
+    return NextResponse.json({ error: 'Internal server error', success: false }, { status: 500 });
   }
 }
