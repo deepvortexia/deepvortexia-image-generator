@@ -55,6 +55,15 @@ export default function EcosystemCards() {
       isActive: true,
       href: "https://voice.deepvortexai.art",
       isCurrent: false
+    },
+    {
+      name: "Image to Video",
+      icon: "🎬",
+      desc: "Animate images with AI",
+      status: "Available Now",
+      isActive: true,
+      href: "https://video.deepvortexai.art",
+      isCurrent: false
     }
   ];
 
