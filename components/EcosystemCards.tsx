@@ -1,168 +1,39 @@
-"use client"; // Important pour gérer le onClick
+'use client'
+import './EcosystemCards.css'
+
+const tools = [
+  { name: 'Emoticons',    icon: '😃', desc: 'Custom emoji creation',        href: 'https://emoticons.deepvortexai.art', isCurrent: false },
+  { name: 'Image Gen',    icon: '🎨', desc: 'AI artwork',                   href: 'https://images.deepvortexai.art',    isCurrent: true  },
+  { name: 'Remove BG',    icon: '✂️', desc: 'Remove backgrounds instantly', href: 'https://bgremover.deepvortexai.art', isCurrent: false },
+  { name: 'Upscaler',     icon: '🔍', desc: 'Upscale images up to 4x',      href: 'https://upscaler.deepvortexai.art',  isCurrent: false },
+  { name: '3D Generator', icon: '🧊', desc: 'Image to 3D model',            href: 'https://3d.deepvortexai.art',        isCurrent: false },
+  { name: 'Voice Gen',    icon: '🎙️', desc: 'AI Voice Generator',           href: 'https://voice.deepvortexai.art',     isCurrent: false },
+  { name: 'Image → Video',icon: '🎬', desc: 'Animate images with AI',       href: 'https://video.deepvortexai.art',     isCurrent: false },
+]
 
 export default function EcosystemCards() {
-  const tools = [
-    {
-      name: "Emoticons",
-      icon: "😃",
-      desc: "Custom emoji creation",
-      status: "Available Now",
-      isActive: true,
-      href: "https://emoticons.deepvortexai.art",
-      isCurrent: false
-    },
-    {
-      name: "Image Gen",
-      icon: "🎨",
-      desc: "AI artwork",
-      status: "Available Now",
-      isActive: true,
-      href: "https://images.deepvortexai.art",
-      isCurrent: true
-    },
-    {
-      name: "Remove BG",
-      icon: "✂️",
-      desc: "Remove backgrounds instantly",
-      status: "Available Now",
-      isActive: true,
-      href: "https://bgremover.deepvortexai.art",
-      isCurrent: false
-    },
-    {
-      name: "Upscaler",
-      icon: "🔍",
-      desc: "Upscale images up to 4x",
-      status: "Available Now",
-      isActive: true,
-      href: "https://upscaler.deepvortexai.art",
-      isCurrent: false
-    },
-    {
-      name: "3D Generator",
-      icon: "🧊",
-      desc: "Image to 3D model",
-      status: "Available Now",
-      isActive: true,
-      href: "https://3d.deepvortexai.art",
-      isCurrent: false
-    },
-    {
-      name: "Voice Gen",
-      icon: "🎙️",
-      desc: "AI Voice Generator",
-      status: "Available Now",
-      isActive: true,
-      href: "https://voice.deepvortexai.art",
-      isCurrent: false
-    },
-    {
-      name: "Image to Video",
-      icon: "🎬",
-      desc: "Animate images with AI",
-      status: "Available Now",
-      isActive: true,
-      href: "https://video.deepvortexai.art",
-      isCurrent: false
-    }
-  ];
-
-  const handleCardClick = (tool: { isActive: boolean; href?: string }) => {
-    if (tool.isActive && tool.href) {
-      // If embedded in Hub iframe, navigate the parent window
-      if (window.parent !== window) {
-        window.parent.postMessage({ type: 'deepvortex-navigate', url: tool.href }, 'https://deepvortexai.art');
-      } else {
-        window.location.assign(tool.href);
-      }
-    }
-  };
-
   return (
-    <section className="preview-tools-section">
-      <h2 className="section-heading">Complete AI Ecosystem</h2>
-      <div className="preview-tools-grid">
-        {tools.map((tool, idx) => {
-          // Construction dynamique des classes
-          const cardClasses = `preview-card ${tool.isActive ? 'card-active' : 'card-inactive'} ${tool.isCurrent ? 'glow-active' : ''}`;
-          
-          return (
-            <div 
-              key={idx} 
-              className={cardClasses}
-              onClick={() => handleCardClick(tool)}
-              role={tool.isActive ? "button" : "presentation"}
-              style={{ cursor: tool.isActive ? 'pointer' : 'default' }}
-            >
-              <div className="preview-icon">{tool.icon}</div>
-              <h3 className="preview-title">{tool.name}</h3>
-              <p className="preview-desc">{tool.desc}</p>
-              
-              <div className="status-container">
-                <span className={`status-badge ${tool.isActive ? 'badge-active' : 'badge-upcoming'}`}>
-                  {tool.status}
-                </span>
-                {tool.isCurrent && <div className="current-tool-label">CURRENT TOOL</div>}
-              </div>
+    <section className="ecosystem-section">
+      <h2 className="ecosystem-heading">Complete AI Ecosystem</h2>
+      <div className="ecosystem-grid">
+        {tools.map((tool, idx) => (
+          <div
+            key={idx}
+            className={`ecosystem-card eco-card-active${tool.isCurrent ? ' eco-glow' : ''}`}
+            onClick={() => { if (!tool.isCurrent) window.location.href = tool.href }}
+            role={tool.isCurrent ? 'presentation' : 'button'}
+            style={{ cursor: tool.isCurrent ? 'default' : 'pointer' }}
+          >
+            <div className="eco-icon">{tool.icon}</div>
+            <h3 className="eco-title">{tool.name}</h3>
+            <p className="eco-desc">{tool.desc}</p>
+            <div className="eco-status-container">
+              <span className="eco-status-badge eco-badge-active">Available Now</span>
+              {tool.isCurrent && <div className="eco-current-label">CURRENT TOOL</div>}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
-
-      <style jsx>{`
-        .preview-tools-section { padding: 4rem 1rem; max-width: 1200px; margin: 0 auto; }
-        .section-heading { font-family: 'Orbitron', sans-serif; font-size: 2rem; text-align: center; margin-bottom: 3rem; color: #D4AF37; }
-        
-        .preview-tools-grid { 
-          display: grid; 
-          grid-template-columns: repeat(4, 1fr); 
-          gap: 1.5rem; 
-        }
-
-        .preview-card {
-          background: rgba(26, 26, 26, 0.8) !important;
-          border: 1px solid rgba(212, 175, 55, 0.2) !important;
-          border-radius: 16px;
-          padding: 2rem 1rem;
-          text-align: center;
-          transition: all 0.3s ease;
-          backdrop-filter: blur(10px);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          min-height: 320px;
-          justify-content: space-between;
-          color: white !important;
-          width: 100%; /* Force la largeur */
-          box-sizing: border-box; /* Évite les débordements */
-        }
-
-        .glow-active {
-          border: 2px solid #D4AF37 !important;
-          box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.1) !important;
-          background: rgba(212, 175, 55, 0.08) !important;
-        }
-
-        .preview-card.card-active:hover {
-          border-color: #D4AF37 !important;
-          transform: translateY(-5px);
-          box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-        }
-
-        .preview-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .preview-title { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: #fff; margin: 0.5rem 0; }
-        .preview-desc { font-size: 0.9rem; color: #ccc; line-height: 1.4; padding: 0 10px; }
-        
-        .status-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; align-items: center; }
-        .status-badge { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; border: 1px solid; }
-        .badge-active { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border-color: #2ecc71; }
-        .badge-upcoming { background: rgba(241, 196, 15, 0.1); color: #f1c40f; border-color: rgba(241, 196, 15, 0.3); }
-
-        .current-tool-label { font-size: 0.7rem; font-weight: 800; color: #D4AF37; border: 1px solid #D4AF37; padding: 0.3rem 0.8rem; border-radius: 4px; background: rgba(212, 175, 55, 0.1); }
-
-        @media (max-width: 1024px) { .preview-tools-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .preview-tools-grid { grid-template-columns: 1fr; } }
-      `}</style>
     </section>
-  );
+  )
 }
