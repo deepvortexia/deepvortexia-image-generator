@@ -82,6 +82,11 @@ function HomeContent(){
   return(
     <div className="min-h-screen bg-black text-white font-sans pb-10">
       <Header buyPack={buyPack} onBuyPackHandled={()=>setBuyPack(null)}/>
+      <div className="particles">
+        {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((left, i) => (
+          <div key={i} className="particle" style={{ left: `${left}%`, animationDelay: `${i * 0.5}s` }} />
+        ))}
+      </div>
       <main className="max-w-[1200px] mx-auto px-3 sm:px-5 flex flex-col gap-4 sm:gap-8">
         <div className="flex flex-col gap-3 sm:gap-5 w-full max-w-[800px] mx-auto mt-3 sm:mt-5">
           <CompactSuggestions onStyleSelect={handleStyleSelect} onIdeaSelect={handleIdeaSelect}/>
