@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Deep Vortex AI" }],
   creator: "Deep Vortex AI",
   publisher: "Deep Vortex AI",
-  robots: "index, follow",
+  robots: "index, follow, max-image-preview:large",
   verification: {
     google: "76BAsq1e-Ol7tA8HmVLi9LgMDXpjyBIQvdAx6bZXF7Q",
   },
@@ -62,6 +62,7 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
         <link rel="llms" href="/llms.txt" type="text/plain" />
+        <meta name="revisit-after" content="3 days" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -80,8 +81,8 @@ export default function RootLayout({
               "offers": {
                 "@type": "AggregateOffer",
                 "priceCurrency": "USD",
-                "lowPrice": "0",
-                "highPrice": "84.99",
+                "lowPrice": "4.99",
+                "highPrice": "99.99",
                 "offerCount": "5"
               },
               "creator": {
