@@ -142,13 +142,12 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
         {/* Logo Display Zone */}
         <div className="logo-display-zone">
           <Image
-            src="/real.png"
+            src="/reallitylogoreal.webp"
             alt="Deep Vortex"
-            width={140}
-            height={140}
+            width={200}
+            height={60}
             className="brand-logo-image"
             priority={true}
-            style={{ filter: "drop-shadow(0 0 18px rgba(255,215,100,0.45)) drop-shadow(0 0 36px rgba(255,215,100,0.2))" }}
           />
         </div>
 
