@@ -18,13 +18,13 @@ function StripeSuccessHandler({ user, refreshProfile }: { user: User | null, ref
     const isSuccess = searchParams?.get('success');
     
     if (isSuccess === 'true' && user) {
-      console.log('Paiement réussi détecté ! Mise à jour des crédits...');
+      console.log('Payment successful — refreshing credits...');
       refreshProfile();
       window.history.replaceState(null, '', window.location.pathname);
     }
   }, [searchParams, user, refreshProfile]);
 
-  return null; // N'affiche rien visuellement
+  return null;
 }
 // ------------------------------------
 
@@ -36,8 +36,6 @@ interface HeaderProps {
 export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
   const { user, profile, signOut, loading, refreshProfile } = useAuth();
   const router = useRouter();
-  
-  // Retire useSearchParams d'ici
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
@@ -126,7 +124,6 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
 
   return (
     <>
-      {/* NOUVEAU : On enveloppe notre composant invisible dans un Suspense */}
       <Suspense fallback={null}>
         <StripeSuccessHandler user={user} refreshProfile={refreshProfile} />
       </Suspense>
@@ -145,7 +142,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
             src="/reallitylogoreal.webp"
             alt="Deep Vortex"
             width={400}
-            height={120}
+            height={110}
             className="brand-logo-image"
             priority={true}
           />
