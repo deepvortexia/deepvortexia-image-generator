@@ -139,18 +139,16 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           </Link>
         )}
 
-        {/* Logo Display Zone with Rotating Orbits */}
+        {/* Logo Display Zone */}
         <div className="logo-display-zone">
-          <div className="orbit-ring-one" />
-          <div className="orbit-ring-two" />
-          <div className="orbit-ring-three" />
-          <Image 
-            src="/deepgoldremoveetiny.png" 
-            alt="Deep Vortex" 
-            width={120} 
-            height={120}
+          <Image
+            src="/real.png"
+            alt="Deep Vortex"
+            width={140}
+            height={140}
             className="brand-logo-image"
-            priority
+            priority={true}
+            style={{ filter: "drop-shadow(0 0 18px rgba(255,215,100,0.45)) drop-shadow(0 0 36px rgba(255,215,100,0.2))" }}
           />
         </div>
 
