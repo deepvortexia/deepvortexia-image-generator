@@ -142,7 +142,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
             src="/reallitylogoreal.webp"
             alt="Deep Vortex"
             width={400}
-            height={110}
+            height={130}
             className="brand-logo-image"
             priority={true}
           />
