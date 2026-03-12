@@ -36,10 +36,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico?v=2", sizes: "any" },
-      { url: "/favicon.svg?v=2", type: "image/svg+xml" },
+      { url: "https://images.deepvortexai.art/favicon.ico?v=4", sizes: "any" },
+      { url: "https://images.deepvortexai.art/favicon.svg?v=4", type: "image/svg+xml" },
     ],
-    apple: "/apple-touch-icon.png?v=2",
+    apple: "https://images.deepvortexai.art/apple-touch-icon.png?v=4",
   },
   other: {
     "theme-color": "#D4AF37",
@@ -58,9 +58,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+        <link rel="icon" href="https://images.deepvortexai.art/favicon.ico?v=4" sizes="any" />
+        <link rel="icon" type="image/svg+xml" href="https://images.deepvortexai.art/favicon.svg?v=4" />
+        <link rel="apple-touch-icon" href="https://images.deepvortexai.art/apple-touch-icon.png?v=4" />
         <link rel="llms" href="/llms.txt" type="text/plain" />
         <meta name="revisit-after" content="3 days" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
