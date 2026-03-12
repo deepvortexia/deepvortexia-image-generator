@@ -82,7 +82,19 @@ export function createClient() {
         // Map Supabase's default cookie name to our shared key
         if (name.startsWith('sb-') && name.endsWith('-auth-token')) {
           const value = getChunkedCookie(STORAGE_KEY)
-          if (value) return value
+          if (value) {
+            // Guard: if the stored value is a base64 string (old Supabase format)
+            // rather than valid JSON, _recoverAndRefresh will throw.
+            // Clear it and return undefined so Supabase starts a clean session.
+            try {
+              JSON.parse(value)
+              return value
+            } catch {
+              console.warn('[auth] Corrupted/base64 session found — clearing storage to prevent crash loop')
+              removeChunkedCookie(STORAGE_KEY)
+              return undefined
+            }
+          }
         }
         // Code verifier: try sessionStorage first (most reliable for same-tab auth),
         // then fall back to cookies. Use the shared name across all apps.
