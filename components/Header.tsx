@@ -139,7 +139,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
         {/* Logo Display Zone */}
         <div className="logo-display-zone">
           <Image
-            src="/reallitylogoreal.webp"
+            src="/logotinyreal.webp"
             alt="Deep Vortex"
             width={400}
             height={130}
