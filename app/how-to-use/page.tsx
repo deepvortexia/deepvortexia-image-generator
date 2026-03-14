@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = {
-  title: "How to Use the AI Image Generator - Deep Vortex AI",
-  description: "Step-by-step guide to creating stunning AI-generated images with Deep Vortex AI. Learn how to write prompts, choose styles, and download your images.",
-};
 
 const otherTools = [
   { name: "Remove Background", desc: "Instantly remove image backgrounds", url: "https://bgremover.deepvortexai.art", icon: "✂️" },
@@ -21,6 +18,10 @@ const otherTools = [
 ];
 
 export default function HowToUsePage() {
+  useEffect(() => {
+    document.title = "How to Use the AI Image Generator - Deep Vortex AI";
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white" style={{ backgroundImage: "radial-gradient(rgba(212,175,55,0.07) 1px, transparent 1px)", backgroundSize: "28px 28px" }}>
 
