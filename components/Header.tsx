@@ -179,8 +179,14 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
             <span className="pill-text">Buy Credits</span>
           </button>
 
+          {/* How to Use Pill */}
+          <Link href="/how-to-use" className="hub-pill" style={{ textDecoration: "none" }} title="How to use this tool">
+            <span className="pill-icon">📖</span>
+            <span className="pill-text">How to Use</span>
+          </Link>
+
           {/* Favorites Pill */}
-          <button 
+          <button
             className="hub-pill favorites-pill"
             onClick={handleFavoritesClick}
             title="View your favorite images"
