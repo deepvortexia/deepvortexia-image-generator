@@ -180,7 +180,7 @@ export default function Header({ buyPack, onBuyPackHandled }: HeaderProps) {
           </button>
 
           {/* How to Use Pill */}
-          <Link href="/how-to-use" className="hub-pill" style={{ textDecoration: "none" }} title="How to use this tool">
+          <Link href="/how-to-use" className="hub-pill how-to-use-pill" style={{ textDecoration: "none" }} title="How to use this tool">
             <span className="pill-icon">📖</span>
             <span className="pill-text">How to Use</span>
           </Link>
