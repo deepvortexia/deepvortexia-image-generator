@@ -4,6 +4,7 @@ import './EcosystemCards.css'
 const tools = [
   { name: 'Emoticons',    icon: '😃', desc: 'Custom emoji creation',        href: 'https://emoticons.deepvortexai.art', isCurrent: false },
   { name: 'Image Gen',    icon: '🎨', desc: 'AI artwork',                   href: 'https://images.deepvortexai.art',    isCurrent: true  },
+  { name: 'Avatar Gen',   icon: '🎭', desc: 'AI portrait styles',           href: 'https://avatar.deepvortexai.art',    isCurrent: false },
   { name: 'Remove BG',    icon: '✂️', desc: 'Remove backgrounds instantly', href: 'https://bgremover.deepvortexai.art', isCurrent: false },
   { name: 'Upscaler',     icon: '🔍', desc: 'Upscale images up to 4x',      href: 'https://upscaler.deepvortexai.art',  isCurrent: false },
   { name: '3D Generator', icon: '🧊', desc: 'Image to 3D model',            href: 'https://3d.deepvortexai.art',        isCurrent: false },
