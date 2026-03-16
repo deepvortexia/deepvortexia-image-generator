@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
 
-    console.log('Generating image with Imagen-4-Fast:', {
+    console.log('Generating image with Flux-1.1-Pro:', {
       promptLength: prompt.length,
       aspectRatio: selectedRatio,
       authenticated: !!user,
@@ -155,16 +155,16 @@ export async function POST(req: NextRequest) {
     const userId: string | undefined = user?.id;
 
     try {
-      console.log('🚀 Calling Replicate with Imagen-4-Fast...');
-      
+      console.log('🚀 Calling Replicate with Flux-1.1-Pro...');
+
       const output = await replicate.run(
-        "google/imagen-4-fast",
+        "black-forest-labs/flux-1.1-pro",
         {
           input: {
             prompt: prompt.trim(),
             aspect_ratio: selectedRatio,
             output_format: 'jpg',
-            safety_tolerance: 2,
+            output_quality: 80,
           }
         }
       );
@@ -371,7 +371,7 @@ export async function POST(req: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorResponse = (error as any).response;
     
-    console.error('❌ Imagen generation error:', {
+    console.error('❌ Flux generation error:', {
       message: errorMessage,
       status: errorResponse?.status,
       details: errorResponse?.data,
