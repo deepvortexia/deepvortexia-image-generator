@@ -98,7 +98,7 @@ export default function RootLayout({
               "featureList": [
                 "Text to Image Generation",
                 "Multiple Aspect Ratios",
-                "AI-Powered with Imagen",
+                "AI-Powered with Flux",
                 "Instant Download",
                 "Favorites Gallery"
               ]
