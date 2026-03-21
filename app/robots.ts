@@ -16,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: 'cohere-ai', allow: '/' },
       { userAgent: 'Bytespider', allow: '/' },
     ],
-    sitemap: 'https://images.deepvortexai.art/sitemap.xml',
+    sitemap: 'https://images.deepvortexai.com/sitemap.xml',
   }
 }
