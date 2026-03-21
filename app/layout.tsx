@@ -13,18 +13,18 @@ export const metadata: Metadata = {
   verification: {
     google: "76BAsq1e-Ol7tA8HmVLi9LgMDXpjyBIQvdAx6bZXF7Q",
   },
-  metadataBase: new URL("https://images.deepvortexai.art"),
+  metadataBase: new URL("https://images.deepvortexai.com"),
   alternates: {
-    canonical: "https://images.deepvortexai.art",
+    canonical: "https://images.deepvortexai.com",
   },
   openGraph: {
     type: "website",
-    url: "https://images.deepvortexai.art",
+    url: "https://images.deepvortexai.com",
     title: "AI Image Generator - Deep Vortex AI",
     description: "Create stunning AI-generated images from text. Professional quality, multiple aspect ratios, instant results.",
     siteName: "Deep Vortex AI",
     locale: "en_US",
-    images: [{ url: "https://images.deepvortexai.art/deepgoldremoveetiny.png", width: 512, height: 512, alt: "Deep Vortex AI Image Generator" }],
+    images: [{ url: "https://images.deepvortexai.com/deepgoldremoveetiny.png", width: 512, height: 512, alt: "Deep Vortex AI Image Generator" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     creator: "@deepvortexart",
     title: "AI Image Generator - Deep Vortex AI",
     description: "Create stunning AI-generated images from text. Professional quality, instant results.",
-    images: ["https://images.deepvortexai.art/deepgoldremoveetiny.png"],
+    images: ["https://images.deepvortexai.com/deepgoldremoveetiny.png"],
   },
   icons: {
     icon: [
-      { url: "https://images.deepvortexai.art/favicon.ico?v=4", sizes: "any" },
-      { url: "https://images.deepvortexai.art/favicon.svg?v=4", type: "image/svg+xml" },
+      { url: "https://images.deepvortexai.com/favicon.ico?v=4", sizes: "any" },
+      { url: "https://images.deepvortexai.com/favicon.svg?v=4", type: "image/svg+xml" },
     ],
-    apple: "https://images.deepvortexai.art/apple-touch-icon.png?v=4",
+    apple: "https://images.deepvortexai.com/apple-touch-icon.png?v=4",
   },
   other: {
     "theme-color": "#D4AF37",
@@ -58,9 +58,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="https://images.deepvortexai.art/favicon.ico?v=4" sizes="any" />
-        <link rel="icon" type="image/svg+xml" href="https://images.deepvortexai.art/favicon.svg?v=4" />
-        <link rel="apple-touch-icon" href="https://images.deepvortexai.art/apple-touch-icon.png?v=4" />
+        <link rel="icon" href="https://images.deepvortexai.com/favicon.ico?v=4" sizes="any" />
+        <link rel="icon" type="image/svg+xml" href="https://images.deepvortexai.com/favicon.svg?v=4" />
+        <link rel="apple-touch-icon" href="https://images.deepvortexai.com/apple-touch-icon.png?v=4" />
         <link rel="llms" href="/llms.txt" type="text/plain" />
         <meta name="revisit-after" content="3 days" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -75,7 +75,7 @@ export default function RootLayout({
               "@type": "WebApplication",
               "name": "Deep Vortex AI Image Generator",
               "description": "Create stunning AI-generated images from text descriptions with professional quality.",
-              "url": "https://images.deepvortexai.art",
+              "url": "https://images.deepvortexai.com",
               "applicationCategory": "DesignApplication",
               "operatingSystem": "All",
               "offers": {
