@@ -20,6 +20,11 @@ function HomeContent(){
   const[error,setError]=useState<string|null>(null);
   const[toast,setToast]=useState<{title:string;message:string;type:'success'|'error'|'warning'}|null>(null);
   const[buyPack,setBuyPack]=useState<string|null>(null);
+  const[loadingStage,setLoadingStage]=useState<0|1|2|3>(0);
+  const[loadingProgress,setLoadingProgress]=useState(0);
+  const[elapsedSeconds,setElapsedSeconds]=useState(0);
+  const progressIntervalRef=useRef<ReturnType<typeof setInterval>|null>(null);
+  const elapsedIntervalRef=useRef<ReturnType<typeof setInterval>|null>(null);
   const textareaRef=useRef<HTMLTextAreaElement>(null);
   const focusTextarea=()=>setTimeout(()=>textareaRef.current?.focus(),0);
   const handleStyleSelect=(s:string)=>{setUserPrompt(s);focusTextarea();};
@@ -41,17 +46,28 @@ function HomeContent(){
   },[searchParams,refreshWithRetry]);
   const handleGenerate=async()=>{
     if(!userPrompt.trim())return;
+    const clearIntervals=()=>{
+      if(progressIntervalRef.current){clearInterval(progressIntervalRef.current);progressIntervalRef.current=null;}
+      if(elapsedIntervalRef.current){clearInterval(elapsedIntervalRef.current);elapsedIntervalRef.current=null;}
+    };
     setIsGenerating(true);setError(null);setToast(null);setImageUrl(null);
+    setLoadingStage(1);setLoadingProgress(0);setElapsedSeconds(0);
+    elapsedIntervalRef.current=setInterval(()=>setElapsedSeconds(s=>s+1),1000);
     try{
+      setLoadingProgress(5);
       const{data:{session:s}}=await supabase.auth.getSession();
       if(!s?.access_token){setError('Please sign in.');setIsGenerating(false);return;}
+      setLoadingProgress(10);setLoadingStage(2);
+      progressIntervalRef.current=setInterval(()=>{
+        setLoadingProgress(prev=>{const gap=85-prev;return gap<0.05?prev:prev+gap*0.003;});
+      },100);
       const controller=new AbortController();
       const timeout=setTimeout(()=>controller.abort(),60000);
       let res:Response;
       try{
         res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.access_token},body:JSON.stringify({prompt:userPrompt,aspectRatio}),signal:controller.signal});
       }catch(fetchErr:any){
-        clearTimeout(timeout);
+        clearTimeout(timeout);clearIntervals();
         if(fetchErr.name==='AbortError'){
           setToast({title:'Request Timed Out',message:'The generation took too long. Please try again. No credits were deducted.',type:'warning'});
         }else{
@@ -60,6 +76,7 @@ function HomeContent(){
         return;
       }
       clearTimeout(timeout);
+      if(progressIntervalRef.current){clearInterval(progressIntervalRef.current);progressIntervalRef.current=null;}
       if(!res.ok){
         const data=await res.json().catch(()=>({}));
         switch(res.status){
@@ -71,13 +88,18 @@ function HomeContent(){
         }
         return;
       }
+      setLoadingStage(3);setLoadingProgress(85);
+      await new Promise<void>(resolve=>{
+        let p=85;
+        const finalize=setInterval(()=>{p+=3;setLoadingProgress(Math.min(p,100));if(p>=100){clearInterval(finalize);resolve();}},40);
+      });
       const data=await res.json();
       setImageUrl(data.imageUrl);
       await refreshProfile();
       if(window.parent!==window){window.parent.postMessage({type:'deepvortex-credits-updated'},'https://deepvortexai.com');}
     }catch(err:unknown){
       setToast({title:'Generation Failed',message:(err instanceof Error?err.message:'An unexpected error occurred')+'. No credits were deducted.',type:'error'});
-    }finally{setIsGenerating(false);}
+    }finally{clearIntervals();setIsGenerating(false);setLoadingStage(0);setLoadingProgress(0);}
   };
   return(
     <div className="min-h-screen bg-black text-white font-sans pb-10">
@@ -92,6 +114,36 @@ function HomeContent(){
           <CompactSuggestions onStyleSelect={handleStyleSelect} onIdeaSelect={handleIdeaSelect}/>
           <PromptSection prompt={userPrompt} onPromptChange={setUserPrompt} aspectRatio={aspectRatio} onAspectRatioChange={setAspectRatio} onGenerate={handleGenerate} isLoading={isGenerating} textareaRef={textareaRef}/>
         </div>
+        {isGenerating&&(
+          <div className="loading-section">
+            <div className="progress-stages">
+              <div className={`progress-stage${loadingStage===1?' stage-active':loadingStage>1?' stage-done':''}`}>
+                <div className="stage-dot"/>
+                <span>Uploading image...</span>
+              </div>
+              <div className={`progress-stage${loadingStage===2?' stage-active':loadingStage>2?' stage-done':''}`}>
+                <div className="stage-dot"/>
+                <span>AI is animating your image...</span>
+              </div>
+              <div className={`progress-stage${loadingStage===3?' stage-active':''}`}>
+                <div className="stage-dot"/>
+                <span>Finalizing video...</span>
+              </div>
+            </div>
+            <div className="progress-bar-wrapper">
+              <div className="progress-bar-track">
+                <div className="progress-bar-fill" style={{width:`${loadingProgress}%`}}/>
+              </div>
+              {loadingProgress>0&&(
+                <div className="progress-bar-tip" style={{left:`${loadingProgress}%`}}/>
+              )}
+            </div>
+            <div className="progress-footer">
+              <span className="progress-percent">{Math.round(loadingProgress)}%</span>
+              <span className="progress-elapsed">{elapsedSeconds}s...</span>
+            </div>
+          </div>
+        )}
         <ImageDisplay imageUrl={imageUrl} isLoading={isGenerating} error={error} prompt={userPrompt} onRegenerate={handleGenerate}/>
         <EcosystemCards/>
       </main>
