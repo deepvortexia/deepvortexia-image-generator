@@ -168,7 +168,7 @@ function HomeContent(){
             </svg>
             Quora
           </a>
-          <a href="mailto:admin@deepvortexai.xyz" className="inline-block px-6 py-2.5 border border-[rgba(212,175,55,0.6)] rounded-lg bg-transparent text-[#D4AF37] no-underline text-base hover:bg-[rgba(212,175,55,0.1)] hover:border-[#D4AF37] transition-all">Contact Us</a>
+          <a href="mailto:admin@deepvortexai.com" className="inline-block px-6 py-2.5 border border-[rgba(212,175,55,0.6)] rounded-lg bg-transparent text-[#D4AF37] no-underline text-base hover:bg-[rgba(212,175,55,0.1)] hover:border-[#D4AF37] transition-all">Contact Us</a>
         </div>
       </footer>
       <Notification show={!!toast} onClose={()=>setToast(null)} title={toast?.title} message={toast?.message} type={toast?.type}/>
