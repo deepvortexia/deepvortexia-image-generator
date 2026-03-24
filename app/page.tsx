@@ -102,7 +102,7 @@ function HomeContent(){
     }finally{clearIntervals();setIsGenerating(false);setLoadingStage(0);setLoadingProgress(0);}
   };
   return(
-    <div className="min-h-screen bg-black text-white font-sans pb-10">
+    <div className="app min-h-screen bg-black text-white font-sans pb-10">
       <Header buyPack={buyPack} onBuyPackHandled={()=>setBuyPack(null)}/>
       <div className="particles">
         {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((left, i) => (
