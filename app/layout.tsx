@@ -77,6 +77,7 @@ export default function RootLayout({
               "name": "Deep Vortex AI Image Generator",
               "description": "Create stunning AI-generated images from text descriptions with professional quality.",
               "url": "https://images.deepvortexai.com",
+              "image": "https://images.deepvortexai.com/deepgoldremoveetiny.png",
               "applicationCategory": "DesignApplication",
               "operatingSystem": "All",
               "offers": {
