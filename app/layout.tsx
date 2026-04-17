@@ -8,9 +8,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "AI Image Generator - Deep Vortex AI | Create Stunning Images from Text",
-  description: "Create stunning AI-generated images from text descriptions. Professional quality, multiple aspect ratios, instant results. Part of the Deep Vortex AI creative ecosystem.",
-  keywords: "AI image generator, text to image, AI art, image creation, Deep Vortex AI, Imagen, AI tools, generate images from text, AI art generator",
+  title: "AI Image Generator Free Online — Text to Image No Signup | Deep Vortex AI",
+  description: "Generate stunning AI images from text descriptions instantly — multiple styles and aspect ratios. Free online tool, no signup required. Professional quality results. Part of Deep Vortex AI.",
+  keywords: ["AI image generator free online", "text to image AI free no signup", "free AI art generator online", "generate images from text free", "AI image creator no account", "text to image no signup free", "Deep Vortex AI image generator", "free AI artwork generator online"],
   authors: [{ name: "Deep Vortex AI" }],
   creator: "Deep Vortex AI",
   publisher: "Deep Vortex AI",
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://images.deepvortexai.com",
-    title: "AI Image Generator - Deep Vortex AI",
-    description: "Create stunning AI-generated images from text. Professional quality, multiple aspect ratios, instant results.",
+    title: "AI Image Generator Free Online — Text to Image No Signup | Deep Vortex AI",
+    description: "Generate stunning AI images from text descriptions instantly — multiple styles and aspect ratios. Free online tool, no signup required. Professional quality results. Part of Deep Vortex AI.",
     siteName: "Deep Vortex AI",
     locale: "en_US",
     images: [{ url: "https://images.deepvortexai.com/deepgoldremoveetiny.png", width: 512, height: 512, alt: "Deep Vortex AI Image Generator" }],
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@deepvortexart",
     creator: "@deepvortexart",
-    title: "AI Image Generator - Deep Vortex AI",
-    description: "Create stunning AI-generated images from text. Professional quality, instant results.",
+    title: "AI Image Generator Free Online — Text to Image No Signup | Deep Vortex AI",
+    description: "Generate stunning AI images from text descriptions instantly — multiple styles and aspect ratios. Free online tool, no signup required. Professional quality results. Part of Deep Vortex AI.",
     images: ["https://images.deepvortexai.com/deepgoldremoveetiny.png"],
   },
   icons: {
