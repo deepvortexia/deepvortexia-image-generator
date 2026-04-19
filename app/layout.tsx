@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     description: "Generate stunning AI images from text descriptions instantly — multiple styles and aspect ratios. Free online tool, no signup required. Professional quality results. Part of Deep Vortex AI.",
     siteName: "Deep Vortex AI",
     locale: "en_US",
-    images: [{ url: "https://images.deepvortexai.com/deepgoldremoveetiny.png", width: 512, height: 512, alt: "Deep Vortex AI Image Generator" }],
+    images: [{ url: "/og-image.webp", width: 512, height: 512, alt: "Deep Vortex AI Image Generator" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     creator: "@deepvortexart",
     title: "AI Image Generator Free Online — Text to Image No Signup | Deep Vortex AI",
     description: "Generate stunning AI images from text descriptions instantly — multiple styles and aspect ratios. Free online tool, no signup required. Professional quality results. Part of Deep Vortex AI.",
-    images: ["https://images.deepvortexai.com/deepgoldremoveetiny.png"],
+    images: ["/og-image.webp"],
   },
   icons: {
     icon: [
@@ -82,7 +82,7 @@ export default function RootLayout({
               "name": "Deep Vortex AI Image Generator",
               "description": "Create stunning AI-generated images from text descriptions with professional quality.",
               "url": "https://images.deepvortexai.com",
-              "image": "https://images.deepvortexai.com/deepgoldremoveetiny.png",
+              "image": "/og-image.webp",
               "applicationCategory": "DesignApplication",
               "operatingSystem": "All",
               "offers": {
